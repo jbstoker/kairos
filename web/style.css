@@ -409,6 +409,36 @@ select {
     line-height: 1.5;
     resize: vertical;
 }
+#sharePreview {
+    position: relative;
+    margin-bottom: 12px;
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid #2a3442;
+}
+#capturedImage {
+    display: block;
+    width: 100%;
+    max-height: 320px;
+    object-fit: cover;
+}
+.overlay-text {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 10px 14px;
+    background: rgba(11, 14, 20, 0.72);
+    color: #f5e6c4;
+    font-size: 0.85rem;
+    text-align: center;
+}
+.seasonal-add {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
 
 /* ---- Help modal ---- */
 .modal-overlay {

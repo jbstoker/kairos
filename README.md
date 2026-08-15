@@ -436,15 +436,17 @@ worker). Open it two ways:
   test).
 - **Seasonal layer** — produce, herbs, mushrooms, meat, and festivals for the
   current Kairos season, filterable by region and tradition. Every item is
-  clickable → a detail modal. "➕ Add your own" saves family knowledge to
-  `data/seasonal_data.json` when the server is running, else to this device
-  (`web/seasonal_display.js` + `web/seasonal_defaults.js`, generated from the
-  JSON by `tools/sync_seasonal.py`).
+  clickable → a detail modal. "➕ Add Produce" / "➕ Add Festival" save family
+  knowledge to `data/seasonal_data.json` when the server is running, else to
+  this device (`web/seasonal_display.js` + `web/seasonal_defaults.js`,
+  generated from the JSON by `tools/sync_seasonal.py`).
 - **Offline planets** — the five naked-eye planets' tropical zodiac signs are
   computed in the browser (`web/planets.js`, compact orbital elements,
   verified against the Skyfield engine) when no backend is reachable.
-- **Share this moment** — exports the current Kairos line as text, copies it
-  to the clipboard, or downloads it as a canvas-rendered image.
+- **Share this moment** — the current Kairos line as text, copy to clipboard,
+  or a canvas-rendered image; **📸 Capture Moment** lets you take (or pick) a
+  photo, stamps it with the Kairos line, and shares it via the native share
+  sheet (or downloads it as a PNG).
 
 ## Data & file formats
 

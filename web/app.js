@@ -202,9 +202,19 @@ async function updateSelfCheck() {
     }
 }
 
-// --- Share this moment (text + clipboard + canvas image) ------------------
+// --- Share this moment (text, clipboard, canvas image, photo capture) -------
+let capturedMomentDataURL = null;
+
+function getKairosDisplayString() {
+    const kst = document.getElementById('kstDisplay');
+    if (kst && kst.textContent && !kst.textContent.startsWith('--')) return kst.textContent;
+    const time = document.getElementById('solarTime')?.textContent || '--:--';
+    const season = document.getElementById('seasonDisplay')?.textContent || 'Observing...';
+    return `${time} · ${season}`;
+}
+
 function buildShareText() {
-    const kst = document.getElementById('kstDisplay')?.textContent || '--:--';
+    const kst = getKairosDisplayString();
     const greg = document.getElementById('gregorian')?.textContent || '';
     const season = (window.__kstData && window.__kstData.season) || '—';
     let loc = '';
@@ -223,6 +233,18 @@ function openShareModal() {
     const text = document.getElementById('shareText');
     if (!modal || !text) return;
     text.value = buildShareText();
+    const preview = document.getElementById('sharePreview');
+    const img = document.getElementById('capturedImage');
+    const momentText = document.getElementById('momentText');
+    const sharePhotoBtn = document.getElementById('shareImageBtn');
+    if (preview && img && capturedMomentDataURL) {
+        img.src = capturedMomentDataURL;
+        if (momentText) momentText.textContent = `Living in ${getKairosDisplayString()}`;
+        preview.hidden = false;
+    } else if (preview) {
+        preview.hidden = true;
+    }
+    if (sharePhotoBtn) sharePhotoBtn.hidden = !capturedMomentDataURL;
     modal.hidden = false;
     document.body.classList.add('modal-open');
 }
@@ -285,6 +307,72 @@ function downloadMomentImage() {
     a.click();
     const status = document.getElementById('status');
     if (status) status.textContent = '🖼️ Kairos moment image downloaded';
+}
+
+// --- Photo capture: camera/file picker → stamp → share/download -------------
+function captureMoment() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.capture = 'environment';
+    input.onchange = (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            capturedMomentDataURL = ev.target.result;
+            openShareModal();
+        };
+        reader.readAsDataURL(file);
+    };
+    input.click();
+}
+
+function shareCapturedImage() {
+    if (!capturedMomentDataURL) return;
+    const image = new Image();
+    image.onload = function () {
+        const canvas = document.createElement('canvas');
+        canvas.width = image.width;
+        canvas.height = image.height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(image, 0, 0);
+        // Bottom bar with the Kairos line, scaled to the photo size.
+        const barH = Math.max(80, Math.round(canvas.height * 0.12));
+        ctx.fillStyle = 'rgba(11, 14, 20, 0.72)';
+        ctx.fillRect(0, canvas.height - barH, canvas.width, barH);
+        ctx.fillStyle = '#f5e6c4';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        const line = `Living in ${getKairosDisplayString()}`;
+        const fontSize = Math.max(18, Math.round(canvas.width / 34));
+        ctx.font = `600 ${fontSize}px "Segoe UI", Tahoma, sans-serif`;
+        ctx.fillText(line, canvas.width / 2, canvas.height - barH / 2);
+        canvas.toBlob(function (blob) {
+            if (!blob) return;
+            const file = new File([blob], 'kairos-moment.png', { type: 'image/png' });
+            const shareData = {
+                title: 'My Kairos Moment',
+                text: `Living in ${getKairosDisplayString()}`,
+                files: [file]
+            };
+            if (navigator.canShare && navigator.canShare(shareData)) {
+                navigator.share(shareData).catch(() => { /* user cancelled */ });
+            } else {
+                const link = document.createElement('a');
+                link.download = 'kairos-moment.png';
+                link.href = URL.createObjectURL(blob);
+                link.click();
+            }
+            const status = document.getElementById('status');
+            if (status) status.textContent = '📤 Kairos moment photo shared / downloaded';
+        }, 'image/png');
+    };
+    image.onerror = function () {
+        const status = document.getElementById('status');
+        if (status) status.textContent = '⚠️ Could not read the captured image.';
+    };
+    image.src = capturedMomentDataURL;
 }
 
 // --- Solar-noon calibration (Sunrise+Sunset / Equal Shadows) ---------------
@@ -368,9 +456,11 @@ document.getElementById('traditionSelect').addEventListener('change', (e) => {
 });
 
 document.getElementById('shareBtn').addEventListener('click', openShareModal);
+document.getElementById('captureBtn').addEventListener('click', captureMoment);
 document.getElementById('shareClose').addEventListener('click', closeShareModal);
 document.getElementById('copyShareBtn').addEventListener('click', copyShareText);
 document.getElementById('imageShareBtn').addEventListener('click', downloadMomentImage);
+document.getElementById('shareImageBtn').addEventListener('click', shareCapturedImage);
 const shareModalEl = document.getElementById('shareModal');
 if (shareModalEl) {
     shareModalEl.addEventListener('click', e => {

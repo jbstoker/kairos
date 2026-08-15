@@ -36,7 +36,8 @@
     <div class="kst-gregorian" id="gregorian">(Gregorian: --)</div>
     <div class="kst-tradition" id="traditionDisplay">--</div>
     <div class="kst-actions">
-        <button class="action-btn" id="shareBtn" title="Export this moment as text or image">📤 Share this moment</button>
+        <button class="action-btn" id="captureBtn" title="Take a photo and stamp it with this Kairos moment">📸 Capture Moment</button>
+        <button class="action-btn" id="shareBtn" title="Export this moment as text or image">📤 Share This Moment</button>
     </div>
     <div class="kst-wheel" id="kstWheel">
         <div class="sun-indicator" id="sunIndicator">☀️</div>
@@ -69,7 +70,10 @@
         <div class="seasonal-container" id="seasonalContainer">
             <span class="seasonal-note">Looking up the sky…</span>
         </div>
-        <button class="action-btn" id="addSeasonalBtn">➕ Add your own</button>
+        <div class="seasonal-add">
+            <button class="action-btn" id="addProduceBtn">➕ Add Produce</button>
+            <button class="action-btn" id="addFestivalBtn">➕ Add Festival</button>
+        </div>
     </div>
 
     <div class="buttons" id="moonButtons">
@@ -213,10 +217,15 @@
             <button class="modal-close" id="shareClose" title="Close">✕</button>
         </div>
         <div class="modal-body">
+            <div id="sharePreview" hidden>
+                <img id="capturedImage" alt="Your moment">
+                <div class="overlay-text" id="momentText">Living in …</div>
+            </div>
             <textarea id="shareText" readonly rows="5"></textarea>
             <div class="share-actions">
                 <button class="action-btn" id="copyShareBtn">📋 Copy</button>
                 <button class="action-btn" id="imageShareBtn">🖼️ Download image</button>
+                <button class="action-btn" id="shareImageBtn" hidden>📤 Share photo</button>
             </div>
         </div>
     </div>

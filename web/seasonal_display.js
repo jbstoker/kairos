@@ -4,7 +4,7 @@
 //   1. Backend : GET/POST /api/seasonal — the Python engine reads the live
 //                data/seasonal_data.json (edits persist server-side).
 //   2. Offline : window.SEASONAL_DEFAULTS (generated from that JSON) plus
-//                localStorage user additions ("➕ Add your own").
+//                localStorage user additions ("➕ Add Produce / Festival").
 //
 // Items are clickable → a detail modal. Filters follow the Kairos season
 // (from the celestial wheel), plus tradition and region.
@@ -173,7 +173,7 @@
         container.innerHTML = cards.length
             ? cards.join('')
             : '<span class="seasonal-note">Nothing in season for these filters — ' +
-              'observe the sky, and add your own knowledge with ➕ Add your own.</span>';
+              'observe the sky, and add your own knowledge with ➕ Add Produce / ➕ Add Festival.</span>';
         container.__items = items;
         container.querySelectorAll('.seasonal-item').forEach((el, i) => {
             el.addEventListener('click', () => openItem(items[i]));
@@ -251,11 +251,11 @@
     }
 
     // ---- Add-your-own form --------------------------------------------------
-    function openAddForm() {
+    function openAddForm(kind) {
         const modal = document.getElementById('addSeasonalModal');
         if (!modal) return;
-        const kind = document.getElementById('addKind');
-        if (kind) kind.value = 'produce';
+        const kindSel = document.getElementById('addKind');
+        if (kindSel && (kind === 'produce' || kind === 'festival')) kindSel.value = kind;
         updateAddFormFields();
         modal.hidden = false;
         document.body.classList.add('modal-open');
@@ -358,8 +358,10 @@
 
     // ---- Init ---------------------------------------------------------------
     function init() {
-        const addBtn = document.getElementById('addSeasonalBtn');
-        if (addBtn) addBtn.addEventListener('click', openAddForm);
+        const addProduce = document.getElementById('addProduceBtn');
+        if (addProduce) addProduce.addEventListener('click', () => openAddForm('produce'));
+        const addFestival = document.getElementById('addFestivalBtn');
+        if (addFestival) addFestival.addEventListener('click', () => openAddForm('festival'));
         const closeBtn = document.getElementById('seasonalClose');
         if (closeBtn) closeBtn.addEventListener('click', closeItem);
         const closeAdd = document.getElementById('addClose');
