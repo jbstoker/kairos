@@ -13,15 +13,13 @@
     <h1>☀️ Kairos <button class="help-btn" id="helpBtn" title="What does this mean?">?</button></h1>
     <div class="sub">time you observe</div>
 
-    <select id="traditionSelect">
-        <option value="rhythm">🌗 Rhythm</option>
-        <option value="tartarian">🌌 Tartarian</option>
-        <option value="celtic">🌿 Celtic</option>
-        <option value="chinese">🐉 Chinese</option>
-        <option value="vedic">🕉️ Vedic</option>
-        <option value="mesopotamian">🏛️ Mesopotamian</option>
-        <option value="mystical">🔮 Mystical</option>
-    </select>
+    <div class="tabs">
+        <button class="tab-btn active" id="tabNowBtn">🌅 Now</button>
+        <button class="tab-btn" id="tabConfigBtn">⚙️ Configure</button>
+    </div>
+
+    <!-- Tab: the top view — what the sky is saying now -->
+    <div class="tab-panel" id="tabNow">
 
     <div class="display">
         <div class="time" id="solarTime">--:--</div>
@@ -54,60 +52,86 @@
     <!-- Today's energy -->
     <div class="energy-card" id="energyCard"></div>
 
-    <!-- Dynamic seasonal layer (user-editable produce & festivals) -->
+    <!-- In season now — filters and editing live in the ⚙️ Configure tab -->
     <div class="seasonal">
         <div class="seasonal-head">
             <span class="seasonal-title">🌿 In season · <b id="seasonalSeasonLabel">--</b></span>
-        </div>
-        <div class="seasonal-filters">
-            <select id="seasonalTradition" title="Tradition filter">
-                <option value="all">All traditions</option>
-            </select>
-            <select id="seasonalRegion" title="Region filter">
-                <option value="auto">Auto region</option>
-            </select>
+            <button class="seasonal-tune" id="seasonalTuneBtn" title="Filters and editing">⚙️ tune</button>
         </div>
         <div class="seasonal-container" id="seasonalContainer">
             <span class="seasonal-note">Looking up the sky…</span>
         </div>
-        <div class="seasonal-add">
-            <button class="action-btn" id="addProduceBtn">➕ Add Produce</button>
-            <button class="action-btn" id="addFestivalBtn">➕ Add Festival</button>
-        </div>
     </div>
 
-    <div class="buttons" id="moonButtons">
-        <button data-emoji="🌑">🌑</button>
-        <button data-emoji="🌒">🌒</button>
-        <button data-emoji="🌓">🌓</button>
-        <button data-emoji="🌔">🌔</button>
-        <button data-emoji="🌕">🌕</button>
-        <button data-emoji="🌖">🌖</button>
-        <button data-emoji="🌗">🌗</button>
-        <button data-emoji="🌘">🌘</button>
-    </div>
-
-    <div id="observationPanel">
-        <p class="obs-hint">🌞 Calibrate your local solar time — two easy ways:</p>
-        <div class="obs-buttons">
-            <button class="action-btn" id="sunriseBtn">🌅 Sunrise</button>
-            <button class="action-btn" id="sunsetBtn">🌇 Sunset</button>
-            <span class="obs-or">or</span>
-            <button class="action-btn" id="equalShadowBtn">⚖️ Shadow = Stick</button>
-        </div>
-        <div id="shadowStatus">Press when the sun touches the horizon, or when your shadow equals the stick.</div>
-    </div>
-
-    <div>
-        <button class="action-btn" id="seasonSpring">🌸 Spring</button>
-        <button class="action-btn" id="seasonSummer">☀️ Summer</button>
-        <button class="action-btn" id="seasonAutumn">🍂 Autumn</button>
-        <button class="action-btn" id="seasonWinter">❄️ Winter</button>
-    </div>
-
-    <div class="status" id="status">Ready.</div>
     <div class="checksum-line" id="checksumLine"
          title="This offset is expected and stable. It does not indicate an error — it reflects the difference between the Earth-age epoch and the current precessional phase. The self-check keeps watching it so drift never happens silently.">🔭 Precession offset: computing…</div>
+    </div><!-- /tabNow -->
+
+    <!-- Tab: configuration -->
+    <div class="tab-panel" id="tabConfig" hidden>
+        <select id="traditionSelect">
+            <option value="rhythm">🌗 Rhythm</option>
+            <option value="tartarian">🌌 Tartarian</option>
+            <option value="celtic">🌿 Celtic</option>
+            <option value="chinese">🐉 Chinese</option>
+            <option value="vedic">🕉️ Vedic</option>
+            <option value="mesopotamian">🏛️ Mesopotamian</option>
+            <option value="mystical">🔮 Mystical</option>
+        </select>
+
+        <div class="config-section">
+            <h3>🌿 Seasonal filters & editing</h3>
+            <div class="seasonal-filters">
+                <select id="seasonalTradition" title="Tradition filter">
+                    <option value="all">All traditions</option>
+                </select>
+                <select id="seasonalRegion" title="Region filter">
+                    <option value="auto">Auto region</option>
+                </select>
+            </div>
+            <div class="seasonal-add">
+                <button class="action-btn" id="addProduceBtn">➕ Add Produce</button>
+                <button class="action-btn" id="addFestivalBtn">➕ Add Festival</button>
+            </div>
+        </div>
+
+        <div id="observationPanel">
+            <p class="obs-hint">🌞 Calibrate your local solar time — two easy ways:</p>
+            <div class="obs-buttons">
+                <button class="action-btn" id="sunriseBtn">🌅 Sunrise</button>
+                <button class="action-btn" id="sunsetBtn">🌇 Sunset</button>
+                <span class="obs-or">or</span>
+                <button class="action-btn" id="equalShadowBtn">⚖️ Shadow = Stick</button>
+            </div>
+            <div id="shadowStatus">Press when the sun touches the horizon, or when your shadow equals the stick.</div>
+        </div>
+
+        <div class="config-section">
+            <h3>🌙 Observe the moon</h3>
+            <div class="buttons" id="moonButtons">
+                <button data-emoji="🌑">🌑</button>
+                <button data-emoji="🌒">🌒</button>
+                <button data-emoji="🌓">🌓</button>
+                <button data-emoji="🌔">🌔</button>
+                <button data-emoji="🌕">🌕</button>
+                <button data-emoji="🌖">🌖</button>
+                <button data-emoji="🌗">🌗</button>
+                <button data-emoji="🌘">🌘</button>
+            </div>
+        </div>
+
+        <div class="config-section">
+            <h3>🍂 Observe the season</h3>
+            <div>
+                <button class="action-btn" id="seasonSpring">🌸 Spring</button>
+                <button class="action-btn" id="seasonSummer">☀️ Summer</button>
+                <button class="action-btn" id="seasonAutumn">🍂 Autumn</button>
+                <button class="action-btn" id="seasonWinter">❄️ Winter</button>
+            </div>
+        </div>
+    </div><!-- /tabConfig -->
+
+    <div class="status" id="status">Ready.</div>
     <div class="footer">Kairos — no GPS, no internet, just you and the sky</div>
 </div>
 

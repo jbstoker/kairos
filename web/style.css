@@ -260,6 +260,58 @@ select {
 .energy-val { color: #f0c27f; font-weight: 600; }
 .energy-note { color: #b7c9e2; flex: 1 1 100%; }
 
+/* ---- Tabs: Now / Configure ---- */
+.tabs {
+    display: flex;
+    gap: 8px;
+    margin: 10px 0 14px;
+    justify-content: center;
+}
+.tab-btn {
+    background: #1e2632;
+    color: #a0b3c9;
+    border: 1px solid #2a3442;
+    border-radius: 40px;
+    padding: 8px 20px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    font-family: inherit;
+    transition: 0.2s;
+}
+.tab-btn:hover { background: #2c384a; }
+.tab-btn.active {
+    background: #2c384a;
+    color: #f5e6c4;
+    border-color: #3a4658;
+}
+.tab-panel[hidden] { display: none; }
+.config-section {
+    background: #1e2632;
+    border: 1px solid #2a3442;
+    border-radius: 20px;
+    padding: 16px;
+    margin: 12px 0;
+}
+.config-section h3 {
+    font-size: 0.8rem;
+    letter-spacing: 1.5px;
+    color: #b7c9e2;
+    margin: 0 0 10px;
+    font-weight: 600;
+}
+.seasonal-tune {
+    background: none;
+    border: 1px solid #2a3442;
+    color: #7f93a9;
+    border-radius: 40px;
+    padding: 4px 12px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    font-family: inherit;
+    transition: 0.2s;
+}
+.seasonal-tune:hover { color: #f5e6c4; background: #2c384a; }
+
 /* ---- Solar-noon observation methods ---- */
 #observationPanel {
     background: #1e2632;

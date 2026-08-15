@@ -468,6 +468,24 @@ if (shareModalEl) {
     });
 }
 
+// --- Tabs: Now (the view) / Configure (the controls) ------------------------
+function switchTab(name) {
+    const isNow = name === 'now';
+    const nowPanel = document.getElementById('tabNow');
+    const configPanel = document.getElementById('tabConfig');
+    if (nowPanel) nowPanel.hidden = !isNow;
+    if (configPanel) configPanel.hidden = isNow;
+    const nowBtn = document.getElementById('tabNowBtn');
+    const configBtn = document.getElementById('tabConfigBtn');
+    if (nowBtn) nowBtn.classList.toggle('active', isNow);
+    if (configBtn) configBtn.classList.toggle('active', !isNow);
+}
+
+document.getElementById('tabNowBtn').addEventListener('click', () => switchTab('now'));
+document.getElementById('tabConfigBtn').addEventListener('click', () => switchTab('config'));
+const seasonalTuneBtn = document.getElementById('seasonalTuneBtn');
+if (seasonalTuneBtn) seasonalTuneBtn.addEventListener('click', () => switchTab('config'));
+
 // Escape closes any open modal.
 document.addEventListener('keydown', e => {
     if (e.key !== 'Escape') return;
