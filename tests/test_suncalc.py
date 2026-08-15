@@ -36,10 +36,15 @@ class TestSolarNoon(unittest.TestCase):
 
     def test_calculate_returns_local(self):
         # Returns a naive local wall-clock datetime (timezone of the machine).
+        # The wall-clock time differs from UTC by the system's own UTC offset
+        # on that date — asserted as an invariant so the test also passes on
+        # machines whose timezone is UTC (e.g. CI runners).
         local = calculate_noon_suncalc(40.71, -74.01, date(2024, 8, 15))
         utc = solar_noon_utc(-74.01, date(2024, 8, 15))
-        # Local wall clock differs from UTC by the system timezone offset.
-        self.assertNotEqual((local - utc).total_seconds(), 0)
+        expected_offset = datetime(
+            2024, 8, 15, 12, tzinfo=timezone.utc).astimezone().utcoffset()
+        self.assertEqual((local - utc).total_seconds(),
+                         expected_offset.total_seconds())
 
 
 if __name__ == "__main__":
