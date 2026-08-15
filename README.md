@@ -810,6 +810,11 @@ tropical seasons (Spring…) come from solar longitude; the observed names
 GPLv3. Rename anything.
 
 ## Wikipedia
+
+The project also has a **live GitHub Wiki**: https://github.com/jbstoker/kairos/wiki
+(generated from this README with `python tools/sync_wiki.py`, pushed to the
+wiki's own repository).
+
 A living Wikipedia draft (not yet submitted) lives in
 `docs/wikipedia_draft.md`. It follows Wikipedia's style guide and is kept
 version-controlled so it can grow with the project. Per Wikipedia's
