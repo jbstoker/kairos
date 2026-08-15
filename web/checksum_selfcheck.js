@@ -101,14 +101,10 @@
 
     // The one-line footer text shown in the PWA.
     function checksumLine(result) {
-        var icon = (result.status === "consistent") ? "✓" : "⚠️";
-        var text = (result.status === "consistent")
-            ? "Self-check: precession checksum aligned"
-            : "Self-check: precession checksum phase offset documented";
         var delta = (result.difference_deg !== undefined)
             ? Number(result.difference_deg).toFixed(4) + "°"
             : "--°";
-        return icon + " " + text + " · offset " + delta;
+        return "🔭 Precession offset: " + delta;
     }
 
     return {

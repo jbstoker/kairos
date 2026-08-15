@@ -50,7 +50,7 @@ jobs:
 
       - name: Check JavaScript syntax
         run: |
-          for f in web/app.js web/kst_display.js web/help.js web/help_data.js web/checksum_selfcheck.js web/sw.js web/lib/suncalc.js; do
+          for f in web/app.js web/kst_display.js web/help.js web/help_data.js web/checksum_selfcheck.js web/planets.js web/seasonal_display.js web/seasonal_defaults.js web/sw.js web/lib/suncalc.js; do
             node --check "$f"
           done
 

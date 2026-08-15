@@ -139,7 +139,13 @@ function updateDisplay() {
         noonText = `Noon: ${hh}:${mm} (observed)`;
     }
 
-    document.getElementById('solarTime').textContent = solarTime;
+    const solarEl = document.getElementById('solarTime');
+    if (solarEl) {
+        solarEl.textContent = solarTime;
+        solarEl.title = solar
+            ? 'Observed solar noon — your local solar time.'
+            : 'No observation yet — tap 📐 Shadow Shortest at true noon to see your local solar time.';
+    }
     if (!window.__kstActive) {
         // KST (celestial engine) owns the moon display when it is live.
         document.getElementById('moonDisplay').textContent = moonEmoji;
@@ -169,6 +175,8 @@ function renderSelfCheck(result) {
             ? ` · stable across ${trend.count} checks`
             : ` · DRIFTING across ${trend.count} checks`;
     }
+    const now = new Date();
+    text += ` · updated ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
     el.textContent = text;
     el.className = 'checksum-line ' + (result.status === 'consistent' ? 'ok' : 'warn');
 }
@@ -192,6 +200,91 @@ async function updateSelfCheck() {
     } else {
         el.textContent = 'Self-check: unavailable';
     }
+}
+
+// --- Share this moment (text + clipboard + canvas image) ------------------
+function buildShareText() {
+    const kst = document.getElementById('kstDisplay')?.textContent || '--:--';
+    const greg = document.getElementById('gregorian')?.textContent || '';
+    const season = (window.__kstData && window.__kstData.season) || '—';
+    let loc = '';
+    try {
+        const saved = JSON.parse(localStorage.getItem('kairos_location') || 'null');
+        if (saved) {
+            loc = ` · ${Math.abs(saved.lat).toFixed(1)}°${saved.lat >= 0 ? 'N' : 'S'}, ` +
+                `${Math.abs(saved.lon).toFixed(1)}°${saved.lon >= 0 ? 'E' : 'W'}`;
+        }
+    } catch (e) { /* ignore */ }
+    return `☀️ Kairos — ${kst}\n${greg}${loc}\n🌍 ${season} · kairos.jbstoker.github.io`;
+}
+
+function openShareModal() {
+    const modal = document.getElementById('shareModal');
+    const text = document.getElementById('shareText');
+    if (!modal || !text) return;
+    text.value = buildShareText();
+    modal.hidden = false;
+    document.body.classList.add('modal-open');
+}
+
+function closeShareModal() {
+    const modal = document.getElementById('shareModal');
+    if (modal) modal.hidden = true;
+    document.body.classList.remove('modal-open');
+}
+
+function copyShareText() {
+    const text = document.getElementById('shareText').value;
+    const done = () => {
+        const status = document.getElementById('status');
+        if (status) status.textContent = '✅ Moment copied to clipboard';
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(() => legacyCopy(text));
+    } else {
+        legacyCopy(text);
+    }
+}
+
+function legacyCopy(text) {
+    const ta = document.getElementById('shareText');
+    ta.focus();
+    ta.select();
+    let ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+    const status = document.getElementById('status');
+    if (status) status.textContent = ok ? '✅ Moment copied to clipboard' : 'Select the text and copy manually.';
+}
+
+function downloadMomentImage() {
+    const lines = buildShareText().split('\n');
+    const canvas = document.createElement('canvas');
+    canvas.width = 900;
+    canvas.height = 430;
+    const ctx = canvas.getContext('2d');
+    const g = ctx.createLinearGradient(0, 0, 0, canvas.height);
+    g.addColorStop(0, '#0b0e14');
+    g.addColorStop(1, '#1e2632');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = '#2a3442';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
+    ctx.fillStyle = '#f0c27f';
+    ctx.font = '600 46px Georgia, serif';
+    ctx.fillText('☀️ Kairos', 60, 95);
+    ctx.fillStyle = '#d4d9e6';
+    ctx.font = '28px "Segoe UI", Tahoma, sans-serif';
+    lines.forEach((line, i) => ctx.fillText(line, 60, 175 + i * 48));
+    ctx.fillStyle = '#5a6a7c';
+    ctx.font = '20px "Segoe UI", Tahoma, sans-serif';
+    ctx.fillText('time you observe · kairos.jbstoker.github.io', 60, canvas.height - 45);
+    const a = document.createElement('a');
+    a.href = canvas.toDataURL('image/png');
+    a.download = 'kairos-moment.png';
+    a.click();
+    const status = document.getElementById('status');
+    if (status) status.textContent = '🖼️ Kairos moment image downloaded';
 }
 
 // --- Event Listeners ---
@@ -220,6 +313,26 @@ document.getElementById('solarNoonBtn').addEventListener('click', () => {
 document.getElementById('traditionSelect').addEventListener('change', (e) => {
     setTradition(e.target.value);
     document.getElementById('status').textContent = `Tradition switched to ${e.target.value}`;
+});
+
+document.getElementById('shareBtn').addEventListener('click', openShareModal);
+document.getElementById('shareClose').addEventListener('click', closeShareModal);
+document.getElementById('copyShareBtn').addEventListener('click', copyShareText);
+document.getElementById('imageShareBtn').addEventListener('click', downloadMomentImage);
+const shareModalEl = document.getElementById('shareModal');
+if (shareModalEl) {
+    shareModalEl.addEventListener('click', e => {
+        if (e.target === shareModalEl) closeShareModal();
+    });
+}
+
+// Escape closes any open modal.
+document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape') return;
+    ['shareModal', 'seasonalModal', 'addSeasonalModal'].forEach(id => {
+        const m = document.getElementById(id);
+        if (m && !m.hidden) { m.hidden = true; document.body.classList.remove('modal-open'); }
+    });
 });
 
 // Load saved tradition

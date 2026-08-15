@@ -426,11 +426,23 @@ worker). Open it two ways:
 - **Offline mode** uses browser geolocation (else `kairos_location` in
   localStorage, else 52°N 5°E) to run the SunCalc engine locally.
 - **Continuous self-check** — the footer line shows the precession checksum
-  status (aligned / phase offset documented) with the live offset. With the
-  Flask server running, each check is also recorded in
-  `data/checksums.json`, so drift in the epoch or the math becomes a visible
-  trend; offline, the identical arithmetic runs in the browser
-  (`web/checksum_selfcheck.js`, pinned to the Python engine by a test).
+  status with the live offset (e.g. `🔭 Precession offset: 90.5168° ·
+  stable · updated 14:32`). With the Flask server running, each check is
+  also recorded in `data/checksums.json`, so drift in the epoch or the math
+  becomes a visible trend; offline, the identical arithmetic runs in the
+  browser (`web/checksum_selfcheck.js`, pinned to the Python engine by a
+  test).
+- **Seasonal layer** — produce, herbs, mushrooms, meat, and festivals for the
+  current Kairos season, filterable by region and tradition. Every item is
+  clickable → a detail modal. "➕ Add your own" saves family knowledge to
+  `data/seasonal_data.json` when the server is running, else to this device
+  (`web/seasonal_display.js` + `web/seasonal_defaults.js`, generated from the
+  JSON by `tools/sync_seasonal.py`).
+- **Offline planets** — the five naked-eye planets' tropical zodiac signs are
+  computed in the browser (`web/planets.js`, compact orbital elements,
+  verified against the Skyfield engine) when no backend is reachable.
+- **Share this moment** — exports the current Kairos line as text, copies it
+  to the clipboard, or downloads it as a canvas-rendered image.
 
 ## Data & file formats
 
@@ -442,6 +454,7 @@ Everything is plain JSON — auditable by hand.
 | `data/traditions/*.json` | the seven traditions (names, months, seasons, weekdays, elements, archetypes) |
 | `data/star_data.json` | the key stars and their seasonal meanings |
 | `data/checksums.json` | the running precession-checksum log |
+| `data/seasonal_data.json` | the user-editable seasonal produce & festivals (web + CLI) |
 | `data/ephemeris/` | where local JPL ephemeris files can live |
 
 Observation entry shape:

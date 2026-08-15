@@ -260,6 +260,119 @@ select {
 .energy-val { color: #f0c27f; font-weight: 600; }
 .energy-note { color: #b7c9e2; flex: 1 1 100%; }
 
+/* ---- Seasonal layer ---- */
+.seasonal {
+    margin-top: 18px;
+    background: rgba(20, 26, 36, 0.55);
+    border: 1px solid #2a3442;
+    border-radius: 24px;
+    padding: 16px;
+}
+.seasonal-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.seasonal-title {
+    font-size: 0.95rem;
+    letter-spacing: 1px;
+    color: #b7c9e2;
+}
+.seasonal-title b { color: #f0c27f; font-weight: 600; }
+.seasonal-filters {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.seasonal-filters select {
+    width: auto;
+    margin-bottom: 0;
+    font-size: 0.8rem;
+    padding: 6px 10px;
+}
+.seasonal-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 12px 0 4px;
+}
+.seasonal-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #1e2632;
+    border: 1px solid #2a3442;
+    border-radius: 40px;
+    padding: 8px 14px;
+    font-size: 0.9rem;
+    color: #d4d9e6;
+    cursor: pointer;
+    transition: 0.2s;
+    font-family: inherit;
+}
+.seasonal-item:hover {
+    background: #2c384a;
+    transform: scale(1.05);
+}
+.seasonal-item .item-icon { font-size: 1.1rem; }
+.seasonal-item .item-name { font-weight: 500; }
+.seasonal-group {
+    width: 100%;
+    font-size: 0.75rem;
+    letter-spacing: 1.5px;
+    color: #8fa3ba;
+    margin-top: 6px;
+}
+.seasonal-note {
+    color: #5a6a7c;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    padding: 6px 0;
+}
+.add-field {
+    display: block;
+    margin: 10px 0;
+    font-size: 0.82rem;
+    color: #a0b3c9;
+}
+.add-field input, .add-field textarea, .add-field select {
+    display: block;
+    width: 100%;
+    margin-top: 4px;
+    background: #1e2632;
+    color: #d4d9e6;
+    border: 1px solid #2a3442;
+    border-radius: 12px;
+    padding: 8px 10px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    box-sizing: border-box;
+}
+
+/* ---- Share ---- */
+.kst-actions { margin: 6px 0 2px; }
+.share-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+}
+#shareText {
+    width: 100%;
+    box-sizing: border-box;
+    background: #1e2632;
+    color: #d4d9e6;
+    border: 1px solid #2a3442;
+    border-radius: 12px;
+    padding: 10px 12px;
+    font-size: 0.88rem;
+    font-family: "Segoe UI", Tahoma, sans-serif;
+    line-height: 1.5;
+    resize: vertical;
+}
+
 /* ---- Help modal ---- */
 .modal-overlay {
     position: fixed;

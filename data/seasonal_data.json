@@ -1,0 +1,199 @@
+{
+  "produce": {
+    "tomato": {
+      "name": "Tomato",
+      "category": "fruit",
+      "seasons": ["Radiance"],
+      "regions": ["temperate", "mediterranean"],
+      "traditions": ["tartarian", "mediterranean"],
+      "description": "A warm-season fruit, rich in lycopene and vitamin C.",
+      "uses": ["fresh", "sauces", "preserves"],
+      "how_to_find": "Grows best in full sun, well-drained soil.",
+      "image": "🍅"
+    },
+    "zucchini": {
+      "name": "Zucchini",
+      "category": "vegetable",
+      "seasons": ["Radiance"],
+      "regions": ["temperate"],
+      "traditions": ["mediterranean", "european"],
+      "description": "A summer squash, high in water and fiber.",
+      "uses": ["grilled", "stuffed", "raw salads"],
+      "how_to_find": "Thrives in warm weather with regular watering.",
+      "image": "🥒"
+    },
+    "chicken": {
+      "name": "Chicken",
+      "category": "meat",
+      "seasons": ["Emergence", "Radiance", "Release"],
+      "regions": ["global"],
+      "traditions": ["global"],
+      "description": "A versatile poultry, source of lean protein.",
+      "uses": ["roasted", "grilled", "soups"],
+      "how_to_find": "Available from local farms or markets.",
+      "image": "🍗"
+    },
+    "porcini": {
+      "name": "Porcini Mushroom",
+      "category": "fungus",
+      "seasons": ["Release"],
+      "regions": ["temperate", "forest"],
+      "traditions": ["italian", "european"],
+      "description": "A prized wild mushroom, earthy and rich.",
+      "uses": ["risotto", "sauces", "dried"],
+      "how_to_find": "Grows near oak, chestnut, and pine trees in autumn.",
+      "image": "🍄"
+    },
+    "asparagus": {
+      "name": "Asparagus",
+      "category": "vegetable",
+      "seasons": ["Emergence"],
+      "regions": ["temperate"],
+      "traditions": ["global"],
+      "description": "The first green shoots of the year, tender and mineral.",
+      "uses": ["steamed", "grilled", "soups"],
+      "how_to_find": "Cut young spears in early spring; snaps where it bends.",
+      "image": "🌱"
+    },
+    "lamb": {
+      "name": "Spring Lamb",
+      "category": "meat",
+      "seasons": ["Emergence"],
+      "regions": ["temperate", "mediterranean"],
+      "traditions": ["global", "celtic"],
+      "description": "Young lamb — the traditional spring meat of the pastures.",
+      "uses": ["roasted", "braised", "grilled"],
+      "how_to_find": "Ask your butcher for local spring lamb in early season.",
+      "image": "🍖"
+    },
+    "strawberry": {
+      "name": "Strawberry",
+      "category": "fruit",
+      "seasons": ["Emergence", "Radiance"],
+      "regions": ["temperate"],
+      "traditions": ["global"],
+      "description": "The first sweet fruit of the turning year.",
+      "uses": ["fresh", "jam", "desserts"],
+      "how_to_find": "Ripens low to the ground; pick when fully red.",
+      "image": "🍓"
+    },
+    "elderflower": {
+      "name": "Elderflower",
+      "category": "herb",
+      "seasons": ["Emergence"],
+      "regions": ["temperate", "forest"],
+      "traditions": ["celtic", "nordic"],
+      "description": "Creamy-white spring blossoms with a heady perfume.",
+      "uses": ["cordial", "fritters", "tea"],
+      "how_to_find": "Hedges and woodland edges; harvest dry mornings.",
+      "image": "🌼"
+    },
+    "honey": {
+      "name": "Honey",
+      "category": "other",
+      "seasons": ["Radiance", "Release"],
+      "regions": ["global"],
+      "traditions": ["global"],
+      "description": "The bees' gift — the sweet of the flowering months.",
+      "uses": ["raw", "teas", "baking"],
+      "how_to_find": "Local apiaries sell the true flavour of your region.",
+      "image": "🍯"
+    },
+    "chanterelle": {
+      "name": "Chanterelle",
+      "category": "fungus",
+      "seasons": ["Release"],
+      "regions": ["temperate", "forest"],
+      "traditions": ["european", "nordic"],
+      "description": "Golden forest mushroom with a fruity, apricot scent.",
+      "uses": ["sautéed", "creams", "risotto"],
+      "how_to_find": "Mossy forest floors under oak and beech after rain.",
+      "image": "🍄"
+    },
+    "pomegranate": {
+      "name": "Pomegranate",
+      "category": "fruit",
+      "seasons": ["Stillness"],
+      "regions": ["mediterranean", "arid"],
+      "traditions": ["mesopotamian", "mediterranean"],
+      "description": "The winter jewel of the old orchards — seeds like rubies.",
+      "uses": ["fresh seeds", "juice", "preserves"],
+      "how_to_find": "In season in late autumn and winter; heavy = juicy.",
+      "image": "🍎"
+    },
+    "citrus": {
+      "name": "Citrus",
+      "category": "fruit",
+      "seasons": ["Stillness"],
+      "regions": ["mediterranean", "tropical"],
+      "traditions": ["global"],
+      "description": "Oranges, lemons, and grapefruit — the sun held through winter.",
+      "uses": ["fresh", "juice", "zest"],
+      "how_to_find": "Sunny southern regions; thin skin and heft mean juice.",
+      "image": "🍊"
+    },
+    "venison": {
+      "name": "Venison",
+      "category": "meat",
+      "seasons": ["Stillness"],
+      "regions": ["temperate", "forest"],
+      "traditions": ["nordic", "european"],
+      "description": "Lean, dark game from the winter forest.",
+      "uses": ["stews", "roasts", "sausage"],
+      "how_to_find": "Game season; ask local hunters or farms.",
+      "image": "🍖"
+    }
+  },
+  "festivals": {
+    "summer_solstice": {
+      "name": "Summer Solstice Festival",
+      "season": "Radiance",
+      "regions": ["global"],
+      "traditions": ["tartarian", "celtic", "nordic"],
+      "description": "Celebration of the longest day, fire, and abundance.",
+      "activities": ["bonfires", "feasting", "all-night vigil"],
+      "foods": ["berries", "grilled meat", "herb-infused drinks"],
+      "image": "☀️"
+    },
+    "harvest_moon": {
+      "name": "Harvest Moon Festival",
+      "season": "Release",
+      "regions": ["global"],
+      "traditions": ["tartarian", "celtic", "asian"],
+      "description": "Gratitude for the harvest, community gathering.",
+      "activities": ["feasts", "moon viewing", "storytelling"],
+      "foods": ["bread", "root vegetables", "wine"],
+      "image": "🌕"
+    },
+    "first_green": {
+      "name": "First Green Festival",
+      "season": "Emergence",
+      "regions": ["global"],
+      "traditions": ["global", "celtic"],
+      "description": "The first green return — planting, blessing, and cleaning.",
+      "activities": ["planting", "egg blessing", "spring cleaning"],
+      "foods": ["asparagus", "lamb", "fresh greens"],
+      "image": "🌱"
+    },
+    "midsummer_fire": {
+      "name": "Midsummer Fire",
+      "season": "Radiance",
+      "regions": ["global"],
+      "traditions": ["nordic", "celtic"],
+      "description": "Bonfires on the longest evenings, light kept through the dark.",
+      "activities": ["bonfires", "swimming", "berry picking"],
+      "foods": ["berries", "honey", "grilled meat"],
+      "image": "🔥"
+    },
+    "winter_lights": {
+      "name": "Winter Lights",
+      "season": "Stillness",
+      "regions": ["global"],
+      "traditions": ["nordic", "global"],
+      "description": "Candles against the dark — the festival of returning light.",
+      "activities": ["candles", "feasting", "storytelling"],
+      "foods": ["citrus", "preserved fruit", "spiced drinks"],
+      "image": "🕯️"
+    }
+  }
+}

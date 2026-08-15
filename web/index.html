@@ -35,6 +35,9 @@
     <div class="kst-primary" id="kstDisplay">--:-- · -- · -- · -- · --</div>
     <div class="kst-gregorian" id="gregorian">(Gregorian: --)</div>
     <div class="kst-tradition" id="traditionDisplay">--</div>
+    <div class="kst-actions">
+        <button class="action-btn" id="shareBtn" title="Export this moment as text or image">📤 Share this moment</button>
+    </div>
     <div class="kst-wheel" id="kstWheel">
         <div class="sun-indicator" id="sunIndicator">☀️</div>
     </div>
@@ -49,6 +52,25 @@
 
     <!-- Today's energy -->
     <div class="energy-card" id="energyCard"></div>
+
+    <!-- Dynamic seasonal layer (user-editable produce & festivals) -->
+    <div class="seasonal">
+        <div class="seasonal-head">
+            <span class="seasonal-title">🌿 In season · <b id="seasonalSeasonLabel">--</b></span>
+        </div>
+        <div class="seasonal-filters">
+            <select id="seasonalTradition" title="Tradition filter">
+                <option value="all">All traditions</option>
+            </select>
+            <select id="seasonalRegion" title="Region filter">
+                <option value="auto">Auto region</option>
+            </select>
+        </div>
+        <div class="seasonal-container" id="seasonalContainer">
+            <span class="seasonal-note">Looking up the sky…</span>
+        </div>
+        <button class="action-btn" id="addSeasonalBtn">➕ Add your own</button>
+    </div>
 
     <div class="buttons" id="moonButtons">
         <button data-emoji="🌑">🌑</button>
@@ -71,7 +93,7 @@
 
     <div class="status" id="status">Ready.</div>
     <div class="checksum-line" id="checksumLine"
-         title="The continuous self-check: the deep-time year is validated against the observed precession of the equinox. A round-number epoch has an expected phase offset; what matters is that it stays constant.">Self-check: computing…</div>
+         title="This offset is expected and stable. It does not indicate an error — it reflects the difference between the Earth-age epoch and the current precessional phase. The self-check keeps watching it so drift never happens silently.">🔭 Precession offset: computing…</div>
     <div class="footer">Kairos — no GPS, no internet, just you and the sky</div>
 </div>
 
@@ -90,9 +112,112 @@
     </div>
 </div>
 
+<!-- Seasonal item detail modal -->
+<div class="modal-overlay" id="seasonalModal" hidden>
+    <div class="modal">
+        <div class="modal-head">
+            <h2 id="seasonalModalTitle">Item</h2>
+            <button class="modal-close" id="seasonalClose" title="Close">✕</button>
+        </div>
+        <div class="modal-body" id="seasonalModalBody"></div>
+    </div>
+</div>
+
+<!-- Add-your-own seasonal item modal -->
+<div class="modal-overlay" id="addSeasonalModal" hidden>
+    <div class="modal">
+        <div class="modal-head">
+            <h2>➕ Add your own</h2>
+            <button class="modal-close" id="addClose" title="Close">✕</button>
+        </div>
+        <div class="modal-body">
+            <label class="add-field">Kind
+                <select id="addKind">
+                    <option value="produce">Produce (food, herb, mushroom, meat)</option>
+                    <option value="festival">Festival / celebration</option>
+                </select>
+            </label>
+            <label class="add-field">Name *
+                <input id="addName" type="text" placeholder="e.g. Nettle">
+            </label>
+            <label class="add-field" id="addCategoryRow">Category
+                <select id="addCategory">
+                    <option>fruit</option><option>vegetable</option><option>herb</option>
+                    <option>fungus</option><option>meat</option><option>other</option>
+                </select>
+            </label>
+            <div id="produceFields">
+                <label class="add-field">In season (Kairos season)
+                    <select id="addProduceSeason">
+                        <option value="Emergence">Emergence (Spring)</option>
+                        <option value="Radiance">Radiance (Summer)</option>
+                        <option value="Release">Release (Autumn)</option>
+                        <option value="Stillness">Stillness (Winter)</option>
+                    </select>
+                </label>
+                <label class="add-field">Uses
+                    <input id="addUses" type="text" placeholder="fresh, sauces, …">
+                </label>
+                <label class="add-field">How to find
+                    <input id="addHowToFind" type="text" placeholder="grows near…">
+                </label>
+            </div>
+            <div id="festivalFields" hidden>
+                <label class="add-field">Season
+                    <select id="addFestivalSeason">
+                        <option value="Emergence">Emergence (Spring)</option>
+                        <option value="Radiance">Radiance (Summer)</option>
+                        <option value="Release">Release (Autumn)</option>
+                        <option value="Stillness">Stillness (Winter)</option>
+                    </select>
+                </label>
+                <label class="add-field">Activities
+                    <input id="addActivities" type="text" placeholder="bonfires, feasting">
+                </label>
+                <label class="add-field">Foods
+                    <input id="addFoods" type="text" placeholder="bread, wine">
+                </label>
+            </div>
+            <label class="add-field">Regions (comma-separated)
+                <input id="addRegions" type="text" placeholder="temperate, forest">
+            </label>
+            <label class="add-field">Traditions (comma-separated)
+                <input id="addTraditions" type="text" placeholder="global">
+            </label>
+            <label class="add-field">Description
+                <textarea id="addDescription" rows="2"></textarea>
+            </label>
+            <label class="add-field">Emoji
+                <input id="addImage" type="text" placeholder="🍅" maxlength="8">
+            </label>
+            <button class="action-btn" id="saveAddBtn">💾 Save</button>
+        </div>
+    </div>
+</div>
+
+<!-- Share modal -->
+<div class="modal-overlay" id="shareModal" hidden>
+    <div class="modal">
+        <div class="modal-head">
+            <h2>📤 Share this moment</h2>
+            <button class="modal-close" id="shareClose" title="Close">✕</button>
+        </div>
+        <div class="modal-body">
+            <textarea id="shareText" readonly rows="5"></textarea>
+            <div class="share-actions">
+                <button class="action-btn" id="copyShareBtn">📋 Copy</button>
+                <button class="action-btn" id="imageShareBtn">🖼️ Download image</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="lib/suncalc.js"></script>
+<script src="planets.js"></script>
 <script src="checksum_selfcheck.js"></script>
+<script src="seasonal_defaults.js"></script>
 <script src="app.js"></script>
+<script src="seasonal_display.js"></script>
 <script src="help_data.js"></script>
 <script src="help.js"></script>
 <script src="kst_display.js"></script>

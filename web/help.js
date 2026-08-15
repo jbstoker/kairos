@@ -4,8 +4,10 @@
 
 function kairosDayOfYear() {
     const now = new Date();
-    const start = new Date(now.getFullYear(), 0, 0);
-    return Math.floor((now - start) / 86400000);
+    // Purely calendar-based (Date.UTC), so DST transitions never shift the count.
+    return Math.floor(
+        (Date.UTC(now.getFullYear(), now.getMonth(), now.getDate())
+            - Date.UTC(now.getFullYear(), 0, 0)) / 86400000);
 }
 
 function phaseNameFromFraction(fraction) {
@@ -92,7 +94,7 @@ function openHelp() {
             </div>`;
         }).join('');
     } else {
-        html += '<p>Planet positions need the celestial engine — run <code>python web/server.py</code> (or the offline fallback shows nothing here).</p>';
+        html += '<p>Planet positions come from the celestial engine — with the server, Skyfield; offline, a compact browser algorithm (web/planets.js).</p>';
     }
     html += '</div>';
 

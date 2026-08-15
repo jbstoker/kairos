@@ -35,6 +35,36 @@ def api_kst():
         return jsonify({"error": str(exc)}), 503
 
 
+@app.route("/api/seasonal", methods=["GET", "POST"])
+def api_seasonal():
+    from core.seasonal_data import add_item, get_items_for_season
+
+    if request.method == "POST":
+        body = request.get_json(silent=True) or {}
+        kind = body.get("kind", "produce")
+        item = body.get("item") or body.get("data") or body
+        if kind not in ("produce", "festival"):
+            return jsonify({"error": f"unknown kind: {kind!r}"}), 400
+        if "kind" in item and "item" in body:
+            item = dict(item)
+            item.pop("kind", None)
+        try:
+            item_id = add_item(item, "festivals" if kind == "festival" else "produce")
+            return jsonify({"ok": True, "id": item_id, "kind": kind})
+        except Exception as exc:  # noqa: BLE001
+            return jsonify({"error": str(exc)}), 500
+
+    season = request.args.get("season", "")
+    tradition = request.args.get("tradition", "") or None
+    region = request.args.get("region", "") or None
+    category = request.args.get("category", "") or None
+    try:
+        return jsonify(get_items_for_season(season, category=category,
+                                            tradition=tradition, region=region))
+    except Exception as exc:  # noqa: BLE001
+        return jsonify({"error": str(exc)}), 500
+
+
 @app.route("/api/now")
 def api_now():
     return jsonify(_kairos.now())

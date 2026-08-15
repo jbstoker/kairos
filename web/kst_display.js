@@ -133,6 +133,7 @@
                 season: getSeason(solar_longitude),
                 visible_star: dawn.length ? dawn[0] : null,
                 dawn_stars: dawn,
+                planets: (window.KairosPlanets && window.KairosPlanets.planetLongitudes(now)) || {},
                 hasSolarNoon: !!(times && times.solarNoon)
             };
         } catch (e) { return null; }
@@ -152,9 +153,10 @@
     }
 
     function getEarthAge(date) {
-        const startOfYear = new Date(date.getFullYear(), 0, 0); // local Dec 31
-        const dayOfYear = (date - startOfYear) / 86400000;      // fractional
-        return EARTH_AGE_YEARS + date.getFullYear() + dayOfYear / 365.2422;
+        // Aligned with core/checksum.py current_earth_age_year():
+        // integer day-of-year (DST-safe) → (doy - 1) / 365.2422.
+        const doy = kairosDayOfYear(date);
+        return EARTH_AGE_YEARS + date.getFullYear() + (doy - 1) / 365.2422;
     }
 
     // ---- Canonical Kairos names (mirrors core/constants.py) -----------------
@@ -166,8 +168,10 @@
     const KAIROS_YEAR_DAY = "Deep Day";
 
     function kairosDayOfYear(date) {
-        const start = new Date(date.getFullYear(), 0, 0); // local Dec 31
-        return Math.floor((date - start) / 86400000);     // 1-based: Jan 1 = 1
+        // Purely calendar-based (Date.UTC), so DST transitions never shift the count.
+        return Math.floor(
+            (Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
+                - Date.UTC(date.getFullYear(), 0, 0)) / 86400000);  // 1-based: Jan 1 = 1
     }
 
     function kairosDayName(doy) {
@@ -269,6 +273,7 @@
                 observed_season: seasonObs ? seasonObs.value : calc.season,
                 visible_star: calc.visible_star,
                 dawn_stars: calc.dawn_stars,
+                planets: calc.planets || {},
                 moon_emoji: moonObs ? moonObs.value : moonEmojiFromPhase(calc.lunar_phase)
             });
             return;
