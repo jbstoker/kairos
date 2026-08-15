@@ -1,7 +1,7 @@
 self.addEventListener('install', e => {
     e.waitUntil(
-        caches.open('kairos-v2').then(cache => {
-            return cache.addAll(['index.html', 'style.css', 'app.js', 'kst_display.js', 'help_data.js', 'help.js', 'lib/suncalc.js', 'manifest.json']);
+        caches.open('kairos-v3').then(cache => {
+            return cache.addAll(['index.html', 'style.css', 'app.js', 'checksum_selfcheck.js', 'kst_display.js', 'help_data.js', 'help.js', 'lib/suncalc.js', 'manifest.json']);
         })
     );
 });

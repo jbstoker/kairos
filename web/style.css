@@ -109,6 +109,14 @@ h1 {
     color: #4a5a6c;
     margin-top: 24px;
 }
+.checksum-line {
+    margin-top: 10px;
+    font-size: 0.72rem;
+    color: #7f93a9;
+    letter-spacing: 0.2px;
+}
+.checksum-line.ok { color: #8fc9a0; }
+.checksum-line.warn { color: #e0b45a; }
 .status {
     margin-top: 8px;
     font-size: 0.85rem;

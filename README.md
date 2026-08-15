@@ -425,6 +425,12 @@ worker). Open it two ways:
   festival, seasonal food), and the five elements.
 - **Offline mode** uses browser geolocation (else `kairos_location` in
   localStorage, else 52°N 5°E) to run the SunCalc engine locally.
+- **Continuous self-check** — the footer line shows the precession checksum
+  status (aligned / phase offset documented) with the live offset. With the
+  Flask server running, each check is also recorded in
+  `data/checksums.json`, so drift in the epoch or the math becomes a visible
+  trend; offline, the identical arithmetic runs in the browser
+  (`web/checksum_selfcheck.js`, pinned to the Python engine by a test).
 
 ## Data & file formats
 

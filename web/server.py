@@ -42,7 +42,8 @@ def api_now():
 
 @app.route("/api/checksum")
 def api_checksum():
-    from core.checksum import checksum_report, current_earth_age_year, precession_checksum, track_checksum
+    from core.checksum import (checksum_report, checksum_trend, current_earth_age_year,
+                               precession_checksum, track_checksum)
 
     try:
         year = current_earth_age_year()
@@ -50,6 +51,10 @@ def api_checksum():
         result = precession_checksum(year)
         result["report"] = checksum_report(year)
         result["earth_age_year"] = year
+        trend = checksum_trend()
+        result["trend"] = {k: trend[k] for k in
+                           ("count", "consistent_fraction", "worst_difference",
+                            "stable", "spread_deg")}
         return jsonify(result)
     except Exception as exc:  # noqa: BLE001
         return jsonify({"error": str(exc)}), 500

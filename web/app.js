@@ -88,9 +88,10 @@ function setTradition(trad) {
 }
 
 function dayOfYear(date) {
-    const start = new Date(date.getFullYear(), 0, 0);
-    const diff = date - start;
-    return Math.floor(diff / 86400000);
+    // Purely calendar-based (Date.UTC), so DST transitions never shift the count.
+    return Math.floor(
+        (Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
+            - Date.UTC(date.getFullYear(), 0, 0)) / 86400000);
 }
 
 function traditionDate(doy, trad) {
@@ -154,6 +155,45 @@ function updateDisplay() {
     document.getElementById('status').textContent = `Moon: ${moonIdx !== null ? phaseName(moonIdx) : 'unknown'} | Season: ${season}`;
 }
 
+// --- Precession self-check (fold 2: the deep time is checked) -------------
+// One footer line. When the Flask server is running, /api/checksum records
+// the check in data/checksums.json (the continuous log); offline, the same
+// arithmetic runs in the browser via checksum_selfcheck.js.
+function renderSelfCheck(result) {
+    const el = document.getElementById('checksumLine');
+    if (!el || !result || !window.KairosSelfCheck) return;
+    let text = window.KairosSelfCheck.checksumLine(result);
+    const trend = result.trend;
+    if (trend && trend.count) {
+        text += trend.stable
+            ? ` · stable across ${trend.count} checks`
+            : ` · DRIFTING across ${trend.count} checks`;
+    }
+    el.textContent = text;
+    el.className = 'checksum-line ' + (result.status === 'consistent' ? 'ok' : 'warn');
+}
+
+async function updateSelfCheck() {
+    const el = document.getElementById('checksumLine');
+    if (!el) return;
+    try {
+        const resp = await fetch('/api/checksum');
+        if (resp.ok) {
+            const data = await resp.json();
+            if (data && !data.error) {
+                renderSelfCheck(data);
+                return;
+            }
+        }
+    } catch (e) { /* fall through to offline */ }
+
+    if (window.KairosSelfCheck) {
+        renderSelfCheck(window.KairosSelfCheck.precessionChecksum());
+    } else {
+        el.textContent = 'Self-check: unavailable';
+    }
+}
+
 // --- Event Listeners ---
 document.querySelectorAll('#moonButtons button').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -187,6 +227,9 @@ document.getElementById('traditionSelect').value = getTradition();
 
 setInterval(updateDisplay, 10000);
 updateDisplay();
+
+setInterval(updateSelfCheck, 60000);
+updateSelfCheck();
 
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js').catch(() => {});
