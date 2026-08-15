@@ -1,0 +1,8 @@
+{
+    "name": "Celtic",
+    "months": 13,
+    "month_names": ["Beth", "Luis", "Fearn", "Saille", "Nion", "Uath", "Duir", "Tinne", "Coll", "Muin", "Gort", "Ngetal", "Ruis"],
+    "year_day": "Feast of the Dead",
+    "season_names": ["Imbolc", "Bealtaine", "Lughnasadh", "Samhain"],
+    "elements": ["Earth", "Air", "Fire", "Water", "Spirit"]
+}

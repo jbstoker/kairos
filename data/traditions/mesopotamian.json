@@ -1,0 +1,8 @@
+{
+    "name": "Mesopotamian",
+    "months": 12,
+    "month_names": ["Nisannu", "Ayaru", "Simanu", "Du'uzu", "Abu", "Ululu", "Tashritu", "Arahsamna", "Kislimu", "Tebetu", "Shabatu", "Addaru"],
+    "year_day": "Akitu",
+    "season_names": ["Rain", "Heat", "Harvest", "Flood"],
+    "zodiac": 12
+}

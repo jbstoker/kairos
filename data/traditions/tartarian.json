@@ -1,0 +1,9 @@
+{
+    "name": "Tartarian",
+    "months": 13,
+    "month_names": ["Solaris", "Lunaris", "Floralis", "Aquarius", "Arboris", "Luminis", "Solaris II", "Ventus", "Telluris", "Ignis", "Caelestis", "Oceanus", "Terra Nova"],
+    "year_day": "Tartarus Day",
+    "season_names": ["Emerge", "Flourish", "Harvest", "Stillness"],
+    "elements": ["Fire", "Water", "Earth", "Air", "Ether"],
+    "archetypes": ["Creator", "Healer", "Warrior", "Sage", "Lover", "Guardian", "Mystic", "Destroyer", "Fool", "Magician", "Empress", "Emperor", "Star"]
+}

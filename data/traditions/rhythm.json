@@ -1,0 +1,9 @@
+{
+    "name": "Rhythm",
+    "months": 13,
+    "month_names": ["Root Moon", "Sap Moon", "Green Moon", "Bloom Moon", "Grain Moon", "Light Moon", "Thirst Moon", "Fruit Moon", "Harvest Moon", "Wine Moon", "Leaf Moon", "Frost Moon", "Star Moon"],
+    "year_day": "Deep Day",
+    "season_names": ["Emergence", "Radiance", "Release", "Stillness"],
+    "weekdays": ["Sundial", "Well", "Root", "Bloom", "Forge", "Harvest", "Star"],
+    "elements": ["Earth", "Water", "Fire", "Air", "Ether"]
+}

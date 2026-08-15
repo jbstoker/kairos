@@ -1,0 +1,9 @@
+{
+    "name": "Vedic",
+    "months": 12,
+    "month_names": ["Chaitra", "Vaishakha", "Jyeshtha", "Ashadha", "Shravana", "Bhadrapada", "Ashwina", "Kartika", "Agrahayana", "Pausha", "Magha", "Phalguna"],
+    "year_day": "Mahashivaratri",
+    "season_names": ["Vasanta", "Grishma", "Varsha", "Sharad", "Hemanta", "Shishira"],
+    "elements": ["Earth", "Water", "Fire", "Air", "Ether"],
+    "nakshatras": 27
+}

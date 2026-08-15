@@ -1,0 +1,29 @@
+{
+    "stars": {
+        "Sirius": {
+            "ra_hours": 6.75,
+            "dec_degrees": -16.7,
+            "seasonal_meaning": "Nile flood, summer heat"
+        },
+        "Pleiades": {
+            "ra_hours": 3.47,
+            "dec_degrees": 24.1,
+            "seasonal_meaning": "Autumn, harvest, mourning"
+        },
+        "Orion": {
+            "ra_hours": 5.55,
+            "dec_degrees": 7.4,
+            "seasonal_meaning": "Winter, hunting, warrior"
+        },
+        "Arcturus": {
+            "ra_hours": 14.15,
+            "dec_degrees": 19.18,
+            "seasonal_meaning": "Spring, planting, light"
+        },
+        "Vega": {
+            "ra_hours": 18.61,
+            "dec_degrees": 38.78,
+            "seasonal_meaning": "Summer, music, star of the north"
+        }
+    }
+}

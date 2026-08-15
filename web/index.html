@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Kairos — Natural Time</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="icon-192.png">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container" id="app">
+    <h1>☀️ Kairos <button class="help-btn" id="helpBtn" title="What does this mean?">?</button></h1>
+    <div class="sub">time you observe</div>
+
+    <select id="traditionSelect">
+        <option value="rhythm">🌗 Rhythm</option>
+        <option value="tartarian">🌌 Tartarian</option>
+        <option value="celtic">🌿 Celtic</option>
+        <option value="chinese">🐉 Chinese</option>
+        <option value="vedic">🕉️ Vedic</option>
+        <option value="mesopotamian">🏛️ Mesopotamian</option>
+        <option value="mystical">🔮 Mystical</option>
+    </select>
+
+    <div class="display">
+        <div class="time" id="solarTime">--:--</div>
+        <div class="moon" id="moonDisplay">🌑</div>
+        <div class="season" id="seasonDisplay">Observing...</div>
+        <div class="calendar" id="calendarDisplay"></div>
+        <div class="calendar" id="noonDisplay"></div>
+    </div>
+
+    <!-- Kairos Time (KST) — the primary display. All else is a reference. -->
+    <div class="kst-primary" id="kstDisplay">--:-- · -- · -- · -- · --</div>
+    <div class="kst-gregorian" id="gregorian">(Gregorian: --)</div>
+    <div class="kst-tradition" id="traditionDisplay">--</div>
+    <div class="kst-wheel" id="kstWheel">
+        <div class="sun-indicator" id="sunIndicator">☀️</div>
+    </div>
+    <div class="kst-display">
+        <div class="kst-row"><span>🌞 Solar Longitude</span><span id="solarLongitude">--°</span></div>
+        <div class="kst-row"><span>🌙 Lunar Age</span><span id="lunarAge">-- days</span></div>
+        <div class="kst-row"><span>🌀 Sidereal Time</span><span id="siderealDisplay">--:--</span></div>
+        <div class="kst-row"><span>⭐ Visible Star</span><span id="starDisplay">--</span></div>
+        <div class="kst-row"><span>🌍 Celestial Season</span><span id="kstSeason">--</span></div>
+        <div class="kst-row"><span>🪐 Planets</span><span id="planetDisplay">--</span></div>
+    </div>
+
+    <!-- Today's energy -->
+    <div class="energy-card" id="energyCard"></div>
+
+    <div class="buttons" id="moonButtons">
+        <button data-emoji="🌑">🌑</button>
+        <button data-emoji="🌒">🌒</button>
+        <button data-emoji="🌓">🌓</button>
+        <button data-emoji="🌔">🌔</button>
+        <button data-emoji="🌕">🌕</button>
+        <button data-emoji="🌖">🌖</button>
+        <button data-emoji="🌗">🌗</button>
+        <button data-emoji="🌘">🌘</button>
+    </div>
+
+    <div>
+        <button class="action-btn" id="solarNoonBtn">📐 Shadow Shortest</button>
+        <button class="action-btn" id="seasonSpring">🌸 Spring</button>
+        <button class="action-btn" id="seasonSummer">☀️ Summer</button>
+        <button class="action-btn" id="seasonAutumn">🍂 Autumn</button>
+        <button class="action-btn" id="seasonWinter">❄️ Winter</button>
+    </div>
+
+    <div class="status" id="status">Ready.</div>
+    <div class="footer">Kairos — no GPS, no internet, just you and the sky</div>
+</div>
+
+<!-- Help / info modal -->
+<div class="modal-overlay" id="helpModal" hidden>
+    <div class="modal">
+        <div class="modal-head">
+            <h2>Kairos — what am I looking at?</h2>
+            <button class="modal-close" id="helpClose" title="Close">✕</button>
+        </div>
+        <div class="modal-body" id="helpBody"></div>
+        <div class="modal-foot">
+            Kairos is observation-first. These are hints from the sky — the sky you
+            actually see is always the authority.
+        </div>
+    </div>
+</div>
+
+<script src="lib/suncalc.js"></script>
+<script src="app.js"></script>
+<script src="help_data.js"></script>
+<script src="help.js"></script>
+<script src="kst_display.js"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+{
+    "name": "Mystical",
+    "months": 13,
+    "month_names": ["Phoenix", "Dragon", "Serpent", "Wolf", "Raven", "Bear", "Owl", "Elk", "Salmon", "Eagle", "Horse", "Whale", "Star"],
+    "year_day": "Void Day",
+    "season_names": ["Awakening", "Radiance", "Descent", "Stillness"],
+    "elements": ["Light", "Shadow", "Stone", "Wind", "Void"],
+    "archetypes": ["Seeker", "Guardian", "Shifter", "Sage", "Lover", "Warrior", "Mystic", "Creator", "Destroyer", "Fool", "Empress", "Emperor", "Star"]
+}

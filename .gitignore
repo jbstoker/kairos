@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.eggs/
+
+# Virtualenv
+.venv/
+
+# IDE
+.idea/
+
+# Data (user observations are local)
+data/observations.json
+data/checksums.json
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Stray PyCharm sample (not part of Kairos)
+main.py
+
+# Local ephemeris downloads (skyfield caches these in ~/.skyfield)
+*.bsp
+
+# Atomic-write temp files
+*.tmp
+

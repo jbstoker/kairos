@@ -1,0 +1,9 @@
+{
+    "name": "Chinese",
+    "months": 12,
+    "month_names": ["Zhengyue", "Er Yue", "San Yue", "Si Yue", "Wu Yue", "Liu Yue", "Qi Yue", "Ba Yue", "Jiu Yue", "Shi Yue", "Shiyi Yue", "Shi'er Yue"],
+    "year_day": "Laba",
+    "season_names": ["Spring", "Summer", "Late Summer", "Autumn", "Winter"],
+    "elements": ["Wood", "Fire", "Earth", "Metal", "Water"],
+    "terms": 24
+}
