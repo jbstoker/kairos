@@ -205,7 +205,10 @@ Requirements: **Python 3.11+**. The core runs on the standard library
 alone; Skyfield (for the celestial KST engine) is optional.
 
 ```bash
-# 1. clone or copy the repository
+# 1. clone the repository
+git clone git@github.com:jbstoker/kairos.git
+cd kairos
+
 # 2. (recommended) create a virtual environment
 python -m venv .venv
 .venv\Scripts\activate            # Windows

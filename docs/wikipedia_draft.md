@@ -41,15 +41,15 @@
 | platform = [[Raspberry Pi Pico]], [[ESP32]], [[Web browser]]
 | genre = [[Timekeeping]], [[Astronomy]], [[Open-source software]]
 | license = [[GNU General Public License|GPL-3.0-or-later]]
-| website = <!-- project repository URL -->
+| website = https://github.com/jbstoker/kairos
 }}
 
 '''Kairos''' is a [[free and open-source software|free and open-source]],
 offline-first [[time]] system based on direct observation of the
 [[Sun]], the [[Moon]], and the [[season]]s rather than on satellite
-navigation, network time, or precomputed tables.<ref name="readme">{{cite web |title=Kairos README |url=<!-- repository URL --> |website=<!-- repository --> |access-date=15 August 2026}}</ref> Its name refers to the [[Ancient Greek]] concept of {{lang|grc|kairos}}, the opportune moment, as opposed to {{lang|grc|chronos}}, measured or mechanical time.<ref name="philosophy">{{cite web |title=Kairos Philosophy |url=<!-- repository/docs/philosophy.md --> |access-date=15 August 2026}}</ref>
+navigation, network time, or precomputed tables.<ref name="readme">{{cite web |title=Kairos README |url=https://github.com/jbstoker/kairos |website=GitHub |access-date=15 August 2026}}</ref> Its name refers to the [[Ancient Greek]] concept of {{lang|grc|kairos}}, the opportune moment, as opposed to {{lang|grc|chronos}}, measured or mechanical time.<ref name="philosophy">{{cite web |title=Kairos Philosophy |url=https://github.com/jbstoker/kairos/blob/master/docs/philosophy.md |access-date=15 August 2026}}</ref>
 
-The system is organized around three layers: a [[Python (programming language)|Python]] core that stores user observations (solar noon, moon phase, season events) and converts them into several traditional calendars; a [[progressive web app]] that runs entirely in the browser without a server; and [[embedded system|embedded]] clock hardware based on [[MicroPython]] and [[Arduino]] microcontrollers.<ref name="readme" /> A separate "Kairos Time" (KST) engine computes astronomical quantities such as [[ecliptic longitude|solar longitude]], [[lunar phase]], and [[sidereal time]] locally from [[JPL]] ephemerides.<ref name="api">{{cite web |title=Kairos API documentation |url=<!-- repository/docs/api.md --> |access-date=15 August 2026}}</ref>
+The system is organized around three layers: a [[Python (programming language)|Python]] core that stores user observations (solar noon, moon phase, season events) and converts them into several traditional calendars; a [[progressive web app]] that runs entirely in the browser without a server; and [[embedded system|embedded]] clock hardware based on [[MicroPython]] and [[Arduino]] microcontrollers.<ref name="readme" /> A separate "Kairos Time" (KST) engine computes astronomical quantities such as [[ecliptic longitude|solar longitude]], [[lunar phase]], and [[sidereal time]] locally from [[JPL]] ephemerides.<ref name="api">{{cite web |title=Kairos API documentation |url=https://github.com/jbstoker/kairos/blob/master/docs/api.md |access-date=15 August 2026}}</ref>
 
 == History ==
 Kairos was first released in 2026, with version 2.0.0 establishing the
@@ -57,7 +57,7 @@ core observation format, six bundled traditions (Tartarian, Celtic,
 Chinese, Vedic, Mesopotamian, and Mystical), the cross-referenced
 solar-noon engine, and the celestial KST layer.<ref name="readme" /><ref name="api" /> Development follows a stated "constitution" that
 requires the project to remain offline by default, verifiable, and
-independent of external authority.<ref name="constitution">{{cite web |title=Kairos Constitution |url=<!-- repository/CONSTITUTION.md --> |access-date=15 August 2026}}</ref>
+independent of external authority.<ref name="constitution">{{cite web |title=Kairos Constitution |url=https://github.com/jbstoker/kairos/blob/master/CONSTITUTION.md |access-date=15 August 2026}}</ref>
 
 == Design ==
 === Observation over authority ===
@@ -98,7 +98,7 @@ moon-phase moods, and daily, weekly, and seasonal rituals.<ref name="api" />
 The project publishes firmware for a physical Kairos clock: a
 [[Raspberry Pi Pico]] (MicroPython) or [[ESP32]] (Arduino) driving an
 [[SSD1306]] OLED display, with a single button for recording solar
-noon.<ref name="hardware">{{cite web |title=Kairos hardware guide |url=<!-- repository/docs/hardware_guide.md --> |access-date=15 August 2026}}</ref>
+noon.<ref name="hardware">{{cite web |title=Kairos hardware guide |url=https://github.com/jbstoker/kairos/blob/master/docs/hardware_guide.md |access-date=15 August 2026}}</ref>
 
 == License ==
 Kairos is licensed under the [[GNU General Public License]] version 3 or
@@ -110,7 +110,8 @@ divergence clearly.<ref name="constitution" />
 {{reflist}}
 
 == External links ==
-* <!-- Official repository URL -->
+
+* [Kairos on GitHub](https://github.com/jbstoker/kairos)
 
 [[Category:Timekeeping software]]
 [[Category:Free software]]
