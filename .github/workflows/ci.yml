@@ -36,13 +36,7 @@ jobs:
           rc=${PIPESTATUS[0]}
           if [ $rc -ne 0 ]; then
             echo "::group::pytest failure summary"
-            tail -80 pytest.log | python -c "
-import sys
-for line in sys.stdin:
-    msg = line.rstrip()[:400].replace('%','%25').replace(chr(13),'%0D').replace(chr(10),'%0A')
-    if msg.strip():
-        print(f'::error::{msg}')
-"
+            python tools/ci_annotate_failures.py pytest.log
             echo "::endgroup::"
           fi
           exit $rc
