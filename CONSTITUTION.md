@@ -1,4 +1,8 @@
-# Kairos Constitution
+# The Kairos Constitution
+
+**Observation over Authority · Offline by Default · Modular and Optional · Open and Verifiable · Forkable but Honest · For All Humans · Gregorian as Reference**
+
+---
 
 1. **Observation over Authority** — Kairos trusts what you see, not what a map or database says.
 2. **Offline by Default** — No internet, GPS, or cloud sync is ever required.

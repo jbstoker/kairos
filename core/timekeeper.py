@@ -18,6 +18,7 @@ if not __package__:
 from core.anchor import load_observations, save_observation
 from core.constants import KAIROS_SEASON_NAMES, kairos_date, kairos_day_name, kairos_season_name
 from core.cross_reference import cross_reference_solar_noon
+from core.i18n import normalize_lang, tr_name, translator
 from core.lunar import moon_age_from_phase, moon_phase_name, phase_from_emoji
 from core.observation_correction import correct_solar_noon
 from core.season import season_from_observations
@@ -51,7 +52,7 @@ def format_year(raw_year):
     return f"{scale} / {precision:.3f}"
 
 
-def format_kst(kst_data):
+def format_kst(kst_data, lang="en"):
     """One-line human-readable Kairos Time string.
 
     >>> format_kst({"solar_time": "14:32", "day_name": "Sundial",
@@ -59,12 +60,15 @@ def format_kst(kst_data):
     ...             "earth_age_year": 4540002026.624})
     '14:32 · Sundial · Bloom Moon 16 · Radiance · 4.54B / 2026.624'
     """
+    t = translator(lang)
     time_str = kst_data.get("solar_time", "--:--")
-    month_name = kst_data.get("month_name", "Solaris")
+    month_name = tr_name(t, "month.", kst_data.get("month_name", "Solaris"))
     day = kst_data.get("day", 1)
-    season = kst_data.get("season", "Summer")
+    season = tr_name(t, "season.", kst_data.get("season", "Summer"))
     year_str = format_year(kst_data.get("earth_age_year", EARTH_AGE_YEARS))
     day_name = kst_data.get("day_name")
+    if day_name:
+        day_name = tr_name(t, "day.", day_name)
     parts = [time_str]
     if day_name:
         parts.append(day_name)
@@ -82,55 +86,73 @@ def load_tradition(tradition):
 
 
 class Kairos:
-    def __init__(self, tradition=DEFAULT_TRADITION, lat=None, lon=None):
+    def __init__(self, tradition=DEFAULT_TRADITION, lat=None, lon=None,
+                 lang="en"):
         self.tradition = tradition
         self.lat = lat
         self.lon = lon
+        self.lang = normalize_lang(lang)
+        self.t = translator(self.lang)
         self.obs = load_observations()
         self.trad_data = load_tradition(tradition)
 
     # ------------------------------------------------------------------ #
     # Observations
     # ------------------------------------------------------------------ #
-    def observe_solar_noon(self):
-        save_observation("solar_noon", "observed")
-        return "Solar noon recorded."
+    def observe_solar_noon(self, when=None):
+        """Record the solar noon — now by default, or at a specific local time."""
+        save_observation("solar_noon", "observed", when=when)
+        return self.t("cli.solar_noon_recorded")
 
     def observe_moon_phase(self, emoji):
         idx = phase_from_emoji(emoji)
         if idx is None:
-            return "Invalid emoji. Use 🌑🌒🌓🌔🌕🌖🌗🌘"
+            return self.t("cli.invalid_emoji")
         save_observation("moon_phase", emoji)
-        return f"Moon phase recorded: {moon_phase_name(idx)}"
+        return self.t("cli.moon_phase_recorded",
+                      name=tr_name(self.t, "moon.", moon_phase_name(idx)))
 
     def observe_season_event(self, event):
         if event not in VALID_SEASONS:
-            return f"Invalid season. Use one of: {', '.join(VALID_SEASONS)}"
+            return self.t("cli.invalid_season",
+                          seasons=self.t("cli.display.valid_seasons"))
         save_observation("season_event", event)
-        return f"Season event recorded: {event}"
+        return self.t("cli.season_recorded",
+                      event=tr_name(self.t, "season.", event))
 
     # ------------------------------------------------------------------ #
     # Tradition-aware calendar
     # ------------------------------------------------------------------ #
     def calendar_date(self, day_of_year=None):
-        """Map a day-of-year into this tradition's month/day/year-day."""
+        """Map a day-of-year into this tradition's month/day/year-day.
+
+        Month/weekday/year-day names are translated for display when a
+        translation exists (canonical Kairos names); tradition proper nouns
+        such as "Solaris" pass through unchanged.
+        """
         if day_of_year is None:
             day_of_year = day_of_year()
         months = self.trad_data.get("months", 13)
         month_index, day, kind = month_day_from_doy(day_of_year, months)
         if kind == "year_day":
-            month_name = self.trad_data.get("year_day", "Year Day")
+            month_name = tr_name(self.t, "year_day.",
+                                 self.trad_data.get("year_day", "Year Day"))
             month_number = months
         else:
-            month_name = self.trad_data["month_names"][month_index]
+            month_name = tr_name(self.t, "month.",
+                                 self.trad_data["month_names"][month_index])
             month_number = month_index + 1
         weekdays = self.trad_data.get("weekdays", DEFAULT_WEEKDAYS)
+        weekday = weekdays[(day_of_year - 1) % 7]
+        translated = tr_name(self.t, "day.", weekday)
+        if translated == weekday:
+            translated = tr_name(self.t, "weekday.", weekday)
         return {
             "month": month_name,
             "month_index": month_number,
             "day": day,
             "day_of_year": day_of_year,
-            "weekday": weekdays[(day_of_year - 1) % 7],
+            "weekday": translated,
             "kind": kind,
         }
 
@@ -242,9 +264,10 @@ class Kairos:
 
         e.g. '14:32 · Root · Harvest Moon 3 · Radiance · 4.54B / 2026.624'
 
-        Uses the canonical Kairos day/month/season names (core/constants.py);
-        the time shown is local solar time. The web app renders the same
-        line with wall-clock time, per its display spec.
+        Uses the canonical Kairos day/month/season names (core/constants.py),
+        translated for the instance's language; the time shown is local solar
+        time. The web app renders the same line with wall-clock time, per its
+        display spec.
         """
         kst = self.kst_now(latitude_deg, longitude_deg)
         now = datetime.now(timezone.utc)
@@ -252,59 +275,115 @@ class Kairos:
         kd = kairos_date(doy)
         solar_hours, _, _ = self._solar_time_and_noon()
         kst["solar_time"] = format_solar_time(solar_hours) if solar_hours is not None else "--:--"
-        kst["month_name"] = kd["month"]
+        kst["month_name"] = tr_name(self.t, "month.", kd["month"])
         kst["day"] = kd["day"]
-        kst["day_name"] = kd["weekday"]
-        kst["season"] = kairos_season_name(kst["season"])
+        kst["day_name"] = tr_name(self.t, "day.", kd["weekday"])
+        kst["season"] = tr_name(self.t, "season.", kairos_season_name(kst["season"]))
         kst["earth_age_year"] = EARTH_AGE_YEARS + now.year + (doy - 1) / 365.2422
-        return format_kst(kst)
+        return format_kst(kst, self.lang)
 
     def display(self):
         """A human-readable rendering of the current Kairos moment."""
         data = self.now()
+        moon_phase = tr_name(self.t, "moon.", data["moon_phase"])
+        if data["moon_phase"] == "Unknown":
+            moon_phase = self.t("cli.display.unknown")
         if data["moon_age"] is not None:
-            moon = f"{data['moon_phase']} (age {data['moon_age']}d)"
+            moon = self.t("cli.display.moon_age",
+                          phase=moon_phase, age=data["moon_age"])
         else:
-            moon = data["moon_phase"]
+            moon = moon_phase
         cal = data["calendar"]
+        solar_time = data["solar_time"]
+        if solar_time == "No observation":
+            solar_time = self.t("cli.display.no_observation")
         if data["solar_noon_method"]:
             noon = f"{data['solar_noon']} [{data['solar_noon_method']}]"
         else:
-            noon = "unset — observe sunrise + sunset (or equal shadows) to calibrate"
+            noon = self.t("cli.display.noon_unset")
         return "\n".join([
-            f"Kairos — {data['tradition']}",
-            f"  Solar time : {data['solar_time']}",
-            f"  Noon       : {noon}",
-            f"  Moon       : {moon}",
-            f"  Season     : {data['season']}",
-            f"  Date       : {cal['month']} {cal['day']} ({cal['weekday']}), day {cal['day_of_year']}",
-            f"  Archetype  : {data['archetype']}",
-            f"  Gregorian  : {data['gregorian']}",
+            self.t("cli.display.tradition", tradition=data["tradition"]),
+            f"  {self.t('cli.display.solar_time')} : {solar_time}",
+            f"  {self.t('cli.display.noon')}       : {noon}",
+            f"  {self.t('cli.display.moon')}       : {moon}",
+            f"  {self.t('cli.display.season')}     : {data['season']}",
+            f"  {self.t('cli.display.date')}       : "
+            f"{self.t('cli.display.calendar_date', month=cal['month'], day=cal['day'], weekday=cal['weekday'], doy=cal['day_of_year'])}",
+            f"  {self.t('cli.display.archetype')}  : "
+            f"{tr_name(self.t, 'archetype.', data['archetype'])}",
+            f"  {self.t('cli.display.gregorian')}  : {data['gregorian']}",
         ])
 
 
-def main():
+def parse_local_time(text):
+    """Parse ``HH:MM`` or ``HH:MM:SS`` into today's naive local datetime.
+
+    Raises ``ValueError`` for malformed or out-of-range input.
+    """
+    parts = str(text).split(":")
+    if len(parts) not in (2, 3):
+        raise ValueError(text)
+    try:
+        hour, minute = int(parts[0]), int(parts[1])
+        second = int(parts[2]) if len(parts) == 3 else 0
+    except ValueError:
+        raise ValueError(text) from None
+    if not (0 <= hour < 24 and 0 <= minute < 60 and 0 <= second < 60):
+        raise ValueError(text)
+    now = datetime.now()
+    return now.replace(hour=hour, minute=minute, second=second, microsecond=0)
+
+
+def build_parser(parser_lang="en"):
+    """Build the CLI argument parser, with help text in ``parser_lang``."""
     import argparse
 
+    t = translator(parser_lang)
     parser = argparse.ArgumentParser(
-        prog="kairos", description="Kairos — natural time system"
+        prog="kairos", description=t("cli.description"), add_help=False
     )
+    parser.add_argument("-h", "--help", action="help", default=argparse.SUPPRESS,
+                        help=t("cli.help.help"))
     parser.add_argument("--tradition", default=DEFAULT_TRADITION,
-                        help="tradition to render (tartarian, celtic, chinese, vedic, mesopotamian, mystical)")
-    parser.add_argument("--lat", type=float, help="your latitude in degrees (enables cross-referenced noon)")
-    parser.add_argument("--lon", type=float, help="your longitude in degrees, east positive")
-    parser.add_argument("--observe-noon", action="store_true", help="record today's solar noon")
-    parser.add_argument("--moon", metavar="EMOJI", help="record moon phase, e.g. --moon 🌕")
-    parser.add_argument("--season", metavar="SEASON", help="record a season event: Spring/Summer/Autumn/Winter")
-    parser.add_argument("--kst", action="store_true",
-                        help="show Kairos Time (celestial engine) — needs skyfield")
+                        help=t("cli.help.tradition"))
+    parser.add_argument("--lat", type=float, help=t("cli.help.lat"))
+    parser.add_argument("--lon", type=float, help=t("cli.help.lon"))
+    parser.add_argument("--observe-noon", action="store_true",
+                        help=t("cli.help.observe_noon"))
+    parser.add_argument("--noon", metavar="HH:MM",
+                        help=t("cli.help.noon"))
+    parser.add_argument("--moon", metavar="EMOJI", help=t("cli.help.moon"))
+    parser.add_argument("--season", metavar="SEASON", help=t("cli.help.season"))
+    parser.add_argument("--kst", action="store_true", help=t("cli.help.kst"))
     parser.add_argument("--checksum", action="store_true",
-                        help="run the precession checksum on the Earth-age year")
+                        help=t("cli.help.checksum"))
+    parser.add_argument("--lang", default="en", help=t("cli.help.lang"))
+    return parser
+
+
+def main():
+    # Peek at --lang before argparse builds the parser, so that even `--help`
+    # is rendered in the requested language.
+    lang_arg = "en"
+    for i, arg in enumerate(sys.argv):
+        if arg == "--lang" and i + 1 < len(sys.argv):
+            lang_arg = sys.argv[i + 1]
+        elif arg.startswith("--lang="):
+            lang_arg = arg.split("=", 1)[1]
+
+    parser = build_parser(lang_arg)
     args = parser.parse_args()
 
-    kairos = Kairos(args.tradition, lat=args.lat, lon=args.lon)
+    kairos = Kairos(args.tradition, lat=args.lat, lon=args.lon, lang=args.lang)
     if args.observe_noon:
         print(kairos.observe_solar_noon())
+    if args.noon:
+        try:
+            when = parse_local_time(args.noon)
+        except ValueError:
+            print(kairos.t("cli.invalid_time"))
+        else:
+            print(kairos.observe_solar_noon(when))
     if args.moon:
         print(kairos.observe_moon_phase(args.moon))
     if args.season:
@@ -312,16 +391,16 @@ def main():
     print()
     if args.checksum:
         from core.checksum import checksum_report, current_earth_age_year
-        print(checksum_report(current_earth_age_year()))
+        print(checksum_report(current_earth_age_year(), lang=args.lang))
         print()
     if args.kst:
         try:
             kst = kairos.kst_now(latitude_deg=args.lat or 0.0,
                                  longitude_deg=args.lon or 0.0)
         except ImportError as exc:
-            print(f"KST unavailable: {exc}")
+            print(kairos.t("cli.kst_unavailable", error=exc))
         else:
-            print("Kairos Time (KST) — celestial")
+            print(kairos.t("cli.kst_header"))
             print(f"  {kairos.kst_display_line(latitude_deg=args.lat or 0.0, longitude_deg=args.lon or 0.0)}")
             for key, value in kst.items():
                 print(f"  {key}: {value}")

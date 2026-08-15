@@ -19,6 +19,9 @@ import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 README = os.path.join(ROOT, "README.md")
+# The detailed technical sections live here now (they used to be the README
+# body); the wiki merges them in so no page is lost.
+TECHNICAL = os.path.join(ROOT, "docs", "TECHNICAL.md")
 
 # README section title -> wiki page. Sections with the same page are merged.
 PAGE_MAP = [
@@ -39,6 +42,7 @@ PAGE_MAP = [
     ("Data & file formats", "Data-and-Formats"),
     ("API reference", "API-Reference"),
     ("Configuration", "Configuration"),
+    ("Join the Community", "Community"),
     ("The Mathematics of Kairos", "Mathematics"),
     ("Extending Kairos", "Extending-Kairos"),
     ("Project structure", "Project-Structure"),
@@ -59,6 +63,7 @@ WIKI_PAGES = [
     ("Precession Checksum", "Precession-Checksum"),
     ("Web App", "Web-App"),
     ("Hardware", "Hardware"),
+    ("Community", "Community"),
     ("Data & Formats", "Data-and-Formats"),
     ("API Reference", "API-Reference"),
     ("Configuration", "Configuration"),
@@ -127,6 +132,14 @@ def main():
     with open(README, encoding="utf-8") as f:
         text = f.read()
     intro, sections = split_sections(text)
+
+    # Merge the technical-reference sections (the former README body) so the
+    # wiki keeps every page; README sections win on title clashes.
+    if os.path.exists(TECHNICAL):
+        with open(TECHNICAL, encoding="utf-8") as f:
+            _, tech_sections = split_sections(f.read())
+        readme_titles = {title for title, _ in sections}
+        sections += [(t, c) for t, c in tech_sections if t not in readme_titles]
     pages, order = build_pages(intro, sections)
 
     for page in order:

@@ -16,7 +16,18 @@ from core.timekeeper import Kairos  # noqa: E402
 WEB_DIR = os.path.dirname(os.path.abspath(__file__))
 
 app = Flask(__name__)
-_kairos = Kairos()
+
+# Language for the Python-side snapshots (/api/now, /api/kst names). The PWA
+# itself manages its own language via the in-app selector (web/i18n.js).
+_default_lang = "en"
+
+
+def _make_kairos(lang=""):
+    from core.timekeeper import Kairos
+    return Kairos(lang=lang or _default_lang)
+
+
+_kairos = _make_kairos()
 
 
 @app.route("/")
@@ -65,9 +76,39 @@ def api_seasonal():
         return jsonify({"error": str(exc)}), 500
 
 
+@app.route("/api/phytochemical")
+def api_phytochemical():
+    from core.phytochemical_data import load_phytochemical_data
+
+    return jsonify(load_phytochemical_data())
+
+
+@app.route("/api/phytochemical/<item_id>")
+def api_phytochemical_item(item_id):
+    from core.phytochemical_data import get_phytochemical_inventory
+
+    entry = get_phytochemical_inventory(item_id)
+    if entry is None:
+        return jsonify({"error": f"no phytochemical inventory for {item_id!r}"}), 404
+    return jsonify(entry)
+
+
+@app.route("/api/phytochemical/<item_id>/note", methods=["GET", "POST"])
+def api_phytochemical_note(item_id):
+    from core.phytochemical_data import get_note, save_note
+
+    if request.method == "POST":
+        body = request.get_json(silent=True) or {}
+        note = (body.get("note") or "").strip()
+        return jsonify({"ok": True, "item_id": item_id, "note": save_note(item_id, note)})
+    return jsonify({"item_id": item_id, "note": get_note(item_id)})
+
+
 @app.route("/api/now")
 def api_now():
-    return jsonify(_kairos.now())
+    lang = request.args.get("lang", "")
+    kairos = _make_kairos(lang) if lang else _kairos
+    return jsonify(kairos.now())
 
 
 @app.route("/api/checksum")
@@ -95,5 +136,10 @@ if __name__ == "__main__":
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8000)
     parser.add_argument("--debug", action="store_true")
+    parser.add_argument("--lang", default="en",
+                        help="language for Python-side snapshots "
+                             "(en, nl, fy, de, fr, es, zh)")
     args = parser.parse_args()
+    _default_lang = args.lang
+    _kairos = _make_kairos(args.lang)
     app.run(host=args.host, port=args.port, debug=args.debug)

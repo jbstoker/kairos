@@ -42,6 +42,15 @@ class TestAnchor(unittest.TestCase):
             finally:
                 anchor.OBS_FILE = old
 
+    def test_save_observation_with_custom_time(self):
+        from datetime import datetime
+
+        when = datetime(2026, 8, 15, 13, 41, 9)
+        anchor.save_observation("solar_noon", "observed", when=when)
+        last = anchor.get_last_observation("solar_noon")
+        self.assertEqual(last["timestamp"], "2026-08-15T13:41:09")
+        self.assertEqual(last["value"], "observed")
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -15,6 +15,11 @@
 (function () {
     "use strict";
 
+    // i18n helpers — web/i18n.js is loaded before this script.
+    const I18n = (typeof window !== 'undefined' && window.KairosI18n) || null;
+    const t = I18n ? I18n.t.bind(I18n) : (key, vars) => key;
+    const trName = I18n ? I18n.trName.bind(I18n) : (prefix, name) => name;
+
     // ---- Location (geolocation or stored, default 52°N 5°E) ---------------
     const DEFAULT_LOCATION = { lat: 52.0, lon: 5.0 };
     let location = DEFAULT_LOCATION;
@@ -125,14 +130,15 @@
             const lunar_age = lunar_phase * 29.53058867;
             const times = SunCalc.getTimes(now, lat, lon);
             const dawn = getDawnStars(now, lat, lon);
+            const dawnNames = dawn.map(s => s.name);
             return {
                 solar_longitude,
                 lunar_phase,
                 lunar_age,
                 sidereal_time: calculateSiderealTime(now, lon),
                 season: getSeason(solar_longitude),
-                visible_star: dawn.length ? dawn[0] : null,
-                dawn_stars: dawn,
+                visible_star: dawnNames.length ? dawnNames[0] : null,
+                dawn_stars: dawnNames,
                 planets: (window.KairosPlanets && window.KairosPlanets.planetLongitudes(now)) || {},
                 hasSolarNoon: !!(times && times.solarNoon)
             };
@@ -186,7 +192,16 @@
     }
 
     // Primary Kairos Time line — always the visual leader:
-    // "14:32 · Sundial · Bloom Moon 16 · Radiance · 4.54B / 2026.624"
+    // "14:32 · ⌛ Sundial · Bloom Moon 16 · ☀️ Radiance · 4.54B / 2026.624"
+    // Icons are the single-colour, shape-distinct set (see style.css
+    // .icon-* and data/icon_set notes) — colourblind-friendly by shape.
+    const DAY_ICONS = {
+        Sundial: '⌛', Well: '⛲', Root: '🌱', Bloom: '🌼',
+        Forge: '⚒️', Harvest: '🌾', Star: '✦'
+    };
+    const SEASON_ICONS = {
+        Emergence: '🌿', Radiance: '☀️', Release: '🍂', Stillness: '❄️'
+    };
     function updateKSTSummary(season) {
         const now = new Date();
         const doy = kairosDayOfYear(now);
@@ -194,7 +209,64 @@
         const kairosSeason = KAIROS_SEASONS[season] || season;
         const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
         const yearStr = formatYear(getEarthAge(now));
-        setText('kstDisplay', `${timeStr} · ${kd.weekday} · ${kd.month} ${kd.day} · ${kairosSeason} · ${yearStr}`);
+        const dayIcon = DAY_ICONS[kd.weekday] || '';
+        const seasonIcon = SEASON_ICONS[kairosSeason] || '';
+        setText('kstDisplay',
+            `${timeStr} · ${dayIcon}${trName('day.', kd.weekday)} · ${trName('month.', kd.month)} ${kd.day} · ${seasonIcon}${trName('season.', kairosSeason)} · ${yearStr}`);
+    }
+
+    // ---- Visible-star row: primary star + expandable "+N more" -------------
+    // Clicking the star (or the "+N more" chip) expands the full list of
+    // key stars above the horizon at dawn. Expanded state survives the
+    // 10-second refresh so the list doesn't collapse under the user.
+    function renderStarDisplay(data) {
+        const el = document.getElementById('starDisplay');
+        if (!el) return;
+
+        const wasExpanded = !!(el.querySelector('.star-more-list')
+            && !el.querySelector('.star-more-list').hidden);
+
+        // Both the backend (/api/kst → name strings) and the offline engine
+        // can feed this; normalize a star entry (string, or {name}) to a name.
+        const nameOf = (s) => (typeof s === 'string' ? s : (s && s.name) || '');
+        const primary = nameOf(data.visible_star);
+
+        if (primary) {
+            const others = (data.dawn_stars || [])
+                .map(nameOf)
+                .filter(n => n && n !== primary);
+            let html = `<span class="star-primary">⭐ ${trName('star.', primary)}</span>`;
+            if (others.length) {
+                html +=
+                    `<button type="button" class="star-more" aria-expanded="${wasExpanded}">` +
+                    (wasExpanded ? t('kst.hide') : t('kst.more', { count: others.length })) +
+                    `</button>` +
+                    `<span class="star-more-list" ${wasExpanded ? '' : 'hidden'}>` +
+                    others.map(n => `· ${trName('star.', n)}`).join('<br>') +
+                    `</span>`;
+            }
+            el.innerHTML = html;
+            const list = el.querySelector('.star-more-list');
+            if (list) {
+                el.addEventListener('click', () => {
+                    const show = list.hidden;
+                    list.hidden = !show;
+                    const btn = el.querySelector('.star-more');
+                    if (btn) {
+                        btn.textContent = show ? t('kst.hide') : t('kst.more', { count: others.length });
+                        btn.setAttribute('aria-expanded', String(show));
+                    }
+                });
+            }
+        } else if (data.next_star && data.next_star_days != null) {
+            el.innerHTML =
+                `<span class="star-primary">${t('kst.next_star', {
+                    star: trName('star.', data.next_star),
+                    days: data.next_star_days
+                })}</span>`;
+        } else {
+            el.textContent = t('kst.none');
+        }
     }
 
     // ---- Rendering -----------------------------------------------------------
@@ -219,19 +291,11 @@
         if (moonEl) moonEl.textContent = data.moon_emoji || moonEmojis[phaseIndex];
 
         setText('solarLongitude', `${data.solar_longitude ?? '--'}°`);
-        setText('lunarAge', `${data.lunar_age ?? '--'} days`);
+        setText('lunarAge', `${data.lunar_age ?? '--'} ${t('kst.days')}`);
         setText('siderealDisplay', data.sidereal_time || '--:--');
-        setText('kstSeason', season);
+        setText('kstSeason', trName('season.', season));
 
-        let starText = '⭐ —';
-        if (data.visible_star) {
-            starText = `⭐ ${data.visible_star}`;
-            const more = (data.dawn_stars || []).length - 1;
-            if (more > 0) starText += ` (+${more} more)`;
-        } else if (data.next_star && data.next_star_days != null) {
-            starText = `⭐ — (next: ${data.next_star} in ~${data.next_star_days}d)`;
-        }
-        setText('starDisplay', starText);
+        renderStarDisplay(data);
 
         // Let the help/energy layer (help.js) consume the fresh snapshot.
         window.__kstData = data;

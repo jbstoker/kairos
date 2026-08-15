@@ -20,10 +20,17 @@ def load_observations():
     return data
 
 
-def save_observation(category, value):
+def save_observation(category, value, when=None):
+    """Append an observation. ``when`` overrides the timestamp (default: now).
+
+    A naive local ``when`` is stored as-is; the web PWA stores ISO strings in
+    UTC via ``toISOString()`` and the core reads them back with
+    ``datetime.fromisoformat``, so both paths interoperate.
+    """
+    when = when or datetime.now()
     obs = load_observations()
     obs.setdefault(category, []).append({
-        "timestamp": datetime.now().isoformat(),
+        "timestamp": when.isoformat(),
         "value": value
     })
     atomic_write_json(OBS_FILE, obs)

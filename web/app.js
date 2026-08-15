@@ -10,6 +10,17 @@ const TRADITION_LABEL = {
     vedic: "Vedic", mesopotamian: "Mesopotamian", mystical: "Mystical"
 };
 
+// i18n helpers — web/i18n.js is loaded before this script. The fallbacks
+// keep the app usable even if that file failed to load.
+const I18n = (typeof window !== 'undefined' && window.KairosI18n) || null;
+const t = I18n ? I18n.t.bind(I18n) : (key, vars) => {
+    let s = key;
+    if (vars) for (const k in vars) s = s.split('{' + k + '}').join(String(vars[k]));
+    return s;
+};
+const trName = I18n ? I18n.trName.bind(I18n) : (prefix, name) => name;
+const applyI18n = I18n ? I18n.apply.bind(I18n) : () => {};
+
 const TRADITIONS = {
     rhythm: {
         months: 13,
@@ -113,7 +124,7 @@ function updateDisplay() {
     const obs = loadObs();
     const solar = getLast('solar_noon');
     const moonEmoji = getLast('moon_phase')?.value || "🌑";
-    const season = getLast('season_event')?.value || "Observing...";
+    const season = getLast('season_event')?.value || "";
     const moonIdx = getMoonPhase(moonEmoji);
     const tradition = getTradition();
 
@@ -136,29 +147,34 @@ function updateDisplay() {
         const n = new Date(noon.timestamp);
         const hh = String(n.getHours()).padStart(2, '0');
         const mm = String(n.getMinutes()).padStart(2, '0');
-        noonText = `Noon: ${hh}:${mm} (observed)`;
+        noonText = t('app.noon_observed', { time: `${hh}:${mm}` });
     }
 
     const solarEl = document.getElementById('solarTime');
     if (solarEl) {
         solarEl.textContent = solarTime;
         solarEl.title = solar
-            ? 'Observed solar noon — your local solar time.'
-            : 'No observation yet — record 🌅 Sunrise + 🌇 Sunset (or ⚖️ equal shadows) to see your local solar time.';
+            ? t('app.solar_noon_title')
+            : t('app.solar_no_noon_title');
     }
     if (!window.__kstActive) {
         // KST (celestial engine) owns the moon display when it is live.
         document.getElementById('moonDisplay').textContent = moonEmoji;
     }
-    document.getElementById('seasonDisplay').textContent = `${season} (${tradition})`;
-    document.getElementById('calendarDisplay').textContent = `${d.month} ${d.day}`;
+    document.getElementById('seasonDisplay').textContent =
+        season ? `${trName('season.', season)} (${TRADITION_LABEL[tradition] || tradition})` : t('display.observing');
+    document.getElementById('calendarDisplay').textContent = `${trName('month.', d.month)} ${d.day}`;
     document.getElementById('noonDisplay').textContent = noonText;
-    document.getElementById('gregorian').textContent = `(Gregorian: ${new Date().toLocaleString()})`;
+    document.getElementById('gregorian').textContent =
+        t('gregorian.prefix', { date: new Date().toLocaleString() });
     const tradEl = document.getElementById('traditionDisplay');
     if (tradEl) {
-        tradEl.textContent = `${TRADITION_EMOJI[tradition] || '🌌'} ${TRADITION_LABEL[tradition] || tradition} · optional layer`;
+        tradEl.textContent = `${TRADITION_EMOJI[tradition] || '🌌'} ${TRADITION_LABEL[tradition] || tradition} · ${t('app.optional_layer')}`;
     }
-    document.getElementById('status').textContent = `Moon: ${moonIdx !== null ? phaseName(moonIdx) : 'unknown'} | Season: ${season}`;
+    document.getElementById('status').textContent = t('app.status_moon_season', {
+        moon: moonIdx !== null ? trName('moon.', phaseName(moonIdx)) : t('app.unknown'),
+        season: season ? trName('season.', season) : t('display.observing')
+    });
 }
 
 // --- Precession self-check (fold 2: the deep time is checked) -------------
@@ -168,15 +184,17 @@ function updateDisplay() {
 function renderSelfCheck(result) {
     const el = document.getElementById('checksumLine');
     if (!el || !result || !window.KairosSelfCheck) return;
-    let text = window.KairosSelfCheck.checksumLine(result);
+    let text = window.KairosSelfCheck.checksumLine(result, t('checksum.precession_offset'));
     const trend = result.trend;
     if (trend && trend.count) {
         text += trend.stable
-            ? ` · stable across ${trend.count} checks`
-            : ` · DRIFTING across ${trend.count} checks`;
+            ? ` · ${t('app.checksum_stable', { count: trend.count })}`
+            : ` · ${t('app.checksum_drifting', { count: trend.count })}`;
     }
     const now = new Date();
-    text += ` · updated ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    text += ` · ${t('app.updated', {
+        time: `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`
+    })}`;
     el.textContent = text;
     el.className = 'checksum-line ' + (result.status === 'consistent' ? 'ok' : 'warn');
 }
@@ -198,7 +216,7 @@ async function updateSelfCheck() {
     if (window.KairosSelfCheck) {
         renderSelfCheck(window.KairosSelfCheck.precessionChecksum());
     } else {
-        el.textContent = 'Self-check: unavailable';
+        el.textContent = t('app.selfcheck_unavailable');
     }
 }
 
@@ -225,7 +243,7 @@ function buildShareText() {
                 `${Math.abs(saved.lon).toFixed(1)}°${saved.lon >= 0 ? 'E' : 'W'}`;
         }
     } catch (e) { /* ignore */ }
-    return `☀️ Kairos — ${kst}\n${greg}${loc}\n🌍 ${season} · kairos.jbstoker.github.io`;
+    return `☀️ Kairos — ${kst}\n${greg}${loc}\n🌍 ${trName('season.', season)} · kairos.jbstoker.github.io`;
 }
 
 function openShareModal() {
@@ -239,7 +257,7 @@ function openShareModal() {
     const sharePhotoBtn = document.getElementById('shareImageBtn');
     if (preview && img && capturedMomentDataURL) {
         img.src = capturedMomentDataURL;
-        if (momentText) momentText.textContent = `Living in ${getKairosDisplayString()}`;
+        if (momentText) momentText.textContent = t('share.living_in', { moment: getKairosDisplayString() });
         preview.hidden = false;
     } else if (preview) {
         preview.hidden = true;
@@ -259,7 +277,7 @@ function copyShareText() {
     const text = document.getElementById('shareText').value;
     const done = () => {
         const status = document.getElementById('status');
-        if (status) status.textContent = '✅ Moment copied to clipboard';
+        if (status) status.textContent = t('share.moment_copied');
     };
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(text).then(done).catch(() => legacyCopy(text));
@@ -275,7 +293,7 @@ function legacyCopy(text) {
     let ok = false;
     try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
     const status = document.getElementById('status');
-    if (status) status.textContent = ok ? '✅ Moment copied to clipboard' : 'Select the text and copy manually.';
+    if (status) status.textContent = ok ? t('share.moment_copied') : t('share.copy_manually');
 }
 
 function downloadMomentImage() {
@@ -300,13 +318,13 @@ function downloadMomentImage() {
     lines.forEach((line, i) => ctx.fillText(line, 60, 175 + i * 48));
     ctx.fillStyle = '#5a6a7c';
     ctx.font = '20px "Segoe UI", Tahoma, sans-serif';
-    ctx.fillText('time you observe · kairos.jbstoker.github.io', 60, canvas.height - 45);
+    ctx.fillText(t('share.watermark'), 60, canvas.height - 45);
     const a = document.createElement('a');
     a.href = canvas.toDataURL('image/png');
     a.download = 'kairos-moment.png';
     a.click();
     const status = document.getElementById('status');
-    if (status) status.textContent = '🖼️ Kairos moment image downloaded';
+    if (status) status.textContent = t('share.image_downloaded');
 }
 
 // --- Photo capture: camera/file picker → stamp → share/download -------------
@@ -344,7 +362,7 @@ function shareCapturedImage() {
         ctx.fillStyle = '#f5e6c4';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        const line = `Living in ${getKairosDisplayString()}`;
+        const line = t('share.living_in', { moment: getKairosDisplayString() });
         const fontSize = Math.max(18, Math.round(canvas.width / 34));
         ctx.font = `600 ${fontSize}px "Segoe UI", Tahoma, sans-serif`;
         ctx.fillText(line, canvas.width / 2, canvas.height - barH / 2);
@@ -352,8 +370,8 @@ function shareCapturedImage() {
             if (!blob) return;
             const file = new File([blob], 'kairos-moment.png', { type: 'image/png' });
             const shareData = {
-                title: 'My Kairos Moment',
-                text: `Living in ${getKairosDisplayString()}`,
+                title: t('share.share_title'),
+                text: t('share.living_in', { moment: getKairosDisplayString() }),
                 files: [file]
             };
             if (navigator.canShare && navigator.canShare(shareData)) {
@@ -365,12 +383,12 @@ function shareCapturedImage() {
                 link.click();
             }
             const status = document.getElementById('status');
-            if (status) status.textContent = '📤 Kairos moment photo shared / downloaded';
+            if (status) status.textContent = t('share.photo_shared');
         }, 'image/png');
     };
     image.onerror = function () {
         const status = document.getElementById('status');
-        if (status) status.textContent = '⚠️ Could not read the captured image.';
+        if (status) status.textContent = t('share.photo_error');
     };
     image.src = capturedMomentDataURL;
 }
@@ -386,13 +404,59 @@ function setObservationStatus(message, isSuccess) {
     }
 }
 
+const NOON_METHOD_LABELS = {
+    equal_shadows: 'obs.method_equal_shadows',
+    sunrise_sunset: 'obs.method_sunrise_sunset',
+    entered_times: 'obs.method_entered_times',
+    entered_noon: 'obs.method_entered_noon'
+};
+
 function saveSolarNoon(noonTime, method) {
     saveObsAt('solar_noon', method, noonTime);
     const nice = noonTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    const label = method === 'equal_shadows' ? 'equal shadows' : 'sunrise + sunset';
-    setObservationStatus(`✅ Solar noon calculated: ${nice}`, true);
+    const label = t(NOON_METHOD_LABELS[method] || 'obs.method_sunrise_sunset');
+    setObservationStatus(t('obs.noon_calculated', { time: nice }), true);
     const status = document.getElementById('status');
-    if (status) status.textContent = `✅ Solar noon calibrated via ${label} — KST updated.`;
+    if (status) status.textContent = t('obs.noon_calibrated', { label });
+}
+
+// Turn an <input type="time"> value ("HH:MM" or "HH:MM:SS") into a local
+// Date for today; returns null for invalid input.
+function timeInputToDate(value) {
+    const parts = String(value || '').split(':').map(Number);
+    if (parts.length < 2 || parts.some(Number.isNaN)) return null;
+    const [h, m, s = 0] = parts;
+    if (!(h >= 0 && h < 24 && m >= 0 && m < 60 && s >= 0 && s < 60)) return null;
+    const d = new Date();
+    d.setHours(h, m, s, 0);
+    return d;
+}
+
+// Textual entry: sunrise + sunset -> noon is their midpoint (same rule as
+// the live buttons, so both paths agree).
+function enterObservedTimes() {
+    const sunrise = timeInputToDate(document.getElementById('enterSunrise').value);
+    const sunset = timeInputToDate(document.getElementById('enterSunset').value);
+    if (!sunrise || !sunset) {
+        setObservationStatus(t('obs.enter_both'), true);
+        return;
+    }
+    if (sunset <= sunrise) {
+        setObservationStatus(t('obs.enter_order'));
+        return;
+    }
+    const noon = new Date((sunrise.getTime() + sunset.getTime()) / 2);
+    saveSolarNoon(noon, 'entered_times');
+}
+
+// Textual entry: direct solar noon (culmination) — the most precise value.
+function enterSolarNoon() {
+    const noon = timeInputToDate(document.getElementById('enterNoon').value);
+    if (!noon) {
+        setObservationStatus(t('obs.enter_noon'));
+        return;
+    }
+    saveSolarNoon(noon, 'entered_noon');
 }
 
 function saveObsAt(category, value, ts) {
@@ -408,7 +472,8 @@ function saveObsAt(category, value, ts) {
 document.querySelectorAll('#moonButtons button').forEach(btn => {
     btn.addEventListener('click', () => {
         saveObs('moon_phase', btn.dataset.emoji);
-        document.getElementById('status').textContent = `✅ Moon set to ${btn.dataset.emoji} — KST calibrated`;
+        document.getElementById('status').textContent =
+            t('obs.moon_set', { emoji: btn.dataset.emoji });
         if (window.refreshKST) window.refreshKST();
     });
 });
@@ -419,14 +484,14 @@ const kairosCalibrator = (window.KairosObservation && window.KairosObservation.c
 document.getElementById('sunriseBtn').addEventListener('click', () => {
     if (!kairosCalibrator) return;
     kairosCalibrator.recordSunrise(new Date());
-    setObservationStatus('✅ Sunrise recorded — press Sunset when the sun disappears.', true);
+    setObservationStatus(t('obs.sunrise_recorded'), true);
 });
 
 document.getElementById('sunsetBtn').addEventListener('click', () => {
     if (!kairosCalibrator) return;
     const r = kairosCalibrator.recordSunset(new Date());
     if (r.status === 'need_sunrise') {
-        setObservationStatus('⚠️ Please record sunrise first.');
+        setObservationStatus(t('obs.need_sunrise'));
         return;
     }
     saveSolarNoon(r.noon, 'sunrise_sunset');
@@ -436,23 +501,28 @@ document.getElementById('equalShadowBtn').addEventListener('click', () => {
     if (!kairosCalibrator) return;
     const r = kairosCalibrator.recordEqualShadow(new Date());
     if (r.status === 'shadow_first') {
-        setObservationStatus('✅ First equal-shadow moment recorded — press again in the afternoon when the shadow matches again.', true);
+        setObservationStatus(t('obs.shadow_first'), true);
         return;
     }
     saveSolarNoon(r.noon, 'equal_shadows');
 });
 
+const enterTimesBtn = document.getElementById('enterTimesBtn');
+if (enterTimesBtn) enterTimesBtn.addEventListener('click', enterObservedTimes);
+const enterNoonBtn = document.getElementById('enterNoonBtn');
+if (enterNoonBtn) enterNoonBtn.addEventListener('click', enterSolarNoon);
+
 ['Spring', 'Summer', 'Autumn', 'Winter'].forEach(season => {
     document.getElementById(`season${season}`).addEventListener('click', () => {
         saveObs('season_event', season);
-        document.getElementById('status').textContent = `✅ Season set to ${season}`;
+        document.getElementById('status').textContent = t('obs.season_set', { season: trName('season.', season) });
         if (window.refreshKST) window.refreshKST();
     });
 });
 
 document.getElementById('traditionSelect').addEventListener('change', (e) => {
     setTradition(e.target.value);
-    document.getElementById('status').textContent = `Tradition switched to ${e.target.value}`;
+    document.getElementById('status').textContent = t('obs.tradition_switched', { tradition: e.target.value });
 });
 
 document.getElementById('shareBtn').addEventListener('click', openShareModal);
@@ -469,22 +539,10 @@ if (shareModalEl) {
 }
 
 // --- Tabs: Now (the view) / Configure (the controls) ------------------------
-function switchTab(name) {
-    const isNow = name === 'now';
-    const nowPanel = document.getElementById('tabNow');
-    const configPanel = document.getElementById('tabConfig');
-    if (nowPanel) nowPanel.hidden = !isNow;
-    if (configPanel) configPanel.hidden = isNow;
-    const nowBtn = document.getElementById('tabNowBtn');
-    const configBtn = document.getElementById('tabConfigBtn');
-    if (nowBtn) nowBtn.classList.toggle('active', isNow);
-    if (configBtn) configBtn.classList.toggle('active', !isNow);
-}
-
-document.getElementById('tabNowBtn').addEventListener('click', () => switchTab('now'));
-document.getElementById('tabConfigBtn').addEventListener('click', () => switchTab('config'));
-const seasonalTuneBtn = document.getElementById('seasonalTuneBtn');
-if (seasonalTuneBtn) seasonalTuneBtn.addEventListener('click', () => switchTab('config'));
+// Handled by web/tabs.js (loaded before this script): one delegated
+// document-level listener keeps the tabs working even if a script fails or
+// throws, and the seasonal "⚙️ tune" button (jumps to Configure) is wired
+// there too.
 
 // Escape closes any open modal.
 document.addEventListener('keydown', e => {

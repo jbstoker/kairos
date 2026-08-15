@@ -100,11 +100,13 @@
     }
 
     // The one-line footer text shown in the PWA.
-    function checksumLine(result) {
+    // `label` is the (translated) "Precession offset" text; the caller passes
+    // it so this pure module stays dependency-free (see web/i18n.js).
+    function checksumLine(result, label) {
         var delta = (result.difference_deg !== undefined)
             ? Number(result.difference_deg).toFixed(4) + "°"
             : "--°";
-        return "🔭 Precession offset: " + delta;
+        return "🔭 " + (label || "Precession offset") + ": " + delta;
     }
 
     return {

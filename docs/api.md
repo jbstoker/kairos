@@ -95,6 +95,30 @@ Categories: `solar_noon`, `moon_phase`, `season_event`, `sun_movement`.
 - `modules.energy.*` — `mood_for_moon`, `festival_for_season`, `ritual_for_archetype`
 - `modules.ritual.*` — `ritual_for_solar_time`, `ritual_for_weekday`, `ritual_for_season`
 
+## `core.phytochemical_data` — the honest phytochemical inventory
+
+| Function | Description |
+| --- | --- |
+| `load_phytochemical_data()` | The full inventory: `disclaimer`, `source`, `items`. |
+| `get_disclaimer()` | The data disclaimer shown at the bottom of every inventory. |
+| `get_source()` | The `{label, url}` source block (USDA FoodData Central). |
+| `get_phytochemical_inventory(item_id)` | One item's compound list, or `None`. |
+| `get_note(item_id)` | The stored per-item user note (empty when none). |
+| `save_note(item_id, note)` | Save (or clear) a per-item user note. |
+
+Data lives in `data/phytochemical_data.json` and is bundled into the PWA by
+`tools/sync_phytochemical.py`. Every numeric value is an approximation from
+public food-composition references — the disclaimer says so, plainly, and is
+rendered (ℹ️, small and low-contrast) at the bottom of each inventory in the
+seasonal produce detail modal.
+
+### Web endpoints
+
+- `GET /api/phytochemical` — the full inventory (disclaimer, source, items).
+- `GET /api/phytochemical/<item_id>` — one item's inventory (404 when unknown).
+- `GET /api/phytochemical/<item_id>/note` — the stored user note.
+- `POST /api/phytochemical/<item_id>/note` — `{"note": "…"}` to save or clear a user note.
+
 ## Cross-referenced solar-noon engine
 
 Kairos can predict solar noon locally and check its own work:

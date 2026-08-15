@@ -12,6 +12,11 @@
 (function () {
     'use strict';
 
+    // i18n helpers — web/i18n.js is loaded before this script.
+    const I18n = (typeof window !== 'undefined' && window.KairosI18n) || null;
+    const t = I18n ? I18n.t.bind(I18n) : (key, vars) => key;
+    const trName = I18n ? I18n.trName.bind(I18n) : (prefix, name) => name;
+
     const SEASONS = ['Emergence', 'Radiance', 'Release', 'Stillness'];
     const KAIROS_SEASON_MAP = { Spring: 'Emergence', Summer: 'Radiance', Autumn: 'Release', Winter: 'Stillness' };
     const PRODUCE_CATEGORIES = ['fruit', 'vegetable', 'herb', 'fungus', 'meat', 'other'];
@@ -120,13 +125,13 @@
             if (TRADITION_LABELS[current]) {
                 const opt = document.createElement('option');
                 opt.value = current;
-                opt.textContent = TRADITION_LABELS[current] + ' (this app)';
+                opt.textContent = TRADITION_LABELS[current] + ' ' + t('seasonal.this_app');
                 tradSel.appendChild(opt);
             }
             Array.from(traditions).sort().forEach(t => {
                 const opt = document.createElement('option');
                 opt.value = t;
-                opt.textContent = TRADITION_LABELS[t] || t;
+                opt.textContent = (t === 'global') ? t('seasonal.global') : (TRADITION_LABELS[t] || t);
                 tradSel.appendChild(opt);
             });
         }
@@ -134,7 +139,7 @@
         if (regSel && regSel.options.length <= 1) {
             const auto = document.createElement('option');
             auto.value = 'auto';
-            auto.textContent = 'Auto · ' + detectedRegion();
+            auto.textContent = t('seasonal.auto_region', { region: detectedRegion() });
             regSel.appendChild(auto);
             Array.from(regions).filter(r => r !== 'global').sort().forEach(r => {
                 const opt = document.createElement('option');
@@ -144,14 +149,14 @@
             });
             const glob = document.createElement('option');
             glob.value = 'global';
-            glob.textContent = 'Global';
+            glob.textContent = t('seasonal.global');
             regSel.appendChild(glob);
         }
     }
 
     // ---- Rendering ----------------------------------------------------------
     function renderCard(item) {
-        return `<button class="seasonal-item" title="Tap for details">` +
+        return `<button class="seasonal-item" title="${t('seasonal.tap_details')}">` +
             `<span class="item-icon">${item.image || '🌿'}</span>` +
             `<span class="item-name">${item.name}</span></button>`;
     }
@@ -159,21 +164,32 @@
     function renderContainer(season, tradition, region) {
         const container = document.getElementById('seasonalContainer');
         const labelEl = document.getElementById('seasonalSeasonLabel');
-        if (labelEl) labelEl.textContent = season;
+        if (labelEl) labelEl.textContent = trName('season.', season);
         if (!container) return;
+
+        // Seasonal accent on the card border (Emergence/Radiance/Release/Stillness).
+        const seasonalCard = document.querySelector('.seasonal');
+        if (seasonalCard) {
+            ['season-emergence', 'season-radiance', 'season-release', 'season-stillness']
+                .forEach(c => seasonalCard.classList.remove(c));
+            const accent = {
+                Emergence: 'season-emergence', Radiance: 'season-radiance',
+                Release: 'season-release', Stillness: 'season-stillness'
+            }[season];
+            if (accent) seasonalCard.classList.add(accent);
+        }
 
         const result = filtered(season, tradition, region);
         const cards = [];
         result.produce.forEach(item => cards.push(renderCard(item)));
         if (result.festivals.length) {
-            cards.push('<div class="seasonal-group">🎉 Festivals</div>');
+            cards.push(`<div class="seasonal-group">${t('seasonal.festivals')}</div>`);
             result.festivals.forEach(item => cards.push(renderCard(item)));
         }
         const items = [].concat(result.produce, result.festivals);
         container.innerHTML = cards.length
             ? cards.join('')
-            : '<span class="seasonal-note">Nothing in season for these filters — ' +
-              'observe the sky, and add your own knowledge with ➕ Add Produce / ➕ Add Festival.</span>';
+            : `<span class="seasonal-note">${t('seasonal.empty_hint')}</span>`;
         container.__items = items;
         container.querySelectorAll('.seasonal-item').forEach((el, i) => {
             el.addEventListener('click', () => openItem(items[i]));
@@ -199,7 +215,7 @@
                     const items = [].concat(data.produce || [], data.festivals || []);
                     container.innerHTML = items.length
                         ? items.map(renderCard).join('')
-                        : '<span class="seasonal-note">Nothing in season for these filters.</span>';
+                        : `<span class="seasonal-note">${t('seasonal.empty')}</span>`;
                     container.__items = items;
                     container.querySelectorAll('.seasonal-item').forEach((el, i) => {
                         el.addEventListener('click', () => openItem(items[i]));
@@ -224,22 +240,27 @@
         if (title) title.textContent = `${item.image || '🌿'} ${item.name}`;
         let html = '';
         if (item.kind === 'festival') {
-            html += field('Season', item.season);
-            html += field('Regions', item.regions);
-            html += field('Traditions', item.traditions);
-            html += field('Description', item.description);
-            html += field('Activities', item.activities);
-            html += field('Foods', item.foods);
+            html += field(t('seasonal.field.season'), item.season);
+            html += field(t('seasonal.field.regions'), item.regions);
+            html += field(t('seasonal.field.traditions'), item.traditions);
+            html += field(t('seasonal.field.description'), item.description);
+            html += field(t('seasonal.field.activities'), item.activities);
+            html += field(t('seasonal.field.foods'), item.foods);
         } else {
-            html += field('Category', item.category);
-            html += field('Seasons', item.seasons);
-            html += field('Regions', item.regions);
-            html += field('Traditions', item.traditions);
-            html += field('Description', item.description);
-            html += field('Uses', item.uses);
-            html += field('How to find', item.how_to_find);
+            html += field(t('seasonal.field.category'), item.category);
+            html += field(t('seasonal.field.seasons'), item.seasons);
+            html += field(t('seasonal.field.regions'), item.regions);
+            html += field(t('seasonal.field.traditions'), item.traditions);
+            html += field(t('seasonal.field.description'), item.description);
+            html += field(t('seasonal.field.uses'), item.uses);
+            html += field(t('seasonal.field.how_to_find'), item.how_to_find);
         }
-        body.innerHTML = html || '<p>No details yet.</p>';
+        body.innerHTML = html || `<p>${t('seasonal.no_details')}</p>`;
+        // The phytochemical inventory (compounds, disclaimer, source link,
+        // user notes) renders at the bottom of this modal for produce items.
+        if (typeof window.KairosPhytochemicals !== 'undefined' && window.KairosPhytochemicals.renderInto) {
+            window.KairosPhytochemicals.renderInto(body, item);
+        }
         modal.hidden = false;
         document.body.classList.add('modal-open');
     }
@@ -286,7 +307,7 @@
         const name = document.getElementById('addName').value.trim();
         if (!name) {
             const status = document.getElementById('status');
-            if (status) status.textContent = '⚠️ Give the item a name first.';
+            if (status) status.textContent = t('seasonal.name_first');
             return;
         }
         const image = document.getElementById('addImage').value.trim() || '🌿';
@@ -339,17 +360,17 @@
                     const status = document.getElementById('status');
                     if (status) {
                         status.textContent = ok
-                            ? `✅ "${item.name}" added (server)`
-                            : `✅ "${item.name}" added (this device — server offline)`;
+                            ? t('seasonal.added_server', { name: item.name })
+                            : t('seasonal.added_device_offline', { name: item.name });
                     }
                 })
                 .catch(() => {
                     const status = document.getElementById('status');
-                    if (status) status.textContent = `✅ "${item.name}" added (this device — server offline)`;
+                    if (status) status.textContent = t('seasonal.added_device_offline', { name: item.name });
                 });
         } catch (e) {
             const status = document.getElementById('status');
-            if (status) status.textContent = `✅ "${item.name}" added (this device)`;
+            if (status) status.textContent = t('seasonal.added_device', { name: item.name });
         }
 
         closeAddForm();

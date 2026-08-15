@@ -15,6 +15,7 @@ dist/
 # Data (user observations are local)
 data/observations.json
 data/checksums.json
+data/phytochemical_notes.json
 
 # OS
 Thumbs.db
@@ -28,4 +29,7 @@ main.py
 
 # Atomic-write temp files
 *.tmp
+
+# Local test scratch (browser profiles, throwaway scripts)
+_tmp_*
 

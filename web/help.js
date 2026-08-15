@@ -2,6 +2,11 @@
 // Renders the "?" modal (KST explanations, planet meanings, energy) and
 // the "today's energy" card in the main display.
 
+// i18n helpers — web/i18n.js is loaded before this script.
+const I18n = (typeof window !== 'undefined' && window.KairosI18n) || null;
+const t = I18n ? I18n.t.bind(I18n) : (key, vars) => key;
+const trName = I18n ? I18n.trName.bind(I18n) : (prefix, name) => name;
+
 function kairosDayOfYear() {
     const now = new Date();
     // Purely calendar-based (Date.UTC), so DST transitions never shift the count.
@@ -23,25 +28,25 @@ function buildEnergyHTML(kstData) {
     const element = ELEMENT_CYCLE[(doy - 1) % 5];
     const season = (kstData && kstData.season) || "Spring";
     const mood = phaseNameFromFraction(kstData && kstData.lunar_phase);
-    const festival = (SEASON_FESTIVAL_MEANINGS[season] || []).join(" · ");
-    const foods = (SEASONAL_FOODS[season] || []).join(", ");
+    const festival = t('festival.' + season);
+    const foods = t('food.' + season);
     const elementGlyphs = { "Light": "☀️", "Shadow": "🌑", "Stone": "🪨", "Wind": "🌬️", "Void": "⚫" };
 
     return [
-        `<div class="energy-line"><span class="energy-key">🜂 Archetype</span>` +
-            `<span class="energy-val">${archetype}</span>` +
-            `<span class="energy-note">${ARCHETYPE_MEANINGS[archetype]}</span></div>`,
-        `<div class="energy-line"><span class="energy-key">🌙 Moon mood</span>` +
-            `<span class="energy-val">${mood}</span>` +
-            `<span class="energy-note">${MOON_MOOD_MEANINGS[mood]}</span></div>`,
-        `<div class="energy-line"><span class="energy-key">${elementGlyphs[element]} Element</span>` +
-            `<span class="energy-val">${element}</span>` +
-            `<span class="energy-note">${ELEMENT_MEANINGS[element]}</span></div>`,
-        `<div class="energy-line"><span class="energy-key">🕯️ ${season}</span>` +
-            `<span class="energy-val">festival</span>` +
+        `<div class="energy-line"><span class="energy-key">${t('energy.archetype')}</span>` +
+            `<span class="energy-val">${trName('archetype.', archetype)}</span>` +
+            `<span class="energy-note">${t('archetype_meaning.' + archetype)}</span></div>`,
+        `<div class="energy-line"><span class="energy-key">${t('energy.moon_mood')}</span>` +
+            `<span class="energy-val">${trName('moon.', mood)}</span>` +
+            `<span class="energy-note">${t('moon_meaning.' + mood)}</span></div>`,
+        `<div class="energy-line"><span class="energy-key">${elementGlyphs[element]} ${t('energy.element', { glyph: '' }).trim()}</span>` +
+            `<span class="energy-val">${trName('element.', element)}</span>` +
+            `<span class="energy-note">${t('element_meaning.' + element)}</span></div>`,
+        `<div class="energy-line"><span class="energy-key">🕯️ ${trName('season.', season)}</span>` +
+            `<span class="energy-val">${t('energy.festival')}</span>` +
             `<span class="energy-note">${festival}</span></div>`,
-        `<div class="energy-line"><span class="energy-key">🍎 In season</span>` +
-            `<span class="energy-val">food</span>` +
+        `<div class="energy-line"><span class="energy-key">🍎 ${t('energy.in_season')}</span>` +
+            `<span class="energy-val">${t('energy.food')}</span>` +
             `<span class="energy-note">${foods}</span></div>`
     ].join("");
 }
@@ -56,13 +61,14 @@ function renderPlanetStrip(kstData) {
     if (!el) return;
     const planets = (kstData && kstData.planets) || {};
     const order = ['mercury', 'venus', 'mars', 'jupiter', 'saturn'];
-    const parts = order.filter(n => planets[n]).map(n => {
+    // One clean row per planet (☿ Mercury · ♌ Leo) instead of a run-on line.
+    const lines = order.filter(n => planets[n]).map(n => {
         const meta = PLANET_MEANINGS[n];
         const sign = planets[n].zodiac || '—';
         const glyph = ZODIAC_GLYPHS[sign] || '';
-        return `${meta.glyph} ${glyph}${sign}`;
+        return `<span class="planet-line">${meta.glyph} ${trName('planet.', n)} · ${glyph}${trName('zodiac.', sign)}</span>`;
     });
-    el.textContent = parts.length ? parts.join(' · ') : '—';
+    el.innerHTML = lines.length ? lines.join('') : '—';
 }
 
 // ---- Help modal -----------------------------------------------------------
@@ -71,14 +77,13 @@ function openHelp() {
     const body = document.getElementById('helpBody');
     if (!body) return;
 
-    let html = '<div class="help-section"><h3>What am I looking at?</h3>';
+    let html = `<div class="help-section"><h3>${t('help.what_am_i_looking_at')}</h3>`;
     for (const key of ['wheel', 'solarLongitude', 'lunarAge', 'sidereal', 'star', 'season']) {
-        const item = KST_HELP[key];
-        html += `<p><strong>${item.title}.</strong> ${item.text}</p>`;
+        html += `<p><strong>${t('kst_help.' + key + '.title')}.</strong> ${t('kst_help.' + key + '.text')}</p>`;
     }
     html += '</div>';
 
-    html += '<div class="help-section"><h3>🪐 The planets now (esoteric notes)</h3>';
+    html += `<div class="help-section"><h3>${t('help.planets_now')}</h3>`;
     const planets = (kstData && kstData.planets) || {};
     const order = ['mercury', 'venus', 'mars', 'jupiter', 'saturn'];
     const present = order.filter(n => planets[n]);
@@ -88,24 +93,32 @@ function openHelp() {
             const sign = planets[n].zodiac || '—';
             const glyph = ZODIAC_GLYPHS[sign] || '';
             return `<div class="help-row">
-                <span class="planet-glyph">${meta.glyph} ${meta.name}</span>
-                <span class="planet-sign">in ${glyph} ${sign}</span>
-                <span class="planet-meaning">${meta.meaning}</span>
+                <span class="planet-glyph">${meta.glyph} ${trName('planet.', n)}</span>
+                <span class="planet-sign">${t('help.planet_in', { sign: glyph + trName('zodiac.', sign) })}</span>
+                <span class="planet-meaning">${t('planet_meaning.' + n)}</span>
             </div>`;
         }).join('');
     } else {
-        html += '<p>Planet positions come from the celestial engine — with the server, Skyfield; offline, a compact browser algorithm (web/planets.js).</p>';
+        html += `<p>${t('help.planets_fallback')}</p>`;
     }
     html += '</div>';
 
-    html += '<div class="help-section"><h3>✨ Today&apos;s energy</h3>';
+    html += `<div class="help-section"><h3>${t('help.todays_energy')}</h3>`;
     html += buildEnergyHTML(kstData);
     html += '</div>';
 
-    html += '<div class="help-section"><h3>🜂 The five elements</h3>';
+    html += `<div class="help-section"><h3>${t('help.five_elements')}</h3>`;
     for (const el of ELEMENT_CYCLE) {
-        html += `<p><strong>${el}.</strong> ${ELEMENT_MEANINGS[el]}</p>`;
+        html += `<p><strong>${trName('element.', el)}.</strong> ${t('element_meaning.' + el)}</p>`;
     }
+    html += '</div>';
+
+    html += `<div class="help-section"><h3>${t('help.phytochem')}</h3>`;
+    html += `<p>${t('help.phytochem_text')}</p>`;
+    html += '</div>';
+
+    html += `<div class="help-section"><h3>${t('help.community')}</h3>`;
+    html += `<p>${t('help.community_text')}</p>`;
     html += '</div>';
 
     body.innerHTML = html;

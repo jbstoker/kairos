@@ -196,43 +196,50 @@ def checksum_trend(limit=None):
 # --------------------------------------------------------------------- #
 # Human-readable report
 # --------------------------------------------------------------------- #
-def checksum_report(earth_age_years=None):
+def checksum_report(earth_age_years=None, lang="en"):
     """A human-readable summary of the precession checksum.
 
     The absolute offset between a round-number deep-time epoch and the
     precession cycle is expected; what matters is that it *stays constant*
     over time. When tracking data exists, the report therefore includes the
-    observed trend.
+    observed trend. ``lang`` selects the interface language (see core/i18n.py).
     """
+    from core.i18n import translator
+
+    t = translator(lang)
     if earth_age_years is None:
         earth_age_years = current_earth_age_year()
 
     result = precession_checksum(earth_age_years)
     if result["status"] == "consistent":
-        icon, text = "✓", "Aligned with celestial cycles"
+        icon, text = "✓", t("cli.checksum.consistent")
     else:
-        icon, text = "⚠️", "Phase offset documented (round-number epoch; not phase-locked to the Great Year)"
+        icon, text = "⚠️", t("cli.checksum.inconsistent")
 
     lines = [
-        f"{icon} Precession Checksum: {text}",
-        f"   Calculated equinox position: {result['calculated_position']}°",
-        f"   Observed equinox position:   {result['expected_position']}°",
-        f"   Difference: {result['difference_deg']}° (tolerance: {result['tolerance_deg']}°)",
+        t("cli.checksum.header", icon=icon, text=text),
+        "   " + t("cli.checksum.calculated",
+                  value=result["calculated_position"]),
+        "   " + t("cli.checksum.observed",
+                  value=result["expected_position"]),
+        "   " + t("cli.checksum.difference",
+                  value=result["difference_deg"],
+                  tolerance=result["tolerance_deg"]),
     ]
     if result["status"] == "inconsistent":
         aligned = phase_aligned_year(earth_age_years)
         offset = earth_age_years - aligned
-        lines.append(
-            f"   Phase offset: ~{offset:+,.0f} years vs. the observed equinox "
-            f"(expected for a round epoch; the checksum tracks its consistency)")
+        lines.append("   " + t("cli.checksum.phase_offset",
+                              offset=f"{offset:+,.0f}"))
 
     trend = checksum_trend()
     if trend["count"]:
-        stable = "stable" if trend["stable"] else "DRIFTING ⚠️"
-        lines.append(
-            f"   Trend: {stable} across {trend['count']} checks "
-            f"(difference spread {trend['spread_deg']}°)")
+        stable = (t("cli.checksum.stable") if trend["stable"]
+                  else t("cli.checksum.drifting"))
+        lines.append("   " + t("cli.checksum.trend",
+                              stable=stable, count=trend["count"],
+                              spread=trend["spread_deg"]))
     else:
-        lines.append("   Trend: no tracking data yet — run the server or `--checksum` repeatedly")
+        lines.append("   " + t("cli.checksum.trend_none"))
     return "\n".join(lines)
 

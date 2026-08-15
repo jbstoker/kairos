@@ -50,7 +50,7 @@ jobs:
 
       - name: Check JavaScript syntax
         run: |
-          for f in web/app.js web/kst_display.js web/help.js web/help_data.js web/checksum_selfcheck.js web/planets.js web/observation_methods.js web/seasonal_display.js web/seasonal_defaults.js web/sw.js web/lib/suncalc.js; do
+          for f in web/i18n.js web/app.js web/kst_display.js web/help.js web/help_data.js web/checksum_selfcheck.js web/planets.js web/observation_methods.js web/seasonal_display.js web/seasonal_defaults.js web/phytochemical_display.js web/phytochemical_defaults.js web/tabs.js web/sw.js web/lib/suncalc.js; do
             node --check "$f"
           done
 
@@ -58,3 +58,5 @@ jobs:
         run: |
           python core/timekeeper.py --checksum
           python -m core.timekeeper --tradition rhythm
+          python -m core.timekeeper --lang=nl
+          python -m core.timekeeper --help --lang=de

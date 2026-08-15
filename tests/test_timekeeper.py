@@ -207,5 +207,51 @@ class TestTimekeeper(unittest.TestCase):
         self.assertIn("Solar time", text)
 
 
+class TestParseLocalTime(unittest.TestCase):
+    def test_hhmm_and_hhmmss(self):
+        from datetime import datetime
+
+        from core.timekeeper import parse_local_time
+
+        when = parse_local_time("13:41")
+        self.assertEqual((when.hour, when.minute, when.second), (13, 41, 0))
+        self.assertEqual(when.date(), datetime.now().date())
+        when2 = parse_local_time("06:16:37")
+        self.assertEqual((when2.hour, when2.minute, when2.second), (6, 16, 37))
+
+    def test_invalid_times_raise(self):
+        from core.timekeeper import parse_local_time
+
+        for bad in ("25:00", "13", "abc", "13:99", "13:41:61", "9:5:6:7", ""):
+            with self.assertRaises(ValueError):
+                parse_local_time(bad)
+
+    def test_observe_solar_noon_at_specific_time(self):
+        import os
+        import tempfile
+
+        import core.anchor as anchor
+        from datetime import datetime
+
+        from core.timekeeper import Kairos, parse_local_time
+
+        fd, path = tempfile.mkstemp(suffix=".json")
+        os.close(fd)
+        os.remove(path)
+        old = anchor.OBS_FILE
+        anchor.OBS_FILE = path
+        try:
+            kairos = Kairos()
+            when = parse_local_time("13:41:09")
+            self.assertEqual(kairos.observe_solar_noon(when),
+                             "Solar noon recorded.")
+            last = anchor.get_last_observation("solar_noon")
+            self.assertEqual(datetime.fromisoformat(last["timestamp"]), when)
+        finally:
+            anchor.OBS_FILE = old
+            if os.path.exists(path):
+                os.remove(path)
+
+
 if __name__ == "__main__":
     unittest.main()

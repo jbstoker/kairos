@@ -1,41 +1,97 @@
-# Kairos Philosophy
+# The Kairos Philosophy
 
-**Time you observe, not time you obey.**
+## Time You Observe, Not Time You Obey
 
-Most time systems ask you to trust an unseen authority: a satellite, a
-network, a table someone else computed. Kairos asks the opposite. It starts
-from one simple fact — the sky is always there — and builds a time system
-you can verify with your own eyes, anywhere on Earth, without power, signal,
-or permission.
+Kairos is not a calendar. It is a *way of seeing time*.
 
-## Why "Kairos"
+Most calendars are inherited — built by empires, adjusted by popes, patched by politicians. They are useful tools, but they are not *true*. They drift. They correct. They forget.
 
-Ancient Greek had two words for time. *Chronos* is measured, uniform,
-mechanical — the ticking clock. *Kairos* is the opportune moment, the
-right time, time that has meaning. Kairos the project is about the second
-kind: time you experience, shaped by the sun, moon, and seasons you can
-actually see.
+Kairos does not drift. It does not correct. It simply *observes*.
 
-## The seven articles
+---
 
-The full commitments live in `CONSTITUTION.md`. The short version:
+### The Day — A Turning, Not a Number
 
-1. **Observation over Authority** — your eyes beat any database.
-2. **Offline by Default** — no internet, GPS, or cloud, ever required.
-3. **Modular and Optional** — time, food, energy: take what you need.
-4. **Open and Verifiable** — every calculation is public and auditable.
-5. **Forkable but Honest** — forks that add external authority must say so.
-6. **For All Humans** — child-simple, programmer-robust.
-7. **Gregorian as Reference, Not Center** — the conventional calendar is a
-   footnote, never the star.
+The seven days of the Kairos week are not named for gods or planets. They are named for what you can *feel* in the turning of the light:
 
-## Design notes
+| Day | Meaning |
+|-----|---------|
+| **Sundial** | Clarity, action, visibility |
+| **Well** | Reflection, rest, depth |
+| **Root** | Grounding, patience, endurance |
+| **Bloom** | Growth, connection, emergence |
+| **Forge** | Creation, transformation, will |
+| **Harvest** | Completion, gratitude, closure |
+| **Star** | Vision, dream, renewal |
 
-- **Anchors, not tables.** Kairos doesn't ship ephemeris tables. It anchors
-  to observations you record: sunrise and sunset (their midpoint is solar
-  noon), equal shadows, the shape of the moon, the turn of the seasons.
-- **Tradition as a lens.** The same observed sky can be read through a
-  Tartarian 13-month calendar, a Celtic tree calendar, a Vedic ritu, or a
-  Mesopotamian zodiac. The observation is yours; the lens is a choice.
-- **Fallibility is a feature.** If the sky is overcast, Kairos says so. It
-  never pretends to know more than you do.
+These are not prescribed. They are *observed*.
+
+---
+
+### The Months — Observed, Not Invented
+
+The thirteen months of Kairos are named for what is *happening* in the living world:
+
+| Month | Meaning |
+|-------|---------|
+| **Root Moon** | The earth breathes, roots deepen |
+| **Sap Moon** | Life stirs beneath the bark |
+| **Green Moon** | The first green shoots emerge |
+| **Bloom Moon** | Flowers open, bees return |
+| **Grain Moon** | Seeds are sown, intention is planted |
+| **Light Moon** | The sun is at its peak, light is fullest |
+| **Thirst Moon** | The dry heat, the longing for rain |
+| **Fruit Moon** | The first fruits ripen, abundance begins |
+| **Harvest Moon** | The full gathering of crops |
+| **Wine Moon** | The pressing of grapes, transformation |
+| **Leaf Moon** | Leaves turn and fall, release |
+| **Frost Moon** | The first frost, remembrance |
+| **Star Moon** | The clearest nights, the deepest sky |
+
+These are not arbitrary. They are *observable*.
+
+---
+
+### The Seasons — Qualities of Time
+
+The four seasons are not abstract labels. They are *qualities* of the turning year:
+
+| Season | Kairos Name | Meaning |
+|--------|-------------|---------|
+| Spring | **Emergence** | Life breaks through, light returns |
+| Summer | **Radiance** | Light is fullest, energy peaks |
+| Autumn | **Release** | The letting go, the turning inward |
+| Winter | **Stillness** | The deep rest, the root |
+
+These are *felt* — not taught.
+
+---
+
+### The Year — The Deep Anchor
+
+The year in Kairos is not the year of kings or religions.  
+It is the **Earth‑Age year** — the unbroken count from the beginning of our world:
+
+`4.54B / 2026.622`
+
+This number is *precise* — and it is *humble*.  
+It is based on the best current science, but it is configurable, because science evolves.
+
+---
+
+### Why This Matters
+
+Kairos is not a replacement for other calendars. It is a *companion*.  
+It offers a different way to feel time — one that is:
+
+- **Observable** — you can see it in the sky, the soil, the stars.
+- **Verifiable** — you can check it against your own eyes.
+- **Humble** — it does not claim to be the final word.
+- **Open** — you can adjust it, rename it, make it your own.
+
+We are not building a monument.  
+We are building a *mirror*.
+
+---
+
+> *“Kairos does not measure time. It invites you to observe it.”*
