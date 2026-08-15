@@ -1,0 +1,14 @@
+# Normalize line endings and mark binaries.
+* text=auto
+
+*.py text eol=lf
+*.js text eol=lf
+*.html text eol=lf
+*.css text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.ino text eol=lf
+*.h text eol=lf
+
+*.png binary
+*.bsp binary

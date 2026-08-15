@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [ "3.11", "3.12" ]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Cache Skyfield ephemeris
+        uses: actions/cache@v4
+        with:
+          path: ~/.skyfield
+          key: skyfield-de421-${{ runner.os }}-${{ hashFiles('core/celestial.py') }}
+
+      - name: Run tests
+        run: python -m pytest tests -q
+
+      - name: Check JavaScript syntax
+        run: |
+          for f in web/app.js web/kst_display.js web/help.js web/help_data.js web/sw.js web/lib/suncalc.js; do
+            node --check "$f"
+          done
+
+      - name: CLI smoke test
+        run: |
+          python core/timekeeper.py --checksum
+          python -m core.timekeeper --tradition rhythm

@@ -2,6 +2,9 @@
 
 **Time you observe, not time you obey.**
 
+[![CI](https://github.com/jbstoker/kairos/actions/workflows/ci.yml/badge.svg)](https://github.com/jbstoker/kairos/actions)
+[![License: GPLv3](https://img.shields.io/badge/license-GPLv3-blue.svg)](LICENSE)
+
 Kairos is an open-source, offline-first, observation-based time system. It
 works without GPS, internet, or precomputed tables, and it anchors itself
 to what you can actually see: the sun, the moon, the stars, and the
@@ -404,10 +407,13 @@ curl http://127.0.0.1:8000/api/checksum   # check + track (server)
 The PWA in `web/` is self-contained and installable (manifest + service
 worker). Open it two ways:
 
-```bash
-python web/server.py               # http://127.0.0.1:8000 (+ /api/kst, /api/now, /api/checksum)
-# or just open web/index.html directly — the offline SunCalc engine takes over
-```
+- **Live demo** (GitHub Pages, no install): https://jbstoker.github.io/kairos/
+  — the offline SunCalc engine runs entirely in your browser.
+- **Locally**:
+  ```bash
+  python web/server.py               # http://127.0.0.1:8000 (+ /api/kst, /api/now, /api/checksum)
+  # or just open web/index.html directly — the offline SunCalc engine takes over
+  ```
 
 - **Visual leadership** — Kairos Time is the primary display; Gregorian is
   a small footnote; the tradition is an optional layer.
