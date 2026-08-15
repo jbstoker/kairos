@@ -270,7 +270,7 @@ class Kairos:
         if data["solar_noon_method"]:
             noon = f"{data['solar_noon']} [{data['solar_noon_method']}]"
         else:
-            noon = "unset — record your shortest shadow"
+            noon = "unset — observe sunrise + sunset (or equal shadows) to calibrate"
         return "\n".join([
             f"Kairos — {data['tradition']}",
             f"  Solar time : {data['solar_time']}",

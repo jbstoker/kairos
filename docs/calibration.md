@@ -7,6 +7,11 @@ each one with tools you already have.
 
 Solar noon is when the sun crosses your local meridian — the moment your
 shadow is shortest and points due north (southern hemisphere: due south).
+The web app offers two easy ways to record it:
+
+- **🌅 Sunrise + 🌇 Sunset** — record both; the midpoint is solar noon.
+- **⚖️ Shadow = Stick** — press when a stick's shadow equals the stick,
+  once in the morning and once in the afternoon; the midpoint is noon.
 
 ### Method 1 — gnomon (recommended)
 
@@ -21,6 +26,13 @@ reading. A few noons in a row will give you a very good anchor.
 
 If you miss noon, note the times of sunrise and sunset; the midpoint is
 close to solar noon (adjusted for the equation of time).
+
+### Method 3 — equal shadows (fallback)
+
+A stick's shadow equals its height when the sun is at 45° altitude — twice
+each day, once in the morning and once in the afternoon. Record both
+moments; their midpoint is solar noon. This is the web app's
+"⚖️ Shadow = Stick" button.
 
 ### Notes
 

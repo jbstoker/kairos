@@ -62,8 +62,8 @@ independent of external authority.<ref name="constitution">{{cite web |title=Kai
 == Design ==
 === Observation over authority ===
 Rather than querying an ephemeris service or a network clock, Kairos
-anchors its time to observations recorded by the user: the moment a
-vertical shadow is shortest ([[solar noon]]), the apparent phase of the
+anchors its time to observations recorded by the user: the midpoint between
+sunrise and sunset ([[solar noon]]), the apparent phase of the
 Moon, and seasonal events such as first frost or leaf fall.<ref name="readme" /> These observations are stored locally in a [[JSON]] log and
 can override any computed prediction.<ref name="api" />
 

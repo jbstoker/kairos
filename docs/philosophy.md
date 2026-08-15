@@ -32,8 +32,8 @@ The full commitments live in `CONSTITUTION.md`. The short version:
 ## Design notes
 
 - **Anchors, not tables.** Kairos doesn't ship ephemeris tables. It anchors
-  to observations you record: the shortest shadow (solar noon), the shape of
-  the moon, the turn of the seasons.
+  to observations you record: sunrise and sunset (their midpoint is solar
+  noon), equal shadows, the shape of the moon, the turn of the seasons.
 - **Tradition as a lens.** The same observed sky can be read through a
   Tartarian 13-month calendar, a Celtic tree calendar, a Vedic ritu, or a
   Mesopotamian zodiac. The observation is yours; the lens is a choice.

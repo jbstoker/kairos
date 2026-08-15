@@ -8,7 +8,7 @@ Kairos is a small, importable Python library plus a zero-dependency web app.
 from core.timekeeper import Kairos
 
 kairos = Kairos("tartarian")          # or "celtic", "chinese", "vedic", ...
-kairos.observe_solar_noon()           # shortest shadow of the day
+kairos.observe_solar_noon()           # sunrise+sunset or equal-shadow midpoint
 kairos.observe_moon_phase("🌕")       # what you saw tonight
 kairos.observe_season_event("Summer") # what the land is doing
 

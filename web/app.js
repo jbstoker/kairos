@@ -144,7 +144,7 @@ function updateDisplay() {
         solarEl.textContent = solarTime;
         solarEl.title = solar
             ? 'Observed solar noon — your local solar time.'
-            : 'No observation yet — tap 📐 Shadow Shortest at true noon to see your local solar time.';
+            : 'No observation yet — record 🌅 Sunrise + 🌇 Sunset (or ⚖️ equal shadows) to see your local solar time.';
     }
     if (!window.__kstActive) {
         // KST (celestial engine) owns the moon display when it is live.
@@ -287,6 +287,35 @@ function downloadMomentImage() {
     if (status) status.textContent = '🖼️ Kairos moment image downloaded';
 }
 
+// --- Solar-noon calibration (Sunrise+Sunset / Equal Shadows) ---------------
+// The pure state machine lives in web/observation_methods.js; here we only
+// wire it to the UI and store the completed noon as an observation.
+function setObservationStatus(message, isSuccess) {
+    const status = document.getElementById('shadowStatus');
+    if (status) {
+        status.textContent = message;
+        status.classList.toggle('obs-success', !!isSuccess);
+    }
+}
+
+function saveSolarNoon(noonTime, method) {
+    saveObsAt('solar_noon', method, noonTime);
+    const nice = noonTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const label = method === 'equal_shadows' ? 'equal shadows' : 'sunrise + sunset';
+    setObservationStatus(`✅ Solar noon calculated: ${nice}`, true);
+    const status = document.getElementById('status');
+    if (status) status.textContent = `✅ Solar noon calibrated via ${label} — KST updated.`;
+}
+
+function saveObsAt(category, value, ts) {
+    const obs = loadObs();
+    if (!obs[category]) obs[category] = [];
+    obs[category].push({ timestamp: ts.toISOString(), value });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(obs));
+    updateDisplay();
+    if (window.refreshKST) window.refreshKST();
+}
+
 // --- Event Listeners ---
 document.querySelectorAll('#moonButtons button').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -296,10 +325,33 @@ document.querySelectorAll('#moonButtons button').forEach(btn => {
     });
 });
 
-document.getElementById('solarNoonBtn').addEventListener('click', () => {
-    saveObs('solar_noon', 'observed');
-    document.getElementById('status').textContent = '✅ Solar noon observed! KST calibrated.';
-    if (window.refreshKST) window.refreshKST();
+const kairosCalibrator = (window.KairosObservation && window.KairosObservation.createCalibrator)
+    ? window.KairosObservation.createCalibrator() : null;
+
+document.getElementById('sunriseBtn').addEventListener('click', () => {
+    if (!kairosCalibrator) return;
+    kairosCalibrator.recordSunrise(new Date());
+    setObservationStatus('✅ Sunrise recorded — press Sunset when the sun disappears.', true);
+});
+
+document.getElementById('sunsetBtn').addEventListener('click', () => {
+    if (!kairosCalibrator) return;
+    const r = kairosCalibrator.recordSunset(new Date());
+    if (r.status === 'need_sunrise') {
+        setObservationStatus('⚠️ Please record sunrise first.');
+        return;
+    }
+    saveSolarNoon(r.noon, 'sunrise_sunset');
+});
+
+document.getElementById('equalShadowBtn').addEventListener('click', () => {
+    if (!kairosCalibrator) return;
+    const r = kairosCalibrator.recordEqualShadow(new Date());
+    if (r.status === 'shadow_first') {
+        setObservationStatus('✅ First equal-shadow moment recorded — press again in the afternoon when the shadow matches again.', true);
+        return;
+    }
+    saveSolarNoon(r.noon, 'equal_shadows');
 });
 
 ['Spring', 'Summer', 'Autumn', 'Winter'].forEach(season => {

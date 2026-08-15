@@ -12,5 +12,5 @@ self-contained and need no files here. This folder is for people who want
 a third, very accurate reference without any network dependency.
 
 The project philosophy applies here too: predictions are suggestions.
-Your recorded observations — the shortest shadow, the moon's shape — are
-always the final authority.
+Your recorded observations — sunrise and sunset, equal shadows, the moon's
+shape — are always the final authority.

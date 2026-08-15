@@ -260,6 +260,43 @@ select {
 .energy-val { color: #f0c27f; font-weight: 600; }
 .energy-note { color: #b7c9e2; flex: 1 1 100%; }
 
+/* ---- Solar-noon observation methods ---- */
+#observationPanel {
+    background: #1e2632;
+    border-radius: 20px;
+    padding: 16px;
+    margin: 12px 0;
+    border: 1px solid #2a3442;
+}
+.obs-hint {
+    color: #8e9ab0;
+    font-size: 0.9rem;
+    margin: 0 0 8px;
+}
+.obs-buttons {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+.obs-buttons .action-btn { background: #2a3442; margin: 4px; }
+.obs-or {
+    color: #5a6a7c;
+    margin: 0 8px;
+    font-size: 0.85rem;
+}
+#shadowStatus {
+    margin-top: 12px;
+    font-size: 0.85rem;
+    color: #a0b3c9;
+    padding: 8px;
+    background: #141a24;
+    border-radius: 12px;
+    text-align: center;
+    transition: 0.2s;
+}
+#shadowStatus.obs-success { color: #5a8f4a; }
+
 /* ---- Seasonal layer ---- */
 .seasonal {
     margin-top: 18px;

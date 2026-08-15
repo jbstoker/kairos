@@ -54,8 +54,9 @@ Pins are defined in `config.h` — change them to match your board.
 
 ## Usage
 
-- Press the button when the shadow is shortest (solar noon). Do this a few
-  days in a row for a reliable anchor.
+- Press the button when the shadow is shortest (solar noon) — or use the web
+  app's Sunrise+Sunset / Equal-Shadows methods and copy the result. Do this a
+  few days in a row for a reliable anchor.
 - Moon phase and season can be set from the web app or serial input and, in a
   full build, synced to the device.
 

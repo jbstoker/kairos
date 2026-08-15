@@ -417,9 +417,11 @@ worker). Open it two ways:
 
 - **Visual leadership** — Kairos Time is the primary display; Gregorian is
   a small footnote; the tradition is an optional layer.
-- **Observation buttons** — "Shadow Shortest", the season buttons, and the
-  moon emojis store observations in `localStorage` and re-calibrate the
-  display instantly.
+- **Observation buttons** — calibrate solar noon two ways: 🌅 Sunrise + 🌇
+  Sunset (noon is the midpoint) or, as a fallback, ⚖️ Equal Shadows (press
+  when a stick's shadow equals the stick, morning and afternoon). Season
+  buttons and moon emojis store observations in `localStorage` and
+  re-calibrate the display instantly.
 - **Help panel (?)** — explains every number, the planets' positions and
   traditional meanings, today's energy (archetype, moon mood, element,
   festival, seasonal food), and the five elements.

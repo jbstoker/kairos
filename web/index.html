@@ -83,8 +83,18 @@
         <button data-emoji="🌘">🌘</button>
     </div>
 
+    <div id="observationPanel">
+        <p class="obs-hint">🌞 Calibrate your local solar time — two easy ways:</p>
+        <div class="obs-buttons">
+            <button class="action-btn" id="sunriseBtn">🌅 Sunrise</button>
+            <button class="action-btn" id="sunsetBtn">🌇 Sunset</button>
+            <span class="obs-or">or</span>
+            <button class="action-btn" id="equalShadowBtn">⚖️ Shadow = Stick</button>
+        </div>
+        <div id="shadowStatus">Press when the sun touches the horizon, or when your shadow equals the stick.</div>
+    </div>
+
     <div>
-        <button class="action-btn" id="solarNoonBtn">📐 Shadow Shortest</button>
         <button class="action-btn" id="seasonSpring">🌸 Spring</button>
         <button class="action-btn" id="seasonSummer">☀️ Summer</button>
         <button class="action-btn" id="seasonAutumn">🍂 Autumn</button>
@@ -214,6 +224,7 @@
 
 <script src="lib/suncalc.js"></script>
 <script src="planets.js"></script>
+<script src="observation_methods.js"></script>
 <script src="checksum_selfcheck.js"></script>
 <script src="seasonal_defaults.js"></script>
 <script src="app.js"></script>
