@@ -31,7 +31,7 @@ function makeEl(id) {
     if (id === 'tabNowBtn') classes.add('active');
     const e = {
         id: id,
-        hidden: (id === 'tabConfig'),
+        hidden: (id === 'tabConfig') || (id === 'tabNowBtn'),
         _classes: classes,
         classList: {
             add: (c) => e._classes.add(c),
@@ -70,6 +70,8 @@ function click(el) { handlers.forEach(fn => fn({ target: el })); }
 const state = () => JSON.stringify({
     nowHidden: elements.tabNow.hidden,
     cfgHidden: elements.tabConfig.hidden,
+    nowBtnHidden: elements.tabNowBtn.hidden,
+    cfgBtnHidden: elements.tabConfigBtn.hidden,
     nowActive: elements.tabNowBtn._classes.has('active'),
     cfgActive: elements.tabConfigBtn._classes.has('active'),
     switchTabType: typeof global.switchTab
@@ -98,6 +100,9 @@ class TestTabsWeb(unittest.TestCase):
         out = self._run()
         self.assertFalse(out["initial"]["nowHidden"])
         self.assertTrue(out["initial"]["cfgHidden"])
+        # On the Now view only the Configure button is visible (and vice versa):
+        self.assertTrue(out["initial"]["nowBtnHidden"])
+        self.assertFalse(out["initial"]["cfgBtnHidden"])
         self.assertTrue(out["initial"]["nowActive"])
         self.assertFalse(out["initial"]["cfgActive"])
         self.assertEqual(out["initial"]["switchTabType"], "function")
@@ -106,6 +111,9 @@ class TestTabsWeb(unittest.TestCase):
         out = self._run()
         self.assertTrue(out["afterConfig"]["nowHidden"])
         self.assertFalse(out["afterConfig"]["cfgHidden"])
+        # Now on Configure: only the Now button is visible.
+        self.assertFalse(out["afterConfig"]["nowBtnHidden"])
+        self.assertTrue(out["afterConfig"]["cfgBtnHidden"])
         self.assertFalse(out["afterConfig"]["nowActive"])
         self.assertTrue(out["afterConfig"]["cfgActive"])
 
@@ -113,6 +121,9 @@ class TestTabsWeb(unittest.TestCase):
         out = self._run()
         self.assertFalse(out["afterNow"]["nowHidden"])
         self.assertTrue(out["afterNow"]["cfgHidden"])
+        # Back on Now: only the Configure button is visible again.
+        self.assertTrue(out["afterNow"]["nowBtnHidden"])
+        self.assertFalse(out["afterNow"]["cfgBtnHidden"])
         self.assertTrue(out["afterNow"]["nowActive"])
 
     def test_non_tab_click_is_ignored(self):

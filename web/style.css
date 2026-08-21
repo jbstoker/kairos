@@ -366,6 +366,7 @@ select {
     border-color: #3a4658;
 }
 .tab-panel[hidden] { display: none; }
+.tab-btn[hidden] { display: none; }
 .config-section {
     background: #1e2632;
     border: 1px solid #2a3442;

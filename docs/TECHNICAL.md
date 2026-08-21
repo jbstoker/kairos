@@ -500,7 +500,9 @@ worker). Open it two ways:
   sheet (or downloads it as a PNG).
 - **Tidy, mobile-first layout** — the energy and In-season cards collapse
   (tap their headers), the **🌅 Now / ⚙️ Configure** tab bar sits at the
-  bottom, the observation matrix scales to 90% width, and the shared
+  bottom (only the inactive tab's button is visible, so the footer always
+  shows the way out of the current view), the observation matrix scales to
+  90% width, and the shared
   action buttons (Capture · Share) form one segmented toolbar.
 
 ## Data & file formats
