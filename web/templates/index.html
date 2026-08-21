@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title data-i18n="title">Kairos — Natural Time</title>
+    <link rel="manifest" href="site.webmanifest">
+    <link rel="icon" type="image/svg+xml" href="logo.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container" id="app">
+    <header class="kairos-planetary-header">
+        <button class="help-btn header-help" id="helpBtn" data-i18n-title="helpBtn.title" title="What does this mean?">?</button>
+        <div class="header-clock-wrapper">
+            <svg id="header-concentric-clock" viewBox="0 0 400 400" width="100%" height="100%">
+                <!-- Fixed Axis System: Vertical/Horizontal Realities -->
+                <line x1="200" y1="0" x2="200" y2="400" class="axis-line vertical" />   <!-- Top: SUNDOWN | Bottom: SUNRISE -->
+                <line x1="0" y1="200" x2="400" y2="200" class="axis-line horizontal" /> <!-- Left: NIGHT | Right: NOON -->
+
+                <!-- Structural Environmental Labels -->
+                <text x="200" y="25" text-anchor="middle" class="axis-lbl">SUNDOWN</text>
+                <text x="200" y="385" text-anchor="middle" class="axis-lbl">SUNRISE</text>
+                <text x="365" y="205" text-anchor="end" class="axis-lbl">NOON</text>
+                <text x="35" y="205" text-anchor="start" class="axis-lbl">NIGHT</text>
+
+                <!-- Concentric Radial Tracks: Diameters breathe in/out dynamically -->
+                <circle id="hdr-moon-ring" cx="200" cy="200" r="80" class="distance-ring moon-track" />
+                <circle id="hdr-sun-ring" cx="200" cy="200" r="140" class="distance-ring sun-track" />
+
+                <!-- Shifting Beads: Permanently locked to the vertical axis coordinate -->
+                <circle id="hdr-moon-bead" cx="200" cy="120" r="6" class="radial-bead moon-element" />
+                <circle id="hdr-sun-bead" cx="200" cy="60" r="10" class="radial-bead sun-element" />
+
+                <!-- Core Rosetta Anchor (The Machine Clock Interface) -->
+                <g class="center-rosetta-anchor">
+                    <circle cx="200" cy="200" r="28" class="anchor-bg" />
+                    <text x="200" y="205" id="gregorian-clock-readout" text-anchor="middle">00:00</text>
+                </g>
+            </svg>
+        </div>
+
+        <div class="manifesto-layer">
+            <p class="wish-statement">Faith returned to the entity that feeds all us animals.</p>
+            <button id="eye-override-trigger" class="header-sensory-btn">Re-Anchor to My Eyes</button>
+        </div>
+    </header>
+
+    <div class="tabs">
+        <button class="tab-btn active" id="tabNowBtn" data-tab="now" data-i18n="tabs.now">🌅 Now</button>
+        <button class="tab-btn" id="tabConfigBtn" data-tab="config" data-i18n="tabs.configure">⚙️ Configure</button>
+    </div>
+
+    <!-- Tab: the top view — what the sky is saying now -->
+    <div class="tab-panel" id="tabNow">
+
+    <div class="display">
+        <div class="time" id="solarTime">--:--</div>
+        <div class="moon" id="moonDisplay">🌑</div>
+        <div class="season" id="seasonDisplay" data-i18n="display.observing">Observing...</div>
+        <div class="calendar" id="calendarDisplay"></div>
+        <div class="calendar" id="noonDisplay"></div>
+    </div>
+
+    <!-- Kairos Time (KST) — the primary display. All else is a reference. -->
+    <div class="kst-primary" id="kstDisplay">--:-- · -- · -- · -- · --</div>
+    <div class="kst-gregorian" id="gregorian">(Gregorian: --)</div>
+    <div class="kst-tradition" id="traditionDisplay">--</div>
+    <div class="kst-actions">
+        <button class="action-btn" id="captureBtn" data-i18n="action.capture" data-i18n-title="action.capture.title" title="Take a photo and stamp it with this Kairos moment">📸 Capture Moment</button>
+        <button class="action-btn" id="shareBtn" data-i18n="action.share" data-i18n-title="action.share.title" title="Export this moment as text or image">📤 Share This Moment</button>
+    </div>
+    <div class="kst-wheel" id="kstWheel">
+        <div class="sun-indicator" id="sunIndicator">☀️</div>
+    </div>
+    <div class="kst-display">
+        <div class="kst-row"><span data-i18n="kst.solar_longitude">🌞 Solar Longitude</span><span id="solarLongitude">--°</span></div>
+        <div class="kst-row"><span data-i18n="kst.lunar_age">🌙 Lunar Age</span><span id="lunarAge">-- days</span></div>
+        <div class="kst-row"><span data-i18n="kst.sidereal_time">🌀 Sidereal Time</span><span id="siderealDisplay">--:--</span></div>
+        <div class="kst-row"><span data-i18n="kst.visible_star">⭐ Visible Star</span><span id="starDisplay">--</span></div>
+        <div class="kst-row"><span data-i18n="kst.celestial_season">🌍 Celestial Season</span><span id="kstSeason">--</span></div>
+        <div class="kst-row"><span data-i18n="kst.planets">🪐 Planets</span><span id="planetDisplay">--</span></div>
+    </div>
+
+    <!-- Today's energy -->
+    <div class="energy-card" id="energyCard"></div>
+
+    <!-- In season now — filters and editing live in the ⚙️ Configure tab -->
+    <div class="seasonal">
+        <div class="seasonal-head">
+            <span class="seasonal-title"><span data-i18n="seasonal.in_season">🌿 In season</span> · <b id="seasonalSeasonLabel">--</b></span>
+            <button class="seasonal-tune" id="seasonalTuneBtn" data-i18n="seasonal.tune" data-i18n-title="seasonal.tune.title" title="Filters and editing">⚙️ tune</button>
+        </div>
+        <div class="seasonal-container" id="seasonalContainer">
+            <span class="seasonal-note" data-i18n="seasonal.looking_up">Looking up the sky…</span>
+        </div>
+    </div>
+
+    <div class="checksum-line" id="checksumLine" data-i18n="checksum.computing"
+         data-i18n-title="checksum.title"
+         title="This offset is expected and stable. It does not indicate an error — it reflects the difference between the Earth-age epoch and the current precessional phase. The self-check keeps watching it so drift never happens silently.">🔭 Precession offset: computing…</div>
+    </div><!-- /tabNow -->
+
+    <!-- Tab: configuration -->
+    <div class="tab-panel" id="tabConfig" hidden>
+        <div class="config-section">
+            <h3 data-i18n="config.tradition">🕰️ Your tradition</h3>
+            <p class="config-hint" data-i18n="config.tradition_hint">Read the same observed sky through a different calendar lens.</p>
+            <select id="traditionSelect">
+                <option value="rhythm">🌗 Rhythm</option>
+                <option value="tartarian">🌌 Tartarian</option>
+                <option value="celtic">🌿 Celtic</option>
+                <option value="chinese">🐉 Chinese</option>
+                <option value="vedic">🕉️ Vedic</option>
+                <option value="mesopotamian">🏛️ Mesopotamian</option>
+                <option value="mystical">🔮 Mystical</option>
+            </select>
+        </div>
+
+        <div class="config-section">
+            <h3 data-i18n="config.language">🌐 Language</h3>
+            <p class="config-hint" data-i18n="config.language_hint">Choose the language of this app.</p>
+            <select id="languageSelect"></select>
+        </div>
+
+        <div class="config-section">
+            <h3 data-i18n="config.seasonal_filters">🌿 Seasonal filters & editing</h3>
+            <p class="config-hint" data-i18n="config.seasonal_filters_hint">Choose which items appear in "In season" on the Now tab.</p>
+            <div class="seasonal-filters">
+                <select id="seasonalTradition" data-i18n-title="config.tradition_filter" title="Tradition filter">
+                    <option value="all" data-i18n="config.all_traditions">All traditions</option>
+                </select>
+                <select id="seasonalRegion" data-i18n-title="config.region_filter" title="Region filter">
+                    <option value="auto" data-i18n="config.auto_region">Auto region</option>
+                </select>
+            </div>
+            <div class="seasonal-add">
+                <button class="action-btn" id="addProduceBtn" data-i18n="config.add_produce">➕ Add Produce</button>
+                <button class="action-btn" id="addFestivalBtn" data-i18n="config.add_festival">➕ Add Festival</button>
+            </div>
+        </div>
+
+        <div class="config-section">
+            <h3 data-i18n="config.calibrate">🌞 Calibrate your local solar time</h3>
+            <p class="config-hint" data-i18n="config.calibrate_hint">Press 🌅 Sunrise when the sun touches the horizon and 🌇 Sunset when it disappears — or use a stick: press ⚖️ Shadow = Stick when the shadow matches the stick (morning and afternoon).</p>
+            <div class="obs-grid">
+                <button class="action-btn" id="sunriseBtn" data-i18n="config.sunrise">🌅 Sunrise</button>
+                <button class="action-btn" id="sunsetBtn" data-i18n="config.sunset">🌇 Sunset</button>
+            </div>
+            <button class="action-btn obs-wide" id="equalShadowBtn" data-i18n="config.equal_shadow">⚖️ Shadow = Stick</button>
+            <div id="shadowStatus" data-i18n="config.shadow_status">Press when the sun touches the horizon, or when your shadow equals the stick.</div>
+
+            <div class="enter-times">
+                <div class="enter-times-head" data-i18n="config.enter_times">📝 Or enter observed times</div>
+                <div class="enter-times-grid">
+                    <label class="enter-field">🌅 <span data-i18n="config.sunrise">Sunrise</span>
+                        <input type="time" id="enterSunrise">
+                    </label>
+                    <label class="enter-field">🌇 <span data-i18n="config.sunset">Sunset</span>
+                        <input type="time" id="enterSunset">
+                    </label>
+                    <button class="action-btn" id="enterTimesBtn" data-i18n="config.use_times">💾 Use these times</button>
+                </div>
+                <div class="enter-times-grid">
+                    <label class="enter-field">☀️ <span data-i18n="config.solar_noon">Solar noon (culmination)</span>
+                        <input type="time" id="enterNoon">
+                    </label>
+                    <button class="action-btn" id="enterNoonBtn" data-i18n="config.set_noon">💾 Set solar noon</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="config-section">
+            <h3 data-i18n="config.observe_moon">🌙 Observe the moon</h3>
+            <p class="config-hint" data-i18n="config.observe_moon_hint">Tap the emoji that matches what you see.</p>
+            <div class="moon-grid" id="moonButtons">
+                <button data-emoji="🌑">🌑</button>
+                <button data-emoji="🌒">🌒</button>
+                <button data-emoji="🌓">🌓</button>
+                <button data-emoji="🌔">🌔</button>
+                <button data-emoji="🌕">🌕</button>
+                <button data-emoji="🌖">🌖</button>
+                <button data-emoji="🌗">🌗</button>
+                <button data-emoji="🌘">🌘</button>
+            </div>
+        </div>
+
+        <div class="config-section">
+            <h3 data-i18n="config.observe_season">🍂 Observe the season</h3>
+            <p class="config-hint" data-i18n="config.observe_season_hint">Press the season that feels right.</p>
+            <div class="season-grid">
+                <button class="action-btn" id="seasonSpring" data-i18n="season_button.Spring">🌸 Spring</button>
+                <button class="action-btn" id="seasonSummer" data-i18n="season_button.Summer">☀️ Summer</button>
+                <button class="action-btn" id="seasonAutumn" data-i18n="season_button.Autumn">🍂 Autumn</button>
+                <button class="action-btn" id="seasonWinter" data-i18n="season_button.Winter">❄️ Winter</button>
+            </div>
+        </div>
+    </div><!-- /tabConfig -->
+
+    <div class="status" id="status" data-i18n="app.ready">Ready.</div>
+    <div class="footer" data-i18n="footer">Kairos — no GPS, no internet, just you and the sky</div>
+    <div class="footer community-footer" data-i18n-html="footer.community">🌍 Join the community — share your <b>#KairosTime</b> · <a href="https://github.com/jbstoker/kairos" target="_blank" rel="noopener noreferrer">github.com/jbstoker/kairos</a></div>
+</div>
+
+
+<!-- Help / info modal -->
+<div class="modal-overlay" id="helpModal" hidden>
+    <div class="modal">
+        <div class="modal-head">
+            <h2 data-i18n="help.modal_title">Kairos — what am I looking at?</h2>
+            <button class="modal-close" id="helpClose" data-i18n-title="close" title="Close">✕</button>
+        </div>
+        <div class="modal-body" id="helpBody"></div>
+        <div class="modal-foot" data-i18n="help.foot">
+            Kairos is observation-first. These are hints from the sky — the sky you
+            actually see is always the authority.
+        </div>
+    </div>
+</div>
+
+<!-- Seasonal item detail modal -->
+<div class="modal-overlay" id="seasonalModal" hidden>
+    <div class="modal">
+        <div class="modal-head">
+            <h2 id="seasonalModalTitle" data-i18n="seasonal.title">Item</h2>
+            <button class="modal-close" id="seasonalClose" data-i18n-title="close" title="Close">✕</button>
+        </div>
+        <div class="modal-body" id="seasonalModalBody"></div>
+    </div>
+</div>
+
+<!-- Add-your-own seasonal item modal -->
+<div class="modal-overlay" id="addSeasonalModal" hidden>
+    <div class="modal">
+        <div class="modal-head">
+            <h2 data-i18n="seasonal.add_own">➕ Add your own</h2>
+            <button class="modal-close" id="addClose" data-i18n-title="close" title="Close">✕</button>
+        </div>
+        <div class="modal-body">
+            <label class="add-field" data-i18n="add.kind">Kind
+                <select id="addKind">
+                    <option value="produce" data-i18n="add.kind_produce">Produce (food, herb, mushroom, meat)</option>
+                    <option value="festival" data-i18n="add.kind_festival">Festival / celebration</option>
+                </select>
+            </label>
+            <label class="add-field" data-i18n="add.name">Name *
+                <input id="addName" type="text" data-i18n-placeholder="add.name_placeholder" placeholder="e.g. Nettle">
+            </label>
+            <label class="add-field" id="addCategoryRow" data-i18n="add.category">Category
+                <select id="addCategory">
+                    <option data-i18n="category.fruit">fruit</option><option data-i18n="category.vegetable">vegetable</option><option data-i18n="category.herb">herb</option>
+                    <option data-i18n="category.fungus">fungus</option><option data-i18n="category.meat">meat</option><option data-i18n="category.other">other</option>
+                </select>
+            </label>
+            <div id="produceFields">
+                <label class="add-field" data-i18n="add.in_season">In season (Kairos season)
+                    <select id="addProduceSeason">
+                        <option value="Emergence" data-i18n="kairos_season.Emergence">Emergence (Spring)</option>
+                        <option value="Radiance" data-i18n="kairos_season.Radiance">Radiance (Summer)</option>
+                        <option value="Release" data-i18n="kairos_season.Release">Release (Autumn)</option>
+                        <option value="Stillness" data-i18n="kairos_season.Stillness">Stillness (Winter)</option>
+                    </select>
+                </label>
+                <label class="add-field" data-i18n="add.uses">Uses
+                    <input id="addUses" type="text" data-i18n-placeholder="add.uses_placeholder" placeholder="fresh, sauces, …">
+                </label>
+                <label class="add-field" data-i18n="add.how_to_find">How to find
+                    <input id="addHowToFind" type="text" data-i18n-placeholder="add.how_to_find_placeholder" placeholder="grows near…">
+                </label>
+            </div>
+            <div id="festivalFields" hidden>
+                <label class="add-field" data-i18n="seasonal.field.season">Season
+                    <select id="addFestivalSeason">
+                        <option value="Emergence" data-i18n="kairos_season.Emergence">Emergence (Spring)</option>
+                        <option value="Radiance" data-i18n="kairos_season.Radiance">Radiance (Summer)</option>
+                        <option value="Release" data-i18n="kairos_season.Release">Release (Autumn)</option>
+                        <option value="Stillness" data-i18n="kairos_season.Stillness">Stillness (Winter)</option>
+                    </select>
+                </label>
+                <label class="add-field" data-i18n="add.activities">Activities
+                    <input id="addActivities" type="text" data-i18n-placeholder="add.activities_placeholder" placeholder="bonfires, feasting">
+                </label>
+                <label class="add-field" data-i18n="add.foods">Foods
+                    <input id="addFoods" type="text" data-i18n-placeholder="add.foods_placeholder" placeholder="bread, wine">
+                </label>
+            </div>
+            <label class="add-field" data-i18n="add.regions">Regions (comma-separated)
+                <input id="addRegions" type="text" data-i18n-placeholder="add.regions_placeholder" placeholder="temperate, forest">
+            </label>
+            <label class="add-field" data-i18n="add.traditions">Traditions (comma-separated)
+                <input id="addTraditions" type="text" data-i18n-placeholder="add.traditions_placeholder" placeholder="global">
+            </label>
+            <label class="add-field" data-i18n="add.description">Description
+                <textarea id="addDescription" rows="2"></textarea>
+            </label>
+            <label class="add-field" data-i18n="add.emoji">Emoji
+                <input id="addImage" type="text" data-i18n-placeholder="add.emoji_placeholder" placeholder="🍅" maxlength="8">
+            </label>
+            <button class="action-btn" id="saveAddBtn" data-i18n="add.save">💾 Save</button>
+        </div>
+    </div>
+</div>
+
+
+<!-- Share modal -->
+<div class="modal-overlay" id="shareModal" hidden>
+    <div class="modal">
+        <div class="modal-head">
+            <h2 data-i18n="share.title">📤 Share this moment</h2>
+            <button class="modal-close" id="shareClose" data-i18n-title="close" title="Close">✕</button>
+        </div>
+        <div class="modal-body">
+            <div id="sharePreview" hidden>
+                <img id="capturedImage" data-i18n-alt="share.alt_moment" alt="Your moment">
+                <div class="overlay-text" id="momentText">Living in …</div>
+            </div>
+            <textarea id="shareText" readonly rows="5"></textarea>
+            <div class="share-actions">
+                <button class="action-btn" id="copyShareBtn" data-i18n="share.copy">📋 Copy</button>
+                <button class="action-btn" id="imageShareBtn" data-i18n="share.download">🖼️ Download image</button>
+                <button class="action-btn" id="shareImageBtn" hidden data-i18n="share.photo">📤 Share photo</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="i18n.js"></script>
+<script src="lib/suncalc.js"></script>
+<script src="planets.js"></script>
+<script src="observation_methods.js"></script>
+<script src="checksum_selfcheck.js"></script>
+<script src="tabs.js"></script>
+<script src="seasonal_defaults.js"></script>
+<script src="phytochemical_defaults.js"></script>
+<script src="app.js"></script>
+<script src="seasonal_display.js"></script>
+<script src="phytochemical_display.js"></script>
+<script src="help_data.js"></script>
+<script src="help.js"></script>
+<script src="kst_display.js"></script>
+<script src="static/js/canvas.js"></script>
+</body>
+</html>

@@ -9,7 +9,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from flask import Flask, jsonify, request, send_from_directory  # noqa: E402
+from flask import Flask, jsonify, render_template, request, send_from_directory  # noqa: E402
 
 from core.timekeeper import Kairos  # noqa: E402
 
@@ -31,6 +31,36 @@ _kairos = _make_kairos()
 
 
 @app.route("/")
+def index():
+    """The main view — the radial planetary header + the classic Kairos body."""
+    return render_template("index.html")
+
+
+@app.route("/api/radial")
+def api_radial():
+    """Raw radial distance factors for the header gauge.
+
+    Computed by core/astronomy.CelestialRadialMetrics from the true
+    astronomical anomaly equations; the raw floats are streamed straight to
+    the front-end render loop (web/static/js/canvas.js). Query param ``ts``
+    pins a unix timestamp for deterministic frames/testing.
+    """
+    import time as _time
+    from datetime import datetime
+
+    from core.astronomy import CelestialRadialMetrics
+
+    ts = request.args.get("ts", None, type=float)
+    ts = ts if ts is not None else _time.time()
+    metrics = CelestialRadialMetrics()
+    return jsonify({
+        "timestamp": int(ts),
+        "gregorian": datetime.now().strftime("%H:%M:%S"),
+        "sun_radial": metrics.get_sun_distance_factor(ts),
+        "moon_radial": metrics.get_moon_distance_factor(ts),
+    })
+
+
 @app.route("/<path:filename>")
 def serve(filename="index.html"):
     return send_from_directory(WEB_DIR, filename)

@@ -832,3 +832,111 @@ select {
 .planet-glyph { color: #f0c27f; font-weight: 600; min-width: 92px; }
 .planet-sign { color: #b7c9e2; }
 .planet-meaning { color: #8e9ab0; flex: 1 1 100%; font-size: 0.84rem; }
+
+/* ---- Radial planetary header (non-crossing axis gauge) ---- */
+.kairos-planetary-header {
+    position: relative;
+    margin: 0 0 20px;
+    padding: 18px 16px 14px;
+    background: radial-gradient(circle at 50% 40%, #1a2230 0%, #0e131b 100%);
+    border: 1px solid #2a3442;
+    border-radius: 28px;
+    text-align: center;
+}
+
+.header-help {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+}
+
+.header-clock-wrapper {
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+#header-concentric-clock {
+    display: block;
+}
+
+.axis-line {
+    stroke: rgba(255, 255, 255, 0.14);
+    stroke-width: 1;
+    stroke-dasharray: 3 7;
+}
+
+.axis-lbl {
+    fill: rgba(212, 217, 230, 0.5);
+    font-size: 11px;
+    letter-spacing: 2px;
+}
+
+.distance-ring {
+    fill: none;
+    stroke-width: 1.5;
+    transition: r 1.2s linear;
+}
+
+.sun-track { stroke: rgba(240, 194, 127, 0.35); }
+.moon-track { stroke: rgba(160, 190, 230, 0.35); }
+
+.radial-bead {
+    transition: cy 1s linear;
+}
+
+.sun-element {
+    fill: #f5c56b;
+    filter: drop-shadow(0 0 8px rgba(245, 197, 107, 0.5));
+}
+
+.moon-element {
+    fill: #cfe0f5;
+    filter: drop-shadow(0 0 6px rgba(207, 224, 245, 0.4));
+}
+
+.anchor-bg {
+    fill: #0b0e14;
+    stroke: rgba(245, 230, 196, 0.3);
+    stroke-width: 1;
+}
+
+#gregorian-clock-readout {
+    fill: #f5e6c4;
+    font-size: 15px;
+    font-weight: 300;
+    letter-spacing: 1px;
+    font-variant-numeric: tabular-nums;
+}
+
+.manifesto-layer {
+    margin-top: 10px;
+}
+
+.wish-statement {
+    font-size: 0.82rem;
+    font-style: italic;
+    color: #8e9ab0;
+    margin-bottom: 8px;
+}
+
+.header-sensory-btn {
+    background: #2a3442;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 999px;
+    color: #d4d9e6;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.header-sensory-btn:hover {
+    background: #3a4658;
+    transform: scale(1.03);
+}
+
+.header-sensory-btn:active {
+    transform: scale(0.96);
+}
+
