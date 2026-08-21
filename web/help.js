@@ -2,10 +2,10 @@
 // Renders the "?" modal (KST explanations, planet meanings, energy) and
 // the "today's energy" card in the main display.
 
-// i18n helpers — web/i18n.js is loaded before this script.
-const I18n = (typeof window !== 'undefined' && window.KairosI18n) || null;
-const t = I18n ? I18n.t.bind(I18n) : (key, vars) => key;
-const trName = I18n ? I18n.trName.bind(I18n) : (prefix, name) => name;
+// i18n helpers — web/i18n.js + web/app.js are loaded before this script.
+// app.js already declares the global `I18n`, `t` and `trName` in the shared
+// global lexical scope; redeclaring any of them here would throw
+// "SyntaxError: redeclaration of const I18n" in classic-script browsers.
 
 function kairosDayOfYear() {
     const now = new Date();

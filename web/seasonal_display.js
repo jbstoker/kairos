@@ -128,10 +128,10 @@
                 opt.textContent = TRADITION_LABELS[current] + ' ' + t('seasonal.this_app');
                 tradSel.appendChild(opt);
             }
-            Array.from(traditions).sort().forEach(t => {
+            Array.from(traditions).sort().forEach(trad => {
                 const opt = document.createElement('option');
-                opt.value = t;
-                opt.textContent = (t === 'global') ? t('seasonal.global') : (TRADITION_LABELS[t] || t);
+                opt.value = trad;
+                opt.textContent = (trad === 'global') ? t('seasonal.global') : (TRADITION_LABELS[trad] || trad);
                 tradSel.appendChild(opt);
             });
         }
