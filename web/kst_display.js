@@ -207,7 +207,7 @@
         const doy = kairosDayOfYear(now);
         const kd = kairosDate(doy);
         const kairosSeason = KAIROS_SEASONS[season] || season;
-        const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+        const timeStr = primaryTime(now);
         const yearStr = formatYear(getEarthAge(now));
         const dayIcon = DAY_ICONS[kd.weekday] || '';
         const seasonIcon = SEASON_ICONS[kairosSeason] || '';
@@ -280,6 +280,13 @@
     const SEASON_COLORS = {
         Spring: '#4a6fa5', Summer: '#5a8f4a', Autumn: '#d4a54a', Winter: '#8a7a6a'
     };
+
+    // ---- Primary display time: the solar position, not the wall clock ---------
+    // "12:00 (180.0°)" — time as a position (web/static/js/solar_time.js).
+    function primaryTime(now) {
+        if (typeof getKairosTimeDisplay === 'function') return getKairosTimeDisplay();
+        return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+    }
 
     function renderKST(data) {
         if (!data) return;

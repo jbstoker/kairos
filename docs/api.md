@@ -272,6 +272,12 @@ annular eclipses become visible when the bodies share an angular vector.
   targets (action buttons, moon emoji grid, chips, tab bar) and delegated
   double-tap-zoom prevention. Selectors target the consolidated `#kstDisplay`
   layout.
+- `web/static/js/solar_time.js` — the solar-time engine (FINAL PRIMARY
+  DISPLAY FORMAT): `getSolarDegrees()` (fraction of day × 360°),
+  `degreesToKairosTime(deg)`, `getKairosTimeDisplay()` → `"12:00 (180.0°)"`
+  and `getGregorianTime()`. `kst_display.js` uses it for the primary line:
+  `"12:00 (180.0°) · ⛲Well · Harvest Moon 9 · ☀️Radiance · 4.54B / 2026.635"` —
+  time is a *position*.
 - `web/static/js/unified_display.js` — the FINAL UNIFIED HEADER layer: the
   compact `#tradition-selector` in the kstDisplay header (synced with the
   Configure tab's `#traditionSelect`) plus the tradition-aware primary line —

@@ -10,7 +10,7 @@
 //     newly deployed app takes control of already-open tabs right away, and
 //     any older cache versions are deleted.
 
-const CACHE_NAME = 'kairos-v20';
+const CACHE_NAME = 'kairos-v21';
 const APP_SHELL = [
     'index.html', 'style.css', 'static/css/mobile.css', 'i18n.js', 'app.js',
     'checksum_selfcheck.js',
@@ -20,7 +20,8 @@ const APP_SHELL = [
     'lib/suncalc.js', 'manifest.json', 'site.webmanifest', 'logo.svg',
     'favicon-16x16.png', 'favicon-32x32.png', 'apple-touch-icon.png',
     'icon-192.png',
-    'static/js/astronomy_engine.js', 'static/js/canvas_renderer.js',
+    'static/js/solar_time.js', 'static/js/astronomy_engine.js',
+    'static/js/canvas_renderer.js',
     'static/js/app_controller.js', 'static/js/unified_display.js',
     'static/js/mobile.js'
 ];

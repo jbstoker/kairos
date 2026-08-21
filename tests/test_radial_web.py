@@ -63,6 +63,7 @@ class TestRadialApi(unittest.TestCase):
 
         self.assertIn('id="observed-date-label"', html)
         self.assertIn('id="tradition-selector"', html)
+        self.assertIn('<script src="static/js/solar_time.js"></script>', html)
         self.assertIn('<script src="static/js/unified_display.js"></script>',
                       html)
         # Geometrically placed fixed axis labels:
@@ -103,6 +104,9 @@ class TestRadialApi(unittest.TestCase):
         unified_js = self.client.get("/static/js/unified_display.js")
         self.assertEqual(unified_js.status_code, 200)
         self.assertIn(b"getSelectedTradition", unified_js.data)
+        solar_js = self.client.get("/static/js/solar_time.js")
+        self.assertEqual(solar_js.status_code, 200)
+        self.assertIn(b"getKairosTimeDisplay", solar_js.data)
 
     def test_unified_display_builds_real_tradition_line(self):
         """The primary line adapts to the selected tradition using the app's
@@ -118,7 +122,7 @@ class TestRadialApi(unittest.TestCase):
             "global.dayOfYear = () => 245;\n"
             "global.traditionDate = (doy, trad) => { if (trad.months === 13) { if (doy > 364) return { month: trad.yearDay, day: doy - 364 }; const m = Math.floor((doy - 1) / 28); return { month: trad.names[m], day: ((doy - 1) % 28) + 1 }; } return { month: trad.names[0], day: 1 }; };\n"
             "const ud = require('./web/static/js/unified_display.js');\n"
-            "const kairos = '14:32 · ⌛ Sundial · Bloom Moon 16 · ☀️ Radiance · 4.54B / 2026.624';\n"
+            "const kairos = '12:00 (180.0°) · ⌛ Sundial · Bloom Moon 16 · ☀️ Radiance · 4.54B / 2026.624';\n"
             "window.updateDisplay(kairos, 'tartarian');\n"
             "const tartarianLine = lineText;\n"
             "window.updateDisplay(kairos, 'rhythm');\n"
@@ -131,14 +135,15 @@ class TestRadialApi(unittest.TestCase):
                               text=True, encoding="utf-8", cwd=REPO_ROOT)
         self.assertEqual(proc.returncode, 0, proc.stderr)
         out = json.loads(proc.stdout)
-        # Day 245 in a 13×28 calendar = Telluris (month 8) day 21.
-        self.assertTrue(out["tartarian"].startswith("14:32 · 🌌 "))
+        # Day 245 in a 13×28 calendar = Telluris (month 8) day 21; the solar
+        # position ("12:00 (180.0°)") leads the tradition line unchanged.
+        self.assertTrue(out["tartarian"].startswith("12:00 (180.0°) · 🌌 "))
         self.assertIn("Telluris 21", out["tartarian"])
         self.assertIn("Radiance", out["tartarian"])
         self.assertIn("2026.624", out["tartarian"])
         # The Kairos (rhythm) lens passes the line through unchanged.
         self.assertEqual(out["rhythm"],
-                         "14:32 · ⌛ Sundial · Bloom Moon 16 · ☀️ Radiance · 4.54B / 2026.624")
+                         "12:00 (180.0°) · ⌛ Sundial · Bloom Moon 16 · ☀️ Radiance · 4.54B / 2026.624")
 
 
 if __name__ == "__main__":

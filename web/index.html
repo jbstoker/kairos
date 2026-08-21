@@ -46,8 +46,9 @@
             </div>
         </div>
 
-        <!-- The Kairos Time one-line (wall clock · day · month · season · year) -->
-        <div class="kst-primary-line" id="kstDisplayLine">--:-- · -- · -- · -- · --</div>
+        <!-- The Kairos Time one-line (solar position · day · month · season · year).
+             "12:00 (180.0°) · ⛲Well · Harvest Moon 9 · ☀️Radiance · 4.54B / 2026.635" -->
+        <div class="kst-primary-line" id="kstDisplayLine">--:-- (--.-°) · -- · -- · -- · --</div>
 
         <!-- Master Unified Astronomical Viewport -->
         <div class="spatial-matrix-wrapper">
@@ -374,6 +375,7 @@
 <script src="phytochemical_display.js"></script>
 <script src="help_data.js"></script>
 <script src="help.js"></script>
+<script src="static/js/solar_time.js"></script>
 <script src="kst_display.js"></script>
 <script src="static/js/astronomy_engine.js"></script>
 <script src="static/js/canvas_renderer.js"></script>
