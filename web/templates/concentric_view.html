@@ -1,25 +1,32 @@
-<!-- Kairos concentric observation matrix — counter-clockwise orbit layout.
+<!-- Kairos 24-hour spatial matrix — true elliptical orbits (counter-clockwise).
      This fragment is the canonical source; the identical markup is injected
-     into web/index.html under the main tabs (Now panel) so it renders on
-     both Flask and GitHub Pages (static hosting). -->
-<div class="kairos-spatial-container">
-    <svg id="kairos-observation-matrix" viewBox="0 0 800 800" width="100%" height="100%">
-        <!-- Structural Axis Bars -->
-        <line x1="400" y1="0" x2="400" y2="800" class="matrix-axis-line" /> <!-- Noon to Night -->
-        <line x1="0" y1="400" x2="800" y2="400" class="matrix-axis-line" /> <!-- Sunset to Sunrise -->
+     into web/index.html inside the #kstDisplay unified spatial panel. -->
+<div class="spatial-matrix-wrapper">
+    <svg id="kairos-observation-matrix" viewBox="0 0 800 800" style="width:100%; max-width:600px; height:auto;">
+        <!-- Axis Crosshairs (Defining the 4 Solar Turning Quadrants) -->
+        <line x1="400" y1="20" x2="400" y2="780" stroke="#1a1a1a" stroke-width="2" /> <!-- Noon (Top) to Night (Bottom) -->
+        <line x1="20" y1="400" x2="780" y2="400" stroke="#1a1a1a" stroke-width="2" /> <!-- Sunset (Left) to Sunrise (Right) -->
 
-        <!-- Elastic Orbital Guide Tracks -->
-        <circle id="sun-track-vector" cx="400" cy="400" r="160" class="orbit-path inner-layer" />
-        <circle id="moon-track-vector" cx="400" cy="400" r="280" class="orbit-path outer-layer" />
+        <!-- Geometrically Placed Fixed Labels (Matching the Sketch Layout) -->
+        <text x="400" y="45" text-anchor="middle" fill="#fff" font-size="18" font-weight="600" letter-spacing="1">NOON</text>
+        <text x="755" y="406" text-anchor="start" fill="#fff" font-size="18" font-weight="600" letter-spacing="1">SUNRISE</text>
+        <text x="400" y="770" text-anchor="middle" fill="#fff" font-size="18" font-weight="600" letter-spacing="1">NIGHT / MIDNIGHT</text>
+        <text x="45" y="406" text-anchor="end" fill="#fff" font-size="18" font-weight="600" letter-spacing="1">SUNDOWN / SUNSET</text>
 
-        <!-- Moving Observation Spheres -->
-        <circle id="sun-bead-node" cx="400" cy="240" r="15" class="celestial-node sun-element" />
-        <circle id="moon-bead-node" cx="400" cy="120" r="11" class="celestial-node moon-element" />
+        <!-- True Elastic Elliptical Orbits (Rx and Ry stretch dynamically) -->
+        <!-- Transform rotates the periapsis axis so the orbits tilt realistically -->
+        <ellipse id="sun-orbit-line" cx="400" cy="400" rx="165" ry="162" fill="none" stroke="#222" stroke-width="2" stroke-dasharray="6,4" transform="rotate(102, 400, 400)" />
+        <ellipse id="moon-orbit-line" cx="400" cy="400" rx="285" ry="270" fill="none" stroke="#222" stroke-width="2" stroke-dasharray="6,4" />
 
-        <!-- Pinned Center Rosetta Translation Anchor -->
+        <!-- Celestial Observation Nodes (Locked permanently to the edge of the rings) -->
+        <circle id="sun-bead" cx="400" cy="235" r="16" fill="#f39c12" filter="drop-shadow(0px 0px 8px rgba(243,156,18,0.5))" />
+        <circle id="moon-bead" cx="400" cy="115" r="11" fill="#ecf0f1" filter="drop-shadow(0px 0px 6px rgba(236,240,241,0.4))" />
+
+        <!-- Rosetta Center Structural Hub (The Universal Translation Core) -->
         <g class="gregorian-translation-hub">
-            <circle cx="400" cy="400" r="65" class="center-anchor-plate" />
-            <text x="400" y="406" id="gregorian-center-clock" text-anchor="middle">--:--</text>
+            <circle cx="400" cy="400" r="65" fill="#0d0d0d" stroke="#333" stroke-width="2" />
+            <!-- Shows the target date of the option/history layer seamlessly -->
+            <text x="400" y="408" id="gregorian-center-clock" text-anchor="middle" fill="#fff" font-size="20" font-family="monospace" font-weight="bold">--:--</text>
         </g>
     </svg>
 </div>

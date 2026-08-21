@@ -235,38 +235,38 @@ The PWA works **two ways**:
 Location for the offline mode comes from browser geolocation if granted,
 else `localStorage['kairos_location']`, else 52°N 5°E.
 
-## Radial header gauge
+## Radial distance factors
 
-The top of the page (`web/index.html`) carries the **non-crossing axis
-gauge** header: the Sun and Moon slide up and down a single static vertical
-axis (they never cross linearly, so eclipses stay out of view), while the
-concentric ring diameters breathe with the true radial distance anomalies.
+The server exposes the raw eccentric radial factors used by the spatial
+matrix (and available for other layers):
 
 - `core/astronomy.py` — `CelestialRadialMetrics`: `get_sun_distance_factor`
   (~0.983–1.017) and `get_moon_distance_factor` (~0.94–1.06).
-- `GET /api/radial?ts=…` — streams the raw floats `{timestamp, gregorian,
-  sun_radial, moon_radial}` to the header loop (`web/static/js/canvas.js`).
-- The gauge also runs **fully statically** (GitHub Pages, `file://`,
-  offline): when `/api/radial` is unreachable, `canvas.js` computes the
-  same anomaly formulas in the browser and ticks the Gregorian readout from
-  the local clock.
+- `GET /api/radial?ts=…` — streams `{timestamp, gregorian, sun_radial,
+  moon_radial}`. The front-end matrix mirrors these formulas client-side
+  (web/static/js/astronomy_engine.js), so it runs fully statically on
+  GitHub Pages and offline.
 
-## Concentric observation matrix (counter-clockwise orbit)
+## Concentric observation matrix (elliptical, counter-clockwise)
 
-Under the Now tab, the **concentric observation matrix** maps the Sun and
-Moon along counter-clockwise orbits — Noon at the top (0 rad), Sunrise
-right (+π/2), Night bottom (π), Sunset left (−π/2) — with a minimalist
-Gregorian clock pinned at the centre. The orbital radii breathe with the
-true eccentric anomalies, so supermoons, micromoons, and total vs annular
-eclipses become visible when the bodies share an angular vector.
+The #kstDisplay master spatial panel maps the Sun and Moon along
+counter-clockwise orbits — Noon at the top (0 rad), Sunrise right (+π/2),
+Night bottom (π), Sunset left (−π/2) — with a minimalist Gregorian clock
+pinned at the centre. The paths are TRUE <ellipse> layers (sun rx 165 /
+ry 162 rotated 102°, moon rx 285 / ry 270) whose rx/ry stretch dynamically
+with the eccentric radial factors, so supermoons, micromoons, and total vs
+annular eclipses become visible when the bodies share an angular vector.
 
 - `web/static/js/astronomy_engine.js` — `CelestialMetrics` (shared client
-  math): `getSunRadialFactor` / `getMoonRadialFactor` (spec) plus the
-  counter-clockwise angle solver (equation of time, lunar elongation).
-- `web/static/js/canvas_renderer.js` — `renderCelestialPositions` polar→
-  cartesian mapper (Noon = 0 offset) + the 1 s render loop.
+  math): radial factors, the counter-clockwise angle solver (equation of
+  time, lunar elongation), and the lunar-node detector.
+- `web/static/js/canvas_renderer.js` — `updatePlanetaryCanvas(sunAngle,
+  sunRadialFactor, moonAngle, moonRadialFactor, isAtLunarNode,
+  targetGregorianTime)`: ellipse rx/ry breathing + the 3D Tilt Node Filter
+  that decorrelates the Moon's ring when it is NOT at a lunar node
+  (preventing false monthly overlaps), with the beads locked to their rings.
 - `web/templates/concentric_view.html` — the canonical SVG fragment;
-  the identical markup is injected into `web/index.html` under the tabs.
+  the identical markup is injected into `web/index.html` inside the panel.
 - Fully client-side: no backend required, so it runs on GitHub Pages and
   offline, in lockstep with the observation-driven app.
 

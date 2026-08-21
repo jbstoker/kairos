@@ -1,43 +1,66 @@
-/* Kairos concentric orbit renderer — polar-to-cartesian mapper.
+/* Kairos elliptical observation matrix — polar-to-ellipse mapper.
  *
  * Maps the counter-clockwise orbital angles + eccentric radial factors onto
- * the SVG observation matrix (web/templates/concentric_view.html). Position
- * is computed relative to NOON at the top vertical peak; the sweep advances
- * counter-clockwise through SUNRISE → NIGHT → SUNSET.
+ * the master spatial viewport (the #kstDisplay panel). The Sun and Moon
+ * travel TRUE <ellipse> layers whose rx/ry stretch dynamically with the
+ * orbital eccentricities; the beads stay locked on their rings, so the paths
+ * and nodes expand/contract together.
  *
- * When the Sun and Moon share the same angular vector the layout visually
- * exposes the eclipse type through the radial breathing: total (Moon
- * contracted close, Sun expanded far) vs annular (Moon expanded far, Sun
- * contracted close).
+ * 3D Tilt Node Filter: when the Moon is NOT at a lunar node, a small radius
+ * offset decorrelates the two rings, preventing false monthly overlaps.
+ * When the bodies do share an angular vector the radial breathing exposes
+ * the eclipse geometry (total vs annular).
  */
 
-function renderCelestialPositions(sunAngle, sunRadial, moonAngle, moonRadial) {
-    const cx = 400; // Center X coordinate
-    const cy = 400; // Center Y coordinate
+function updatePlanetaryCanvas(sunAngle, sunRadialFactor, moonAngle, moonRadialFactor, isAtLunarNode, targetGregorianTime) {
+    const cx = 400;
+    const cy = 400;
 
-    const baseSunRadius = 160;   // Sketch Marker 1 Boundary Baseline
-    const baseMoonRadius = 280;  // Sketch Marker 2 Boundary Baseline
+    // Core structural baselines from the system sketch
+    const baseSunRx = 165;
+    const baseMoonRx = 285;
 
-    // Process live elliptical breathing values
-    const currentSunRadius = baseSunRadius * sunRadial;
-    const currentMoonRadius = baseMoonRadius * moonRadial;
+    // Compute the dynamic elliptical stretch variables
+    const sunRx = baseSunRx * sunRadialFactor;
+    const sunRy = baseSunRx * (1 - 0.0167) * sunRadialFactor; // Factoring solar eccentricity
 
-    // Map Counter-Clockwise from the Top Zenith Axis (Noon = 0 Radian Offset)
-    // Sin tracks rightward horizontal distance, Cos tracks vertical position
-    const sunX = cx + currentSunRadius * Math.sin(sunAngle);
-    const sunY = cy - currentSunRadius * Math.cos(sunAngle);
+    // 3D Tilt Node Filter: Prevents false monthly overlaps
+    let nodeOffset = 0;
+    if (!isAtLunarNode) {
+        nodeOffset = 25 * Math.sin(moonAngle - sunAngle);
+    }
 
-    const moonX = cx + currentMoonRadius * Math.sin(moonAngle);
-    const moonY = cy - currentMoonRadius * Math.cos(moonAngle);
+    const moonRx = baseMoonRx * moonRadialFactor + nodeOffset;
+    const moonRy = baseMoonRx * (1 - 0.0549) * moonRadialFactor + nodeOffset; // Factoring lunar eccentricity
 
-    // Shift physical markers dynamically
-    document.getElementById('sun-bead-node').setAttribute('cx', sunX);
-    document.getElementById('sun-bead-node').setAttribute('cy', sunY);
-    document.getElementById('sun-track-vector').setAttribute('r', currentSunRadius);
+    // 1. Sync and scale the Sun orbit line and position
+    const sunTrack = document.getElementById('sun-orbit-line');
+    const sunBead = document.getElementById('sun-bead');
+    if (sunTrack && sunBead) {
+        sunTrack.setAttribute('rx', sunRx);
+        sunTrack.setAttribute('ry', sunRy);
 
-    document.getElementById('moon-bead-node').setAttribute('cx', moonX);
-    document.getElementById('moon-bead-node').setAttribute('cy', moonY);
-    document.getElementById('moon-track-vector').setAttribute('r', currentMoonRadius);
+        // Counter-clockwise layout mapping from Top Noon Zenith
+        sunBead.setAttribute('cx', cx + sunRx * Math.sin(sunAngle));
+        sunBead.setAttribute('cy', cy - sunRy * Math.cos(sunAngle));
+    }
+
+    // 2. Sync and scale the Moon orbit line and position
+    const moonTrack = document.getElementById('moon-orbit-line');
+    const moonBead = document.getElementById('moon-bead');
+    if (moonTrack && moonBead) {
+        moonTrack.setAttribute('rx', moonRx);
+        moonTrack.setAttribute('ry', moonRy);
+
+        moonBead.setAttribute('cx', cx + moonRx * Math.sin(moonAngle));
+        moonBead.setAttribute('cy', cy - moonRy * Math.cos(moonAngle));
+    }
+
+    // 3. Inject the active target date string straight into the Rosetta Center Hub
+    const centralClock = document.getElementById('gregorian-center-clock');
+    if (centralClock) {
+        centralClock.textContent = targetGregorianTime;
+    }
 }
 
 function pad2(n) { return (n < 10 ? '0' : '') + n; }
@@ -52,12 +75,12 @@ function initConcentricClock() {
 
     function tick() {
         const ts = Date.now() / 1000;
-        renderCelestialPositions(
+        updatePlanetaryCanvas(
             metrics.getSunAngle(ts), metrics.getSunRadialFactor(ts),
-            metrics.getMoonAngle(ts), metrics.getMoonRadialFactor(ts)
+            metrics.getMoonAngle(ts), metrics.getMoonRadialFactor(ts),
+            metrics.isMoonAtLunarNode(ts),
+            formatCenterClock(new Date())
         );
-        const clock = document.getElementById('gregorian-center-clock');
-        if (clock) clock.textContent = formatCenterClock(new Date());
     }
 
     tick();
@@ -71,6 +94,6 @@ if (typeof document !== 'undefined' &&
 }
 
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports.renderCelestialPositions = renderCelestialPositions;
+    module.exports.updatePlanetaryCanvas = updatePlanetaryCanvas;
     module.exports.initConcentricClock = initConcentricClock;
 }

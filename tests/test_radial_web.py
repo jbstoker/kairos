@@ -1,10 +1,11 @@
-"""Web test: the /api/radial stream and the radial header page.
+"""Web test: the /api/radial stream and the unified spatial panel page.
 
-The root serves web/index.html — the non-crossing axis gauge <header> on
-top of the preserved classic Kairos body (tabs, forms and configuration
-mechanics). /api/radial streams the raw radial distance factors straight
-from core.astronomy.CelestialRadialMetrics; the header gauge also works
-fully statically via the client-side fallback in web/static/js/canvas.js.
+The root serves web/index.html — the #kstDisplay master spatial panel (the
+counter-clockwise elliptical observation matrix on top of the preserved
+classic Kairos body: tabs, forms and configuration mechanics). /api/radial
+streams the raw radial distance factors straight from
+core.astronomy.CelestialRadialMetrics; the matrix itself runs fully
+client-side via web/static/js/astronomy_engine.js + canvas_renderer.js.
 """
 
 import unittest
@@ -41,19 +42,29 @@ class TestRadialApi(unittest.TestCase):
         self.assertTrue(0.98 <= data["sun_radial"] <= 1.02)
         self.assertTrue(0.94 <= data["moon_radial"] <= 1.06)
 
-    def test_root_renders_header_and_preserved_body(self):
+    def test_root_renders_spatial_panel_and_preserved_body(self):
         resp = self.client.get("/")
         self.assertEqual(resp.status_code, 200)
         html = resp.get_data(as_text=True)
-        # The new non-crossing axis gauge header:
-        self.assertIn('class="kairos-planetary-header"', html)
-        self.assertIn('id="header-concentric-clock"', html)
-        self.assertIn('id="gregorian-clock-readout"', html)
-        self.assertIn('id="eye-override-trigger"', html)
-        self.assertIn("SUNDOWN", html)
-        self.assertIn("SUNRISE", html)
+        # The master elliptical spatial panel:
+        self.assertIn('class="card kst-unified-spatial-panel"', html)
+        self.assertIn('id="kairos-observation-matrix"', html)
+        self.assertIn('id="gregorian-center-clock"', html)
+        self.assertIn('id="sun-orbit-line"', html)
+        self.assertIn('id="moon-orbit-line"', html)
+        self.assertIn('id="sun-bead"', html)
+        self.assertIn('id="moon-bead"', html)
+        self.assertIn('id="observed-date-label"', html)
+        # Geometrically placed fixed axis labels:
         self.assertIn("NOON", html)
-        self.assertIn("NIGHT", html)
+        self.assertIn("SUNRISE", html)
+        self.assertIn("NIGHT / MIDNIGHT", html)
+        self.assertIn("SUNDOWN / SUNSET", html)
+        # The flat header gauge row is completely gone:
+        self.assertNotIn('class="kairos-planetary-header"', html)
+        self.assertNotIn('id="header-concentric-clock"', html)
+        self.assertNotIn('id="gregorian-clock-readout"', html)
+        self.assertNotIn('id="eye-override-trigger"', html)
         # Preserved lower body — tabs, forms and configuration mechanics:
         self.assertIn('id="tabNow"', html)
         self.assertIn('id="tabConfig"', html)
@@ -69,10 +80,16 @@ class TestRadialApi(unittest.TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertIn(b"Kairos", resp.data)
 
-    def test_canvas_js_served_from_static(self):
-        resp = self.client.get("/static/js/canvas.js")
-        self.assertEqual(resp.status_code, 200)
-        self.assertIn(b"updateHeaderDistanceClock", resp.data)
+    def test_static_engine_js_served(self):
+        engine_js = self.client.get("/static/js/astronomy_engine.js")
+        self.assertEqual(engine_js.status_code, 200)
+        self.assertIn(b"CelestialMetrics", engine_js.data)
+        renderer_js = self.client.get("/static/js/canvas_renderer.js")
+        self.assertEqual(renderer_js.status_code, 200)
+        self.assertIn(b"updatePlanetaryCanvas", renderer_js.data)
+        controller_js = self.client.get("/static/js/app_controller.js")
+        self.assertEqual(controller_js.status_code, 200)
+        self.assertIn(b"updateUnifiedDisplayPanel", controller_js.data)
 
 
 if __name__ == "__main__":

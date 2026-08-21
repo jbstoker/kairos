@@ -13,42 +13,6 @@
 </head>
 <body>
 <div class="container" id="app">
-    <header class="kairos-planetary-header">
-        <button class="help-btn header-help" id="helpBtn" data-i18n-title="helpBtn.title" title="What does this mean?">?</button>
-        <div class="header-clock-wrapper">
-            <svg id="header-concentric-clock" viewBox="0 0 400 400" width="100%" height="100%">
-                <!-- Fixed Axis System: Vertical/Horizontal Realities -->
-                <line x1="200" y1="0" x2="200" y2="400" class="axis-line vertical" />   <!-- Top: SUNDOWN | Bottom: SUNRISE -->
-                <line x1="0" y1="200" x2="400" y2="200" class="axis-line horizontal" /> <!-- Left: NIGHT | Right: NOON -->
-
-                <!-- Structural Environmental Labels -->
-                <text x="200" y="25" text-anchor="middle" class="axis-lbl">SUNDOWN</text>
-                <text x="200" y="385" text-anchor="middle" class="axis-lbl">SUNRISE</text>
-                <text x="365" y="205" text-anchor="end" class="axis-lbl">NOON</text>
-                <text x="35" y="205" text-anchor="start" class="axis-lbl">NIGHT</text>
-
-                <!-- Concentric Radial Tracks: Diameters breathe in/out dynamically -->
-                <circle id="hdr-moon-ring" cx="200" cy="200" r="80" class="distance-ring moon-track" />
-                <circle id="hdr-sun-ring" cx="200" cy="200" r="140" class="distance-ring sun-track" />
-
-                <!-- Shifting Beads: Permanently locked to the vertical axis coordinate -->
-                <circle id="hdr-moon-bead" cx="200" cy="120" r="6" class="radial-bead moon-element" />
-                <circle id="hdr-sun-bead" cx="200" cy="60" r="10" class="radial-bead sun-element" />
-
-                <!-- Core Rosetta Anchor (The Machine Clock Interface) -->
-                <g class="center-rosetta-anchor">
-                    <circle cx="200" cy="200" r="28" class="anchor-bg" />
-                    <text x="200" y="205" id="gregorian-clock-readout" text-anchor="middle">00:00</text>
-                </g>
-            </svg>
-        </div>
-
-        <div class="manifesto-layer">
-            <p class="wish-statement">Faith returned to the entity that feeds all us animals.</p>
-            <button id="eye-override-trigger" class="header-sensory-btn">Re-Anchor to My Eyes</button>
-        </div>
-    </header>
-
     <div class="tabs">
         <button class="tab-btn active" id="tabNowBtn" data-tab="now" data-i18n="tabs.now">🌅 Now</button>
         <button class="tab-btn" id="tabConfigBtn" data-tab="config" data-i18n="tabs.configure">⚙️ Configure</button>
@@ -61,7 +25,7 @@
          plain .display card, the KST one-line, the Gregorian anchor, the
          tradition line, the seasonal wheel and the metric rows into a single
          dashboard. Concentric fragment: web/templates/concentric_view.html -->
-    <div id="kstDisplay" class="card kst-unified-display-panel">
+    <div id="kstDisplay" class="card kst-unified-spatial-panel">
         <!-- Active Selected Date Context Header -->
         <div class="display-header">
             <span id="observed-date-label">Observing Active Context...</span>
@@ -70,29 +34,35 @@
         <!-- The Kairos Time one-line (wall clock · day · month · season · year) -->
         <div class="kst-primary-line" id="kstDisplayLine">--:-- · -- · -- · -- · --</div>
 
-        <!-- The Integrated Concentric Planetary Layout Container -->
+        <!-- The 24-Hour Spatial Matrix Canvas (true elliptical orbits) -->
         <div class="spatial-matrix-wrapper">
-            <div class="kairos-spatial-container">
-                <svg id="kairos-observation-matrix" viewBox="0 0 800 800" width="100%" height="100%">
-                    <!-- Structural Axis Bars -->
-                    <line x1="400" y1="0" x2="400" y2="800" class="matrix-axis-line" /> <!-- Noon to Night -->
-                    <line x1="0" y1="400" x2="800" y2="400" class="matrix-axis-line" /> <!-- Sunset to Sunrise -->
+            <svg id="kairos-observation-matrix" viewBox="0 0 800 800" style="width:100%; max-width:600px; height:auto;">
+                <!-- Axis Crosshairs (Defining the 4 Solar Turning Quadrants) -->
+                <line x1="400" y1="20" x2="400" y2="780" stroke="#1a1a1a" stroke-width="2" /> <!-- Noon (Top) to Night (Bottom) -->
+                <line x1="20" y1="400" x2="780" y2="400" stroke="#1a1a1a" stroke-width="2" /> <!-- Sunset (Left) to Sunrise (Right) -->
 
-                    <!-- Elastic Orbital Guide Tracks -->
-                    <circle id="sun-track-vector" cx="400" cy="400" r="160" class="orbit-path inner-layer" />
-                    <circle id="moon-track-vector" cx="400" cy="400" r="280" class="orbit-path outer-layer" />
+                <!-- Geometrically Placed Fixed Labels (Matching the Sketch Layout) -->
+                <text x="400" y="45" text-anchor="middle" fill="#fff" font-size="18" font-weight="600" letter-spacing="1">NOON</text>
+                <text x="755" y="406" text-anchor="start" fill="#fff" font-size="18" font-weight="600" letter-spacing="1">SUNRISE</text>
+                <text x="400" y="770" text-anchor="middle" fill="#fff" font-size="18" font-weight="600" letter-spacing="1">NIGHT / MIDNIGHT</text>
+                <text x="45" y="406" text-anchor="end" fill="#fff" font-size="18" font-weight="600" letter-spacing="1">SUNDOWN / SUNSET</text>
 
-                    <!-- Moving Observation Spheres -->
-                    <circle id="sun-bead-node" cx="400" cy="240" r="15" class="celestial-node sun-element" />
-                    <circle id="moon-bead-node" cx="400" cy="120" r="11" class="celestial-node moon-element" />
+                <!-- True Elastic Elliptical Orbits (Rx and Ry stretch dynamically) -->
+                <!-- Transform rotates the periapsis axis so the orbits tilt realistically -->
+                <ellipse id="sun-orbit-line" cx="400" cy="400" rx="165" ry="162" fill="none" stroke="#222" stroke-width="2" stroke-dasharray="6,4" transform="rotate(102, 400, 400)" />
+                <ellipse id="moon-orbit-line" cx="400" cy="400" rx="285" ry="270" fill="none" stroke="#222" stroke-width="2" stroke-dasharray="6,4" />
 
-                    <!-- Pinned Center Rosetta Translation Anchor -->
-                    <g class="gregorian-translation-hub">
-                        <circle cx="400" cy="400" r="65" class="center-anchor-plate" />
-                        <text x="400" y="406" id="gregorian-center-clock" text-anchor="middle">--:--</text>
-                    </g>
-                </svg>
-            </div>
+                <!-- Celestial Observation Nodes (Locked permanently to the edge of the rings) -->
+                <circle id="sun-bead" cx="400" cy="235" r="16" fill="#f39c12" filter="drop-shadow(0px 0px 8px rgba(243,156,18,0.5))" />
+                <circle id="moon-bead" cx="400" cy="115" r="11" fill="#ecf0f1" filter="drop-shadow(0px 0px 6px rgba(236,240,241,0.4))" />
+
+                <!-- Rosetta Center Structural Hub (The Universal Translation Core) -->
+                <g class="gregorian-translation-hub">
+                    <circle cx="400" cy="400" r="65" fill="#0d0d0d" stroke="#333" stroke-width="2" />
+                    <!-- Shows the target date of the option/history layer seamlessly -->
+                    <text x="400" y="408" id="gregorian-center-clock" text-anchor="middle" fill="#fff" font-size="20" font-family="monospace" font-weight="bold">--:--</text>
+                </g>
+            </svg>
         </div>
 
         <!-- Consolidated Environmental & Planet Metrics Metadata Footer -->
@@ -381,7 +351,6 @@
 <script src="help_data.js"></script>
 <script src="help.js"></script>
 <script src="kst_display.js"></script>
-<script src="static/js/canvas.js"></script>
 <script src="static/js/astronomy_engine.js"></script>
 <script src="static/js/canvas_renderer.js"></script>
 <script src="static/js/app_controller.js"></script>

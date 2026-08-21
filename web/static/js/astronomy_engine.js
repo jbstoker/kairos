@@ -99,6 +99,41 @@ class CelestialMetrics {
         return -(this.solarHourAngleRadians(unixTimestamp) + elongation);
     }
 
+    /**
+     * Approximate the Moon's mean ecliptic longitude (deg) for a timestamp.
+     * Prefers the vendored SunCalc; falls back to a mean-sun approximation.
+     */
+    approximateMoonEclipticLongitude(unixTimestamp) {
+        const ts = Number(unixTimestamp);
+        let sunLon = 0;
+        if (typeof SunCalc !== 'undefined' && SunCalc.getSolarLongitude) {
+            sunLon = SunCalc.getSolarLongitude(new Date(ts * 1000));
+        } else {
+            // Mean solar longitude (Meeus): days since J2000.0 (2000-01-01 12:00 UTC).
+            const d = (ts - 946728000) / 86400;
+            sunLon = (280.460 + 0.9856474 * d) % 360;
+        }
+        const elongationDeg = this.lunarAgeDays(ts) / this.SYNODIC_MONTH_DAYS * 360;
+        return (((sunLon + elongationDeg) % 360) + 360) % 360;
+    }
+
+    /**
+     * True when the Moon is near its ascending/descending node — the only
+     * alignments where the shared-ray geometry can be a real eclipse (the
+     * 3D Tilt Node Filter uses this to prevent false monthly overlaps).
+     * The ascending-node longitude precesses over the ~18.6-year cycle.
+     */
+    isMoonAtLunarNode(unixTimestamp, toleranceDeg) {
+        const ts = Number(unixTimestamp);
+        const tol = toleranceDeg || 12;
+        const d = (ts - 946728000) / 86400; // days since J2000.0
+        const omega = (125.1228 - 0.0529538083 * d) % 360; // ascending node
+        const moonLon = this.approximateMoonEclipticLongitude(ts);
+        const distAsc = Math.abs(((((moonLon - omega) % 360) + 540) % 360) - 180);
+        const distDesc = Math.abs(((((moonLon - (omega + 180)) % 360) + 540) % 360) - 180);
+        return Math.min(distAsc, distDesc) < tol;
+    }
+
     snapshot(unixTimestamp) {
         const ts = Number(unixTimestamp);
         return {

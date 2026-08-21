@@ -34,7 +34,7 @@ function makeEl(id) {
 }
 ['gregorian-center-clock', 'observed-date-label', 'solar-longitude-val',
  'lunar-age-val', 'active-planets-val', 'celestial-season-val',
- 'sun-bead-node', 'moon-bead-node', 'sun-track-vector', 'moon-track-vector']
+ 'sun-bead', 'moon-bead', 'sun-orbit-line', 'moon-orbit-line']
     .forEach(id => elements[id] = makeEl(id));
 global.document = { getElementById: (id) => elements[id] || null };
 global.window = global;
@@ -51,7 +51,7 @@ global.__kstData = {
 const engine = require('./web/static/js/astronomy_engine.js');
 const renderer = require('./web/static/js/canvas_renderer.js');
 global.CelestialMetrics = engine.CelestialMetrics;
-global.renderCelestialPositions = renderer.renderCelestialPositions;
+global.updatePlanetaryCanvas = renderer.updatePlanetaryCanvas;
 const app = require('./web/static/js/app_controller.js');
 
 const ts = Date.UTC(2026, 3, 20, 14, 30, 0) / 1000;
@@ -65,10 +65,11 @@ const out = {
     lunarAge: elements['lunar-age-val'].textContent,
     planets: elements['active-planets-val'].textContent,
     season: elements['celestial-season-val'].textContent,
-    sunMoved: elements['sun-bead-node']._attrs.cx !== undefined,
-    moonMoved: elements['moon-bead-node']._attrs.cx !== undefined,
-    sunRingR: parseFloat(elements['sun-track-vector']._attrs.r),
-    moonRingR: parseFloat(elements['moon-track-vector']._attrs.r)
+    sunMoved: elements['sun-bead']._attrs.cx !== undefined,
+    moonMoved: elements['moon-bead']._attrs.cx !== undefined,
+    sunRingRx: parseFloat(elements['sun-orbit-line']._attrs.rx),
+    sunRingRy: parseFloat(elements['sun-orbit-line']._attrs.ry),
+    moonRingRx: parseFloat(elements['moon-orbit-line']._attrs.rx)
 };
 
 // Default context (no state label) falls back to the app's context or the
@@ -116,9 +117,12 @@ class TestAppControllerWeb(unittest.TestCase):
         out = self._run()
         self.assertTrue(out["sunMoved"])
         self.assertTrue(out["moonMoved"])
-        # Rings breathe with the eccentric radial factors (within bounds).
-        self.assertTrue(0.98 <= out["sunRingR"] / 160 <= 1.02)
-        self.assertTrue(0.94 <= out["moonRingR"] / 280 <= 1.06)
+        # Sun ellipse breathes with the eccentric radial factor (within bounds)
+        # and ry keeps the solar eccentricity ratio.
+        self.assertTrue(0.98 <= out["sunRingRx"] / 165 <= 1.02)
+        self.assertAlmostEqual(out["sunRingRy"], out["sunRingRx"] * (1 - 0.0167), places=4)
+        # Moon ellipse breathes within its envelope (allowing the node offset).
+        self.assertTrue(0.80 <= out["moonRingRx"] / 285 <= 1.20)
 
 
 if __name__ == "__main__":
