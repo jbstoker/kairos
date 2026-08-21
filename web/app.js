@@ -562,6 +562,28 @@ function saveLocation(lat, lon) {
     }
 })();
 
+// --- In season card: collapsible like the energy card ------------------------
+(function initSeasonalToggle() {
+    const toggle = document.getElementById('seasonalToggle');
+    const container = document.getElementById('seasonalContainer');
+    if (!toggle || !container) return;
+    const icon = toggle.querySelector('.seasonal-toggle-icon');
+    const update = (open) => {
+        container.hidden = !open;
+        toggle.setAttribute('aria-expanded', String(open));
+        if (icon) icon.textContent = open ? '▾' : '▸';
+    };
+    // Collapsed by default so the card saves room.
+    update(false);
+    toggle.addEventListener('click', () => update(container.hidden));
+    toggle.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            update(container.hidden);
+        }
+    });
+})();
+
 document.getElementById('shareBtn').addEventListener('click', openShareModal);
 document.getElementById('captureBtn').addEventListener('click', captureMoment);
 document.getElementById('shareClose').addEventListener('click', closeShareModal);

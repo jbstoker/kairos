@@ -515,8 +515,12 @@ select {
     font-size: 0.95rem;
     letter-spacing: 1px;
     color: #b7c9e2;
+    cursor: pointer;
+    touch-action: manipulation;
 }
 .seasonal-title b { color: #f0c27f; font-weight: 600; }
+.seasonal-toggle-icon { color: #f0c27f; }
+.seasonal-title:hover { color: #f5e6c4; }
 .seasonal-filters {
     display: flex;
     gap: 8px;

@@ -87,6 +87,9 @@ class TestRadialApi(unittest.TestCase):
         self.assertIn('id="saveAddBtn"', html)
         self.assertIn('id="moonButtons"', html)
         self.assertIn('id="helpModal"', html)
+        self.assertIn('id="energyCard"', html)
+        self.assertIn('id="seasonalToggle"', html)
+        self.assertIn('id="seasonalContainer"', html)
 
     def test_legacy_flat_pwa_still_served(self):
         resp = self.client.get("/index.html")

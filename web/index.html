@@ -117,10 +117,14 @@
     <!-- Today's energy -->
     <div class="energy-card" id="energyCard"></div>
 
-    <!-- In season now — filters and editing live in the ⚙️ Configure tab -->
+    <!-- In season now — collapsible like the energy card; filters and
+         editing live in the ⚙️ Configure tab -->
     <div class="seasonal">
         <div class="seasonal-head">
-            <span class="seasonal-title"><span data-i18n="seasonal.in_season">🌿 In season</span> · <b id="seasonalSeasonLabel">--</b></span>
+            <span class="seasonal-title" id="seasonalToggle" role="button" tabindex="0" aria-expanded="false" title="Show/hide what's in season">
+                <span class="seasonal-toggle-icon">▸</span>
+                <span data-i18n="seasonal.in_season">🌿 In season</span> · <b id="seasonalSeasonLabel">--</b>
+            </span>
             <button class="seasonal-tune" id="seasonalTuneBtn" data-i18n="seasonal.tune" data-i18n-title="seasonal.tune.title" title="Filters and editing">⚙️ tune</button>
         </div>
         <div class="seasonal-container" id="seasonalContainer">
