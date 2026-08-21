@@ -308,17 +308,18 @@ The plain `.display` card and the scattered KST layers (one-line, Gregorian
 line, tradition line, seasonal wheel, metric rows) were removed and
 consolidated into a single `#kstDisplay` dashboard panel:
 
-- **Active Selected Date Context Header** (`#observed-date-label`) — the
-  tradition · calendar date · observation-driven solar time.
-- **The Integrated Concentric Planetary Layout** — the observation matrix,
-  with the Gregorian anchor clock pinned at its centre.
+- **Primary line** — the Kairos one-line with the solar position
+  (`HH:MM (DDD.D°) · day · month · season · year`), rebuilt tradition-aware
+  by `unified_display.js` (the tradition is set in the Configure tab).
+- **The Integrated Sky-Dome Observation Matrix** — the Sun/Moon altitude +
+  azimuth on the circular degree wheel, with the Gregorian anchor clock
+  pinned at its centre.
 - **Consolidated metadata grid** — solar longitude, lunar age, active
   planets, and celestial season.
 - `web/static/js/app_controller.js` — `updateUnifiedDisplayPanel
   (selectedDateTimeState)` binds the panel to the current real-time (or an
   optionally selected date), re-routing the observation/tradition layers
-  straight into the unified nodes and triggering the counter-clockwise
-  canvas redraw.
+  straight into the unified nodes and triggering the sky-dome canvas redraw.
 
 ## Precession checksum
 

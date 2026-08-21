@@ -77,10 +77,21 @@ The system is organised in three layers:
   Celtic, Chinese, Vedic, Mesopotamian, and Mystical.
 - **Celestial engine (KST)** — solar longitude, lunar age, sidereal time,
   dawn stars, heliacal-rising hints, and planet positions.
+- **Sky-dome observation matrix** — the web app places the Sun and Moon by
+  their real altitude/azimuth on a circular degree wheel (0–360° every 30°,
+  N/E/S/W cardinals, altitude rings) and detects solar eclipses — including
+  partial ones — when the bodies share azimuth + altitude near a lunar node
+  (the 2026-08-12 Wergea partial eclipse is pinned by a regression test).
+- **Solar-position display** — the primary line reads `HH:MM (DDD.D°)`:
+  time as a position on the 360° dial.
+- **Manual observer location** — no GPS? Set your coordinates in the
+  ⚙️ Configure tab (`kairos_location` in localStorage).
 - **Continuous self-check** — a tracked precession checksum with a trend
   that reports drift instead of hiding it.
 - **Offline-first PWA** — runs with no server at all (SunCalc in the
   browser), installable, fully local.
+- **Mobile-first UI** — collapsible energy/seasonal cards, a bottom tab
+  bar, and large touch targets.
 - **Honest data** — the phytochemical inventory ships with its own data
   disclaimer: approximate public values, a clickable USDA FoodData Central
   source link, and per-item user notes.
@@ -425,8 +436,29 @@ worker). Open it two ways:
   # or just open web/index.html directly — the offline SunCalc engine takes over
   ```
 
-- **Visual leadership** — Kairos Time is the primary display; Gregorian is
-  a small footnote; the tradition is an optional layer.
+- **Unified spatial panel** — one `#kstDisplay` dashboard: the primary
+  Kairos line, the sky-dome observation matrix with the Gregorian clock in
+  its centre, and the metric footer (solar longitude, lunar age, planets,
+  celestial season). Gregorian is only the centre clock; the tradition is
+  an optional layer set in Configure.
+- **Sky-dome observation matrix** — the Sun and Moon are placed by their
+  real **altitude + azimuth** (vendored SunCalc, `web/static/js/
+  astronomy_engine.js`) on a circular **degree wheel** (0–360° every 30°,
+  N/E/S/W cardinals on the corrected axis — facing south, east is left).
+  Subtle altitude rings + a light-grey orbital band between the sun/moon
+  rings show the sky position at a glance.
+- **Eclipse detection** — when the beads share azimuth (≤ ~1.7°), altitude
+  (≤ 5°) and the Moon is near a lunar node (≤ ~19°), the beads glow and the
+  `#eclipse-status` line lights up — tolerances cover partial eclipses
+  (validated against the 2026-08-12 Wergea 89% partial eclipse).
+- **Solar-position display** — the primary line reads `HH:MM (DDD.D°)`
+  (`web/static/js/solar_time.js`): time as a position, so the number and
+  the bead always agree.
+- **Tradition-aware line** — `web/static/js/unified_display.js` rebuilds
+  the primary line with the selected tradition's real calendar date.
+- **Manual observer location** — ⚙️ Configure → 📍 Your location: lat/lon
+  fields + "Use my GPS". Saved to `kairos_location`; the dial reads it
+  live (no GPS required).
 - **Observation buttons** — calibrate solar noon two ways: 🌅 Sunrise + 🌇
   Sunset (noon is the midpoint) or, as a fallback, ⚖️ Equal Shadows (press
   when a stick's shadow equals the stick, morning and afternoon). Season
@@ -464,6 +496,10 @@ worker). Open it two ways:
   or a canvas-rendered image; **📸 Capture Moment** lets you take (or pick) a
   photo, stamps it with the Kairos line, and shares it via the native share
   sheet (or downloads it as a PNG).
+- **Tidy, mobile-first layout** — the energy and In-season cards collapse
+  (tap their headers), the **🌅 Now / ⚙️ Configure** tab bar sits at the
+  bottom, the observation matrix scales to 90% width, and the shared
+  action buttons (Capture · Share) form one segmented toolbar.
 
 ## Data & file formats
 

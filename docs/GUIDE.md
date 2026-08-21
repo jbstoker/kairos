@@ -38,17 +38,40 @@
 
 ---
 
+## The Sky-Dome (Observation Matrix)
+
+The centre of the app is a living sky map, not just a clock:
+
+- The **Sun and Moon beads** are placed by their **real altitude and
+  azimuth** — how high, and in which direction, right now where you are.
+- A circular **degree wheel** (0–360° every 30°) with **N / E / S / W**
+  cardinals and subtle altitude rings lets you read the sky position at a
+  glance. Facing south: `S`/`180°` is top (noon), `E`/`90°` left (sunrise),
+  `N`/`0°` bottom, `W`/`270°` right (sunset).
+- When the Sun and Moon share a sky position — during a **solar eclipse** —
+  the beads overlap and the line below lights up `🌑 ECLIPSE IN PROGRESS`.
+- **No GPS needed.** Kairos uses the browser's location when available, and
+  you can always set your coordinates by hand in **⚙️ Configure → 📍 Your
+  location** (e.g. `53.1503 / 5.8389` for Wergea, Friesland) — saved on
+  your device.
+
 ## Understanding the Format
 
-`00:51 · Bloom · Harvest Moon 4 · Radiance · 4.54B / 2026.622`
+`19:33 (293.4°) · ⛲Well · Harvest Moon 9 · ☀️Radiance · 4.54B / 2026.635`
 
 | Element | Meaning |
 |---------|---------|
-| `00:51` | Your local solar time — observed, not zoned |
-| `Bloom` | The day — one of seven names |
-| `Harvest Moon 4` | The month and day — one of 13 moons |
-| `Radiance` | The season — Emergence, Radiance, Release, or Stillness |
-| `4.54B / 2026.622` | The year — Earth’s age, split into scale and precision |
+| `19:33 (293.4°)` | Your clock as a **position** — solar time of day on the 360° dial |
+| `⛲Well` | The day — one of seven names |
+| `Harvest Moon 9` | The month and day — one of 13 moons |
+| `☀️Radiance` | The season — Emergence, Radiance, Release, or Stillness |
+| `4.54B / 2026.635` | The year — Earth's age, split into scale and precision |
+
+## Tidy View
+
+- The **energy** and **In season** cards are **collapsed by default** —
+  tap their headers to expand them.
+- The **🌅 Now / ⚙️ Configure** tabs sit at the **bottom** of the screen.
 
 ---
 

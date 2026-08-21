@@ -19,7 +19,13 @@ This wiki is a companion to the Kairos system. It contains the philosophy, the u
 
 ## The Kairos Format
 
-`00:51 · Bloom · Harvest Moon 4 · Radiance · 4.54B / 2026.622`
+`19:33 (293.4°) · ⛲Well · Harvest Moon 9 · ☀️Radiance · 4.54B / 2026.635`
+
+The heart of the web app is the **sky-dome**: the Sun and Moon are placed by
+their real altitude and azimuth on a circular degree wheel (0–360°, with
+N/E/S/W), and real solar eclipses light up as overlapping beads with a
+`🌑 ECLIPSE IN PROGRESS` line. See the [User Guide](GUIDE.md) for how to
+read it and how to set your location.
 
 ---
 

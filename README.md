@@ -18,17 +18,27 @@ It trusts your eyes.
 
 When you open Kairos, you see:
 
-`00:51 · Bloom · Harvest Moon 4 · Radiance · 4.54B / 2026.622`
+`19:33 (293.4°) · ⛲Well · Harvest Moon 9 · ☀️Radiance · 4.54B / 2026.635`
 
 This is not a timestamp. It is a **moment** — your moment.
 
 | Element | Meaning |
 |---------|---------|
-| `00:51` | Your local solar time — observed, not zoned |
-| `Bloom` | The day — Sundial, Well, Root, Bloom, Forge, Harvest, or Star |
-| `Harvest Moon 4` | The month and day — one of 13 moons, named for what is happening in the living world |
-| `Radiance` | The season — Emergence, Radiance, Release, or Stillness |
-| `4.54B / 2026.622` | The year — Earth's age, unbroken, from the beginning of our world |
+| `19:33 (293.4°)` | Your clock as a **position** — the solar time of day on a 360° dial (time you can *see*) |
+| `⛲Well` | The day — Sundial, Well, Root, Bloom, Forge, Harvest, or Star |
+| `Harvest Moon 9` | The month and day — one of 13 moons, named for what is happening in the living world |
+| `☀️Radiance` | The season — Emergence, Radiance, Release, or Stillness |
+| `4.54B / 2026.635` | The year — Earth's age, unbroken, from the beginning of our world |
+
+### The observation matrix (sky-dome)
+
+The heart of the app is a living sky map: the **Sun and Moon are placed by
+their real altitude and azimuth** on a circular **degree wheel** (0–360°
+every 30°, with N/E/S/W cardinals and subtle altitude rings). When the Sun
+and Moon align — during a real eclipse — the beads overlap and the app
+lights up `🌑 ECLIPSE IN PROGRESS`. No GPS required: Kairos reads your
+location from the browser, or you can set it by hand in **⚙️ Configure →
+📍 Your location**.
 
 ---
 
