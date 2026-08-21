@@ -715,7 +715,40 @@ select {
 }
 
 /* ---- Share ---- */
-.kst-actions { margin: 6px 0 2px; }
+/* ---- kstActions: grouped segmented toolbar (Capture · Share) ---- */
+.kst-actions {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+    margin: 10px 0 2px;
+    border: 1px solid #2a3442;
+    border-radius: 40px;
+    overflow: hidden;
+    background: #1e2632;
+}
+.kst-actions .action-btn {
+    flex: 1 1 0;
+    min-width: 0;
+    margin: 0;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    color: #f0e3d0;
+    white-space: nowrap;
+}
+.kst-actions .action-btn + .action-btn {
+    border-left: 1px solid #2a3442;
+}
+.kst-actions .action-btn:hover {
+    transform: none;
+    background: #2c384a;
+    box-shadow: none;
+}
+.kst-actions .action-btn:active {
+    transform: none;
+    background: #3a4658;
+}
 .share-actions {
     display: flex;
     gap: 8px;

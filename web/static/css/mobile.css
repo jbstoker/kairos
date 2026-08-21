@@ -93,13 +93,16 @@
     }
 
     .kst-actions {
-        flex-direction: column;
+        flex-direction: row;
         align-items: stretch;
     }
 
     .kst-actions .action-btn {
-        width: 100%;
-        margin: 4px 0;
+        width: auto;
+        margin: 0;
+        font-size: 0.85rem;
+        padding: 12px 8px;
+        white-space: normal;
     }
 
     /* --- Moon emoji buttons: larger grid --- */
