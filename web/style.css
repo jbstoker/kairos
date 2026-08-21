@@ -343,7 +343,7 @@ select {
 .tabs {
     display: flex;
     gap: 8px;
-    margin: 10px 0 14px;
+    margin: 16px 0 0;
 }
 .tab-btn {
     background: #1e2632;

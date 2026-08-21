@@ -61,7 +61,6 @@ class TestRadialApi(unittest.TestCase):
         self.assertIn('id="moon-bead"', html)
         self.assertIn('id="eclipse-status"', html)
 
-        self.assertIn('id="tradition-selector"', html)
         self.assertIn('<script src="static/js/solar_time.js"></script>', html)
         self.assertIn('<script src="static/js/unified_display.js"></script>',
                       html)

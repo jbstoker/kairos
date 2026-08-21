@@ -2,11 +2,10 @@
  * Kairos — Unified Adaptive Display (no Gregorian in the header).
  *
  * FINAL UNIFIED HEADER addendum, adapted to the consolidated #kstDisplay:
- * the Gregorian reference already lives only in the matrix's centre clock,
- * so this layer (a) adds the compact #tradition-selector to the panel header
- * (kept in sync with the Configure tab's #traditionSelect), and (b) makes
- * the primary #kstDisplayLine show the SELECTED tradition's real calendar
- * date instead of a hardcoded string.
+ * the Gregorian reference already lives only in the matrix's centre clock.
+ * The tradition is set in the Configure tab (#traditionSelect), and this
+ * layer makes the primary #kstDisplayLine show the SELECTED tradition's real
+ * calendar date instead of a hardcoded string.
  *
  * The addendum's window.updateDisplay(kairosString, tradition) API is kept,
  * but app.js already owns a global updateDisplay() — this wrapper preserves
@@ -25,19 +24,14 @@
     window.__lastKairosString = '';
 
     function getSelectedTradition() {
-        // #traditionSelect is already synced from localStorage by app.js at
-        // load, so it is the source of truth; the header selector mirrors it.
+        // #traditionSelect is synced from localStorage by app.js.
         const config = document.getElementById('traditionSelect');
         if (config && config.value) return config.value;
-        const header = document.getElementById('tradition-selector');
-        if (header && header.value) return header.value;
         return (typeof getTradition === 'function') ? getTradition() : 'tartarian';
     }
 
     function setSelectedTradition(value) {
-        const header = document.getElementById('tradition-selector');
         const config = document.getElementById('traditionSelect');
-        if (header) header.value = value;
         if (config) config.value = value;
         try { localStorage.setItem('kairos_tradition', value); } catch (e) { /* ignore */ }
         updateDisplay();            // 0-arg: context label + primary line refresh
@@ -70,9 +64,7 @@
             // working, then re-apply the primary line with the new tradition.
             appUpdateDisplay();
             const current = getSelectedTradition();
-            const header = document.getElementById('tradition-selector');
             const config = document.getElementById('traditionSelect');
-            if (header && header.value !== current) header.value = current;
             if (config && config.value !== current) config.value = current;
             if (window.__lastKairosString) {
                 window.updateDisplay(window.__lastKairosString, current);
@@ -91,21 +83,6 @@
     window.getSelectedTradition = getSelectedTradition;
     window.setSelectedTradition = setSelectedTradition;
     window.buildTraditionLine = buildTraditionLine;
-
-    // Keep the header selector in sync with the Configure selector.
-    function syncHeaderSelector() {
-        const header = document.getElementById('tradition-selector');
-        if (!header) return;
-        header.value = getSelectedTradition();
-        header.addEventListener('change', function () {
-            setSelectedTradition(this.value);
-        });
-    }
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', syncHeaderSelector);
-    } else {
-        syncHeaderSelector();
-    }
 
     if (typeof module !== 'undefined' && module.exports) {
         module.exports.getSelectedTradition = getSelectedTradition;

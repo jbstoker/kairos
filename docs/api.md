@@ -284,12 +284,11 @@ centre (alt 90°); below the horizon the bead moves beyond its ring
   `"12:00 (180.0°) · ⛲Well · Harvest Moon 9 · ☀️Radiance · 4.54B / 2026.635"` —
   time is a *position*.
 - `web/static/js/unified_display.js` — the FINAL UNIFIED HEADER layer: the
-  compact `#tradition-selector` in the kstDisplay header (synced with the
-  Configure tab's `#traditionSelect`) plus the tradition-aware primary line —
-  `window.updateDisplay(kairosString, tradition)` merges with app.js's own
-  `updateDisplay()` (both call styles preserved) and rebuilds `#kstDisplayLine`
-  with the selected tradition's real calendar date (Gregorian stays only in
-  the matrix centre clock).
+  tradition-aware primary line — `window.updateDisplay(kairosString, tradition)`
+  merges with app.js's own `updateDisplay()` (both call styles preserved) and
+  rebuilds `#kstDisplayLine` with the selected tradition's real calendar date
+  (Gregorian stays only in the matrix centre clock; the tradition itself is
+  set in the Configure tab's `#traditionSelect`).
 - `web/templates/concentric_view.html` — the canonical SVG fragment;
   the identical markup is injected into `web/index.html` inside the panel.
 - Fully client-side: no backend required, so it runs on GitHub Pages and
