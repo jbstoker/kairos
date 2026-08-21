@@ -70,9 +70,10 @@ The centre of the app is a living sky map, not just a clock:
 
 - The **energy** and **In season** cards are **collapsed by default** —
   tap their headers to expand them.
-- The **🌅 Now / ⚙️ Configure** tabs sit at the **bottom** of the screen —
-  only the button for the view you're *not* on is visible, so the footer
-  always shows one way out (on Now you see ⚙️ Configure, and vice versa).
+- The **🌅 Now / ⚙️ Configure** tab bar sits **right below the seasonal
+  card** — only the button for the view you're *not* on is visible, so the
+  bar always shows one way out (on Now you see ⚙️ Configure, and vice
+  versa). The precession self-check line sits below the community footer.
 
 ---
 

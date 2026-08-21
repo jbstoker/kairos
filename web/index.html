@@ -172,10 +172,6 @@
             <span class="seasonal-note" data-i18n="seasonal.looking_up">Looking up the sky…</span>
         </div>
     </div>
-
-    <div class="checksum-line" id="checksumLine" data-i18n="checksum.computing"
-         data-i18n-title="checksum.title"
-         title="This offset is expected and stable. It does not indicate an error — it reflects the difference between the Earth-age epoch and the current precessional phase. The self-check keeps watching it so drift never happens silently.">🔭 Precession offset: computing…</div>
     </div><!-- /tabNow -->
 
     <!-- Tab: configuration -->
@@ -289,15 +285,21 @@
         </div>
     </div><!-- /tabConfig -->
 
-    <div class="status" id="status" data-i18n="app.ready">Ready.</div>
-    <div class="footer" data-i18n="footer">Kairos — no GPS, no internet, just you and the sky</div>
-    <div class="footer community-footer" data-i18n-html="footer.community">🌍 Join the community — share your <b>#KairosTime</b> · <a href="https://github.com/jbstoker/kairos" target="_blank" rel="noopener noreferrer">github.com/jbstoker/kairos</a></div>
-
-    <!-- Bottom tab bar -->
+    <!-- Bottom tab bar — right below the seasonal card (Now view) / the
+         config content (Configure view); only the way-out button shows. -->
     <div class="tabs">
         <button class="tab-btn active" id="tabNowBtn" data-tab="now" data-i18n="tabs.now" hidden>🌅 Now</button>
         <button class="tab-btn" id="tabConfigBtn" data-tab="config" data-i18n="tabs.configure">⚙️ Configure</button>
     </div>
+
+    <div class="status" id="status" data-i18n="app.ready">Ready.</div>
+    <div class="footer" data-i18n="footer">Kairos — no GPS, no internet, just you and the sky</div>
+    <div class="footer community-footer" data-i18n-html="footer.community">🌍 Join the community — share your <b>#KairosTime</b> · <a href="https://github.com/jbstoker/kairos" target="_blank" rel="noopener noreferrer">github.com/jbstoker/kairos</a></div>
+
+    <!-- Precession self-check — below the community footer -->
+    <div class="checksum-line" id="checksumLine" data-i18n="checksum.computing"
+         data-i18n-title="checksum.title"
+         title="This offset is expected and stable. It does not indicate an error — it reflects the difference between the Earth-age epoch and the current precessional phase. The self-check keeps watching it so drift never happens silently.">🔭 Precession offset: computing…</div>
 </div>
 
 

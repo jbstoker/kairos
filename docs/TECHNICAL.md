@@ -499,10 +499,11 @@ worker). Open it two ways:
   photo, stamps it with the Kairos line, and shares it via the native share
   sheet (or downloads it as a PNG).
 - **Tidy, mobile-first layout** — the energy and In-season cards collapse
-  (tap their headers), the **🌅 Now / ⚙️ Configure** tab bar sits at the
-  bottom (only the inactive tab's button is visible, so the footer always
-  shows the way out of the current view), the observation matrix scales to
-  90% width, and the shared
+  (tap their headers), the **🌅 Now / ⚙️ Configure** tab bar sits right
+  below the seasonal card on Now (and below the config content on
+  Configure) with only the inactive tab's button visible, the precession
+  self-check line sits below the community footer, the observation matrix
+  scales to 90% width, and the shared
   action buttons (Capture · Share) form one segmented toolbar.
 
 ## Data & file formats
