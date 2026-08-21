@@ -44,10 +44,9 @@ The centre of the app is a living sky map, not just a clock:
 
 - The **Sun and Moon beads** are placed by their **real altitude and
   azimuth** — how high, and in which direction, right now where you are.
-- A circular **degree wheel** (0–360° every 30°) with **N / E / S / W**
-  cardinals and subtle altitude rings lets you read the sky position at a
-  glance. Facing south: `S`/`180°` is top (noon), `E`/`90°` left (sunrise),
-  `N`/`0°` bottom, `W`/`270°` right (sunset).
+- A circular **degree wheel** (0–360° every 30°) with subtle altitude rings
+  lets you read the sky position at a glance. Facing south: `180°` is top
+  (noon), `90°` left (sunrise), `0°` bottom, `270°` right (sunset).
 - When the Sun and Moon share a sky position — during a **solar eclipse** —
   the beads overlap and the line below lights up `🌑 ECLIPSE IN PROGRESS`.
 - **No GPS needed.** Kairos uses the browser's location when available, and

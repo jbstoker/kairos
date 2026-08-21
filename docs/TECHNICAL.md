@@ -79,7 +79,7 @@ The system is organised in three layers:
   dawn stars, heliacal-rising hints, and planet positions.
 - **Sky-dome observation matrix** — the web app places the Sun and Moon by
   their real altitude/azimuth on a circular degree wheel (0–360° every 30°,
-  N/E/S/W cardinals, altitude rings) and detects solar eclipses — including
+  altitude rings) and detects solar eclipses — including
   partial ones — when the bodies share azimuth + altitude near a lunar node
   (the 2026-08-12 Wergea partial eclipse is pinned by a regression test).
 - **Solar-position display** — the primary line reads `HH:MM (DDD.D°)`:
@@ -445,7 +445,7 @@ worker). Open it two ways:
 - **Sky-dome observation matrix** — the Sun and Moon are placed by their
   real **altitude + azimuth** (vendored SunCalc, `web/static/js/
   astronomy_engine.js`) on a circular **degree wheel** (0–360° every 30°,
-  N/E/S/W cardinals on the corrected axis — facing south, east is left).
+  on the corrected axis — facing south, east is left).
   Subtle altitude rings + a light-grey orbital band between the sun/moon
   rings show the sky position at a glance.
 - **Eclipse detection** — when the beads share azimuth (≤ ~1.7°), altitude

@@ -36,7 +36,7 @@ class TestMobileCss(unittest.TestCase):
         css = self.client.get("/static/css/mobile.css").get_data(as_text=True)
         self.assertIn("@media (max-width: 600px)", css)
         for target in ("svg#kairos-observation-matrix", ".quadrant-label",
-                       ".degree-label", ".cardinal-label",
+                       ".degree-label",
                        ".rosetta-text", ".action-btn", ".moon-grid button",
                        "#kstDisplay", ".meta-item",
                        "#eclipse-status:not(:empty)", ".seasonal-item",

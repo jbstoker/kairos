@@ -276,9 +276,8 @@ centre (alt 90°); below the horizon the bead moves beyond its ring
   test.
 - The SVG matrix carries a **sky-dome grid + circular degree wheel**: four
   altitude rings (r 60/120/180/240), subtle compass lines, and 0–360° tick
-  marks every 30° with N/E/S/W cardinals on the corrected axis — `S`/`180°`
-  top, `E`/`90°` left, `N`/`0°` bottom, `W`/`270°` right (the white
-  crosshairs are gone).
+  marks every 30° on the corrected axis — `180°` top, `90°` left, `0°`
+  bottom, `270°` right (the white crosshairs are gone).
 - `web/static/css/mobile.css` + `web/static/js/mobile.js` — the mobile
   optimisation layer (`@media (max-width: 600px)`): larger, brighter text,
   full-width container, SVG matrix capped at `min(100%, 70vh)`, larger touch

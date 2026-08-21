@@ -34,7 +34,7 @@ This is not a timestamp. It is a **moment** — your moment.
 
 The heart of the app is a living sky map: the **Sun and Moon are placed by
 their real altitude and azimuth** on a circular **degree wheel** (0–360°
-every 30°, with N/E/S/W cardinals and subtle altitude rings). When the Sun
+every 30°, with subtle altitude rings). When the Sun
 and Moon align — during a real eclipse — the beads overlap and the app
 lights up `🌑 ECLIPSE IN PROGRESS`. No GPS required: Kairos reads your
 location from the browser, or you can set it by hand in **⚙️ Configure →
