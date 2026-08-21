@@ -3,16 +3,19 @@
 Pins the sky-dome layout (web/static/js/astronomy_engine.js +
 web/static/js/canvas_renderer.js) on the true celestial axis: facing south,
 Midnight at the bottom (az 0°), Sunrise LEFT (az 90°), Noon at the top
-(az 180°), Sunset RIGHT (az 270°). Altitude maps the beads from the horizon
-ring to the zenith at the centre; when the bodies share an azimuth AND the
-Moon is at a node an eclipse is detected with glowing-bead + status
-feedback. Without SunCalc the engine falls back to the dial (altitude 0,
-azimuth = local day fraction × 360).
+(az 180°), Sunset RIGHT (az 270°). Altitude maps both bodies from the SHARED
+horizon ring (the outer ring) to the zenith at the centre, so bodies sharing
+a sky position overlap; when the bodies share an azimuth AND the Moon is
+near a node an eclipse (including partial ones) is detected with glowing-bead
++ status feedback. A real eclipse (2026-08-12, Wergea) pins the overlap.
+Without SunCalc the engine falls back to the dial (altitude 0, azimuth =
+local day fraction × 360).
 
 Runs under node with a minimal DOM stub, like the other web tests.
 """
 
 import json
+import math
 import os
 import shutil
 import subprocess
@@ -120,6 +123,29 @@ out.alignedNotNode = {
     active: elements['eclipse-status']._classes.has('active')
 };
 
+// Real eclipse: the 2026-08-12 partial solar eclipse (89%) at Wergea,
+// Friesland (53.1503N, 5.8389E) — maximum 20:09 CEST. The beads must overlap
+// and the eclipse status must light up. (Loaded into `global` directly — no
+// top-level `const` — so the earlier positions block still tests the fallback.)
+global.SunCalc = require('./web/lib/suncalc.js');
+const eclipseMetrics = new engine.CelestialMetrics(5.8389, 53.1503);
+const eclipseT = new Date(2026, 7, 12, 20, 9, 0).getTime() / 1000;   // 20:09 CEST
+const sunE = eclipseMetrics.getSunPositionDeg(eclipseT);
+const moonE = eclipseMetrics.getMoonPositionDeg(eclipseT);
+renderer.updatePlanetaryCanvas(sunE.altitudeDeg, sunE.azimuthDeg,
+    moonE.altitudeDeg, moonE.azimuthDeg,
+    eclipseMetrics.moonNodeAngleRadians(eclipseT), '20:09');
+out.eclipseReal = {
+    sun: sunE, moon: moonE,
+    sunX: parseFloat(elements['sun-bead']._attrs.cx),
+    sunY: parseFloat(elements['sun-bead']._attrs.cy),
+    moonX: parseFloat(elements['moon-bead']._attrs.cx),
+    moonY: parseFloat(elements['moon-bead']._attrs.cy),
+    status: elements['eclipse-status'].textContent,
+    sunFill: elements['sun-bead']._attrs.fill,
+    sunR: elements['sun-bead']._attrs.r
+};
+
 process.stdout.write(JSON.stringify(out));
 process.exit(0);
 """
@@ -160,10 +186,10 @@ class TestSkyDomeWeb(unittest.TestCase):
     def test_altitude_azimuth_bead_placement(self):
         out = self._run()
         f = out["frame1"]
-        # Sun alt 0 az 90 (east/LEFT): on the sun's horizon ring, far left.
+        # Sun alt 0 az 90 (east/LEFT): on the SHARED horizon ring, far left.
         self.assertAlmostEqual(f["sunRx"], 165.0, places=4)
         self.assertAlmostEqual(f["sunRy"], 165 * (1 - 0.0167), places=4)
-        self.assertAlmostEqual(f["sunX"], 400.0 - 165.0, places=4)   # 235
+        self.assertAlmostEqual(f["sunX"], 400.0 - 285.0, places=4)   # 115
         self.assertAlmostEqual(f["sunY"], 400.0, places=4)
         # Moon alt 45 az 180 (south/TOP): halfway from the moon band to the
         # zenith → dist = 285·(1 − 45/90) = 142.5, straight up.
@@ -182,6 +208,19 @@ class TestSkyDomeWeb(unittest.TestCase):
         self.assertEqual(out["frame1"]["moonFill"], "#ecf0f1")
         self.assertEqual(out["frame1"]["moonR"], "11")
         self.assertEqual(out["frame1"]["status"], "")
+
+    def test_real_eclipse_aug_12_2026_overlaps(self):
+        """The 2026-08-12 partial solar eclipse (89%) at Wergea, Friesland
+        (53.1503N, 5.8389E, 20:09 CEST) must place the Sun and Moon beads
+        overlapping and light the eclipse status."""
+        out = self._run()
+        e = out["eclipseReal"]
+        self.assertAlmostEqual(e["sun"]["altitudeDeg"], 7.95, delta=0.3)
+        self.assertAlmostEqual(e["sun"]["azimuthDeg"], 284.35, delta=0.5)
+        dist = math.hypot(e["sunX"] - e["moonX"], e["sunY"] - e["moonY"])
+        self.assertLess(dist, 27.0)   # bead radii 16 + 11 → overlap
+        self.assertEqual(e["status"], "🌑 ECLIPSE IN PROGRESS")
+        self.assertEqual(e["sunFill"], "#ff6b35")
 
     def test_eclipse_detected_when_aligned_and_at_node(self):
         out = self._run()

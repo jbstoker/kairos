@@ -16,31 +16,34 @@ function updatePlanetaryCanvas(sunAltitudeDeg, sunAzimuthDeg, moonAltitudeDeg, m
     const cx = 400;
     const cy = 400;
 
-    // Horizon rings (base radii from the SVG): the sun travels the inner
-    // band, the moon the outer band. altitude 0 = on the ring (horizon),
-    // 90 = the centre (zenith), negative = beyond the ring (underground).
+    // Decorative orbit-path rings (the light-grey band between them) plus a
+    // SHARED horizon radius: both bodies map altitude the same way, so when
+    // the Sun and Moon share a sky position (an eclipse) their beads overlap.
     const sunRingRx = 165;
     const moonRingRx = 285;
+    const horizonRx = 285;
     const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 
     // --- Sun: altitude → distance from centre, azimuth → compass position ---
     const sunAlt = clamp(sunAltitudeDeg, -90, 90);
-    const sunDist = Math.min(380, sunRingRx * (1 - sunAlt / 90));
+    const sunDist = Math.min(380, horizonRx * (1 - sunAlt / 90));
     const sunRad = sunAzimuthDeg * Math.PI / 180;
     const sunX = cx - sunDist * Math.sin(sunRad);
     const sunY = cy + sunDist * Math.cos(sunRad);
 
     // --- Moon ---
     const moonAlt = clamp(moonAltitudeDeg, -90, 90);
-    const moonDist = Math.min(380, moonRingRx * (1 - moonAlt / 90));
+    const moonDist = Math.min(380, horizonRx * (1 - moonAlt / 90));
     const moonRad = moonAzimuthDeg * Math.PI / 180;
     const moonX = cx - moonDist * Math.sin(moonRad);
     const moonY = cy + moonDist * Math.cos(moonRad);
 
-    // --- Eclipse detection: shared azimuth (wrap-safe) AND lunar node ---
+    // --- Eclipse detection: shared azimuth (wrap-safe) AND lunar node.
+    //     Tolerances cover PARTIAL eclipses too (e.g. 89%): up to ~1.7° of
+    //     azimuth offset and ~19° from the lunar node. ---
     const azDiff = Math.abs(((sunAzimuthDeg - moonAzimuthDeg) % 360) + 360) % 360;
-    const isAligned = Math.min(azDiff, 360 - azDiff) * Math.PI / 180 < 0.01;
-    const isAtNode = Math.abs(moonNodeAngle) < 0.1;
+    const isAligned = Math.min(azDiff, 360 - azDiff) * Math.PI / 180 < 0.03;
+    const isAtNode = Math.abs(moonNodeAngle) < 0.33;
     const isEclipse = isAligned && isAtNode;
 
     // --- Update Sun orbit and bead ---
