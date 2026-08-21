@@ -61,7 +61,7 @@ The centre of the app is a living sky map, not just a clock:
 
 | Element | Meaning |
 |---------|---------|
-| `19:33 (293.4°)` | Your clock as a **position** — solar time of day on the 360° dial |
+| `19:33 (293.4°)` | **True solar time** (12:00 = solar noon) + the Sun's real **azimuth** — the number and the sky-dome bead always agree |
 | `⛲Well` | The day — one of seven names |
 | `Harvest Moon 9` | The month and day — one of 13 moons |
 | `☀️Radiance` | The season — Emergence, Radiance, Release, or Stillness |

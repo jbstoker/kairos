@@ -24,8 +24,10 @@ This wiki is a companion to the Kairos system. It contains the philosophy, the u
 The heart of the web app is the **sky-dome**: the Sun and Moon are placed by
 their real altitude and azimuth on a circular degree wheel (0–360°, with
 N/E/S/W), and real solar eclipses light up as overlapping beads with a
-`🌑 ECLIPSE IN PROGRESS` line. See the [User Guide](GUIDE.md) for how to
-read it and how to set your location.
+`🌑 ECLIPSE IN PROGRESS` line. The header reads **true solar time**
+(12:00 = solar noon) with the Sun's azimuth as the degree — so the number
+and the bead always agree. See the [User Guide](GUIDE.md) for how to read
+it and how to set your location.
 
 ---
 

@@ -24,7 +24,7 @@ This is not a timestamp. It is a **moment** — your moment.
 
 | Element | Meaning |
 |---------|---------|
-| `19:33 (293.4°)` | Your clock as a **position** — the solar time of day on a 360° dial (time you can *see*) |
+| `19:33 (293.4°)` | **True solar time** (12:00 = solar noon) + the Sun's real **azimuth** in degrees — the number and the sky-dome bead always agree |
 | `⛲Well` | The day — Sundial, Well, Root, Bloom, Forge, Harvest, or Star |
 | `Harvest Moon 9` | The month and day — one of 13 moons, named for what is happening in the living world |
 | `☀️Radiance` | The season — Emergence, Radiance, Release, or Stillness |

@@ -1,8 +1,10 @@
-"""Web test: the solar-time engine (FINAL PRIMARY DISPLAY FORMAT).
+"""Web test: the true solar-time + azimuth engine.
 
-web/static/js/solar_time.js turns the wall clock into a *position* —
-fraction of day × 360° — so the primary display reads
-"12:00 (180.0°) · ⛲Well · Harvest Moon 9 · ☀️Radiance · 4.54B / 2026.635".
+web/static/js/solar_time.js aligns the primary display with the sky: the
+time is TRUE SOLAR TIME (12:00 = solar noon) and the degree is the Sun's
+real north-based azimuth, so the header and the sky-dome bead always agree
+("12:00 (180.0°) · ⛲Well · Harvest Moon 9 · ☀️Radiance · 4.54B / 2026.635").
+Without SunCalc it falls back to the wall-clock dial.
 The root page must load it before kst_display.js / unified_display.js.
 """
 
@@ -64,6 +66,41 @@ class TestSolarTimeJs(unittest.TestCase):
         self.assertEqual(out["noon"], "12:00")
         self.assertEqual(out["sunset"], "18:00")
         self.assertRegex(out["greg"], r"^\d{2}:\d{2}$")
+
+    def test_true_solar_time_at_solar_noon(self):
+        """With SunCalc, at the instant of solar noon for Wergea the Kairos
+        time reads 12:00 and the degree is the Sun's real azimuth (≈180°/S)."""
+        script = (
+            "const REAL = Date;\n"
+            "global.SunCalc = require('./web/lib/suncalc.js');\n"
+            "const loc = { lat: 53.1503, lon: 5.8389 };\n"
+            "const noonDate = global.SunCalc.getTimes(\n"
+            "    new REAL(2026, 7, 21, 12, 0, 0), loc.lat, loc.lon).solarNoon;\n"
+            "class FakeDate extends REAL {\n"
+            "  constructor(...args) { super(...(args.length ? args : [noonDate.getTime()])); }\n"
+            "  static now() { return noonDate.getTime(); }\n"
+            "}\n"
+            "global.Date = FakeDate;\n"
+            "global.localStorage = { getItem: () => JSON.stringify(loc), setItem: () => {} };\n"
+            "const st = require('./web/static/js/solar_time.js');\n"
+            "process.stdout.write(JSON.stringify({\n"
+            "  noon: st.getSolarNoon(),\n"
+            "  kairosHours: st.getKairosTime(),\n"
+            "  az: st.getSolarAzimuth(),\n"
+            "  disp: st.getKairosTimeDisplay()\n"
+            "}));\n"
+        )
+        proc = subprocess.run(["node", "-e", script], capture_output=True,
+                              text=True, encoding="utf-8")
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        out = json.loads(proc.stdout)
+        # Solar noon for Wergea in August is ~13:39 local.
+        self.assertTrue(13.3 <= out["noon"] <= 14.2, out["noon"])
+        # True solar time: 12:00 at solar noon.
+        self.assertAlmostEqual(out["kairosHours"], 12.0, delta=0.05)
+        # The sun is due south → azimuth ≈ 180° north-based.
+        self.assertAlmostEqual(out["az"], 180.0, delta=5.0)
+        self.assertRegex(out["disp"], r"^12:00 \(\d{3}\.\d°\)$")
 
 
 if __name__ == "__main__":

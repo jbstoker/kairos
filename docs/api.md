@@ -285,12 +285,14 @@ centre (alt 90°); below the horizon the bead moves beyond its ring
   targets (action buttons, moon emoji grid, chips, tab bar) and delegated
   double-tap-zoom prevention. Selectors target the consolidated `#kstDisplay`
   layout.
-- `web/static/js/solar_time.js` — the solar-time engine (FINAL PRIMARY
-  DISPLAY FORMAT): `getSolarDegrees()` (fraction of day × 360°),
-  `degreesToKairosTime(deg)`, `getKairosTimeDisplay()` → `"12:00 (180.0°)"`
-  and `getGregorianTime()`. `kst_display.js` uses it for the primary line:
-  `"12:00 (180.0°) · ⛲Well · Harvest Moon 9 · ☀️Radiance · 4.54B / 2026.635"` —
-  time is a *position*.
+- `web/static/js/solar_time.js` — the TRUE SOLAR TIME + azimuth engine:
+  `getSolarNoon()` (apparent noon via SunCalc), `getSolarAzimuth()` (the
+  Sun's real north-based azimuth), `getKairosTime()` (12:00 = solar noon),
+  `getKairosTimeDisplay()` → `"20:52 (325.0°)"` and `getGregorianTime()`.
+  `kst_display.js` uses it for the primary line, so the header degree — the
+  Sun's azimuth — and the sky-dome bead always agree (sky-based, not
+  clock-based). `getSolarDegrees()` / `degreesToKairosTime(deg)` remain as
+  the no-SunCalc fallback.
 - `web/static/js/unified_display.js` — the FINAL UNIFIED HEADER layer: the
   tradition-aware primary line — `window.updateDisplay(kairosString, tradition)`
   merges with app.js's own `updateDisplay()` (both call styles preserved) and

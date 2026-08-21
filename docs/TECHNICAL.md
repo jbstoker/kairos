@@ -83,7 +83,8 @@ The system is organised in three layers:
   partial ones — when the bodies share azimuth + altitude near a lunar node
   (the 2026-08-12 Wergea partial eclipse is pinned by a regression test).
 - **Solar-position display** — the primary line reads `HH:MM (DDD.D°)`:
-  time as a position on the 360° dial.
+  **true solar time** (12:00 = solar noon) with the Sun's real azimuth as
+  the degree — the number and the sky-dome bead always agree.
 - **Manual observer location** — no GPS? Set your coordinates in the
   ⚙️ Configure tab (`kairos_location` in localStorage).
 - **Continuous self-check** — a tracked precession checksum with a trend
@@ -452,8 +453,9 @@ worker). Open it two ways:
   `#eclipse-status` line lights up — tolerances cover partial eclipses
   (validated against the 2026-08-12 Wergea 89% partial eclipse).
 - **Solar-position display** — the primary line reads `HH:MM (DDD.D°)`
-  (`web/static/js/solar_time.js`): time as a position, so the number and
-  the bead always agree.
+  (`web/static/js/solar_time.js`): **true solar time** — 12:00 = solar
+  noon, via SunCalc — with the Sun's real azimuth as the degree, so the
+  number and the bead always agree.
 - **Tradition-aware line** — `web/static/js/unified_display.js` rebuilds
   the primary line with the selected tradition's real calendar date.
 - **Manual observer location** — ⚙️ Configure → 📍 Your location: lat/lon
