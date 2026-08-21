@@ -1,0 +1,25 @@
+<!-- Kairos concentric observation matrix — counter-clockwise orbit layout.
+     This fragment is the canonical source; the identical markup is injected
+     into web/index.html under the main tabs (Now panel) so it renders on
+     both Flask and GitHub Pages (static hosting). -->
+<div class="kairos-spatial-container">
+    <svg id="kairos-observation-matrix" viewBox="0 0 800 800" width="100%" height="100%">
+        <!-- Structural Axis Bars -->
+        <line x1="400" y1="0" x2="400" y2="800" class="matrix-axis-line" /> <!-- Noon to Night -->
+        <line x1="0" y1="400" x2="800" y2="400" class="matrix-axis-line" /> <!-- Sunset to Sunrise -->
+
+        <!-- Elastic Orbital Guide Tracks -->
+        <circle id="sun-track-vector" cx="400" cy="400" r="160" class="orbit-path inner-layer" />
+        <circle id="moon-track-vector" cx="400" cy="400" r="280" class="orbit-path outer-layer" />
+
+        <!-- Moving Observation Spheres -->
+        <circle id="sun-bead-node" cx="400" cy="240" r="15" class="celestial-node sun-element" />
+        <circle id="moon-bead-node" cx="400" cy="120" r="11" class="celestial-node moon-element" />
+
+        <!-- Pinned Center Rosetta Translation Anchor -->
+        <g class="gregorian-translation-hub">
+            <circle cx="400" cy="400" r="65" class="center-anchor-plate" />
+            <text x="400" y="406" id="gregorian-center-clock" text-anchor="middle">--:--</text>
+        </g>
+    </svg>
+</div>

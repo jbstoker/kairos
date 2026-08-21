@@ -69,18 +69,37 @@ function renderLocally() {
     updateHeaderReadout(localTimeHHMMSS(new Date()));
 }
 
+// When the backend has recently confirmed itself down, keep rendering from
+// the local fallback instead of re-polling every second (avoids noisy 404s
+// on static hosting). The backend is re-probed every 30 s.
+let backendDownAt = 0;
+const BACKEND_RETRY_MS = 30000;
+
 function tickRadialGauge() {
+    const now = Date.now();
+    if (backendDownAt && now - backendDownAt < BACKEND_RETRY_MS) {
+        renderLocally();
+        return;
+    }
     fetch('/api/radial', { cache: 'no-store' })
-        .then(res => res.ok ? res.json() : null)
-        .then(data => {
-            if (data) {
-                updateHeaderDistanceClock(data.sun_radial, data.moon_radial);
-                updateHeaderReadout(data.gregorian);
-                return;
+        .then(res => {
+            if (!res.ok) {
+                backendDownAt = now;
+                renderLocally(); // backend absent → compute in the browser
+                return null;
             }
-            renderLocally(); // backend absent → compute in the browser
+            return res.json();
         })
-        .catch(() => renderLocally());
+        .then(data => {
+            if (!data) return;
+            backendDownAt = 0;
+            updateHeaderDistanceClock(data.sun_radial, data.moon_radial);
+            updateHeaderReadout(data.gregorian);
+        })
+        .catch(() => {
+            backendDownAt = now;
+            renderLocally();
+        });
 }
 
 // Manual trigger: re-anchor by forcing an immediate frame.

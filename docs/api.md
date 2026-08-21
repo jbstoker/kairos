@@ -251,6 +251,25 @@ concentric ring diameters breathe with the true radial distance anomalies.
   same anomaly formulas in the browser and ticks the Gregorian readout from
   the local clock.
 
+## Concentric observation matrix (counter-clockwise orbit)
+
+Under the Now tab, the **concentric observation matrix** maps the Sun and
+Moon along counter-clockwise orbits — Noon at the top (0 rad), Sunrise
+right (+π/2), Night bottom (π), Sunset left (−π/2) — with a minimalist
+Gregorian clock pinned at the centre. The orbital radii breathe with the
+true eccentric anomalies, so supermoons, micromoons, and total vs annular
+eclipses become visible when the bodies share an angular vector.
+
+- `web/static/js/astronomy_engine.js` — `CelestialMetrics` (shared client
+  math): `getSunRadialFactor` / `getMoonRadialFactor` (spec) plus the
+  counter-clockwise angle solver (equation of time, lunar elongation).
+- `web/static/js/canvas_renderer.js` — `renderCelestialPositions` polar→
+  cartesian mapper (Noon = 0 offset) + the 1 s render loop.
+- `web/templates/concentric_view.html` — the canonical SVG fragment;
+  the identical markup is injected into `web/index.html` under the tabs.
+- Fully client-side: no backend required, so it runs on GitHub Pages and
+  offline, in lockstep with the observation-driven app.
+
 ## Precession checksum
 
 The first celestial checksum — a verifiable relationship between the
