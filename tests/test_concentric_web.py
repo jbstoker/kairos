@@ -1,10 +1,11 @@
 """Web test: true elliptical orbits + eclipse detection.
 
-Pins the counter-clockwise layout (web/static/js/astronomy_engine.js +
-web/static/js/canvas_renderer.js): Noon at the top (0 rad), Sunrise right
-(+π/2), Night bottom (π), Sunset left (−π/2). Sun/Moon distances derive
-from the true eccentricities (1 − e·cos θ) so the <ellipse> tracks and
-beads breathe together; when the bodies align AND the Moon is at a node an
+Pins the celestial layout (web/static/js/astronomy_engine.js +
+web/static/js/canvas_renderer.js) on the true axis: facing south, the sun
+rises in the east — Midnight at the bottom (0 rad), Sunrise LEFT (π/2),
+Noon at the top (π), Sunset RIGHT (3π/2). Sun/Moon distances derive from
+the true eccentricities (1 − e·cos θ) so the <ellipse> tracks and beads
+breathe together; when the bodies align AND the Moon is at a node an
 eclipse is detected with glowing-bead + status feedback.
 
 Runs under node with a minimal DOM stub, like the other web tests.
@@ -56,30 +57,30 @@ const engine = require('./web/static/js/astronomy_engine.js');
 const renderer = require('./web/static/js/canvas_renderer.js');
 const m = new engine.CelestialMetrics(0);
 
-// Apparent solar noon for a UTC date, using the engine's own equation of time.
-function solarNoonUTC(y, mo, d) {
-    const noon = Date.UTC(y, mo - 1, d, 12, 0, 0) / 1000;
-    const eotHours = m.equationOfTimeMinutes(m.dayOfYearUTC(noon)) / 60;
-    return noon - eotHours * 3600;
-}
-
-const noon = solarNoonUTC(2026, 3, 20);
+// The dial reads the LOCAL wall clock, so build the cardinal instants from
+// the local clock too — timezone-independent (every machine's own midnight).
+const d0 = new Date(); d0.setHours(0, 0, 0, 0);
+const d6 = new Date(d0); d6.setHours(6, 0, 0, 0);
+const d12 = new Date(d0); d12.setHours(12, 0, 0, 0);
+const d18 = new Date(d0); d18.setHours(18, 0, 0, 0);
+const probe = d0.getTime() / 1000;
 const out = {
     angles: {
-        sunNoon: m.getSunAngle(noon),
-        sunSunrise: m.getSunAngle(noon - 6 * 3600),
-        sunNight: m.getSunAngle(noon - 12 * 3600),
-        sunSunset: m.getSunAngle(noon + 6 * 3600)
+        sunMidnight: m.getSunAngle(d0.getTime() / 1000),
+        sunSunrise: m.getSunAngle(d6.getTime() / 1000),
+        sunNoon: m.getSunAngle(d12.getTime() / 1000),
+        sunSunset: m.getSunAngle(d18.getTime() / 1000)
     },
     nodeAngle: {
-        value: m.moonNodeAngleRadians(noon),
-        isFinite: isFinite(m.moonNodeAngleRadians(noon)),
-        boolAgrees: (Math.abs(m.moonNodeAngleRadians(noon)) * 180 / Math.PI < 12)
-            === m.isMoonAtLunarNode(noon)
+        value: m.moonNodeAngleRadians(probe),
+        isFinite: isFinite(m.moonNodeAngleRadians(probe)),
+        boolAgrees: (Math.abs(m.moonNodeAngleRadians(probe)) * 180 / Math.PI < 12)
+            === m.isMoonAtLunarNode(probe)
     }
 };
 
-// Frame: sun Noon (0), moon Sunrise (+π/2) → not aligned → no eclipse.
+// Frame: sun Midnight (0 rad → bottom), moon Sunrise (π/2 → left).
+// Not aligned → no eclipse.
 renderer.updatePlanetaryCanvas(0, 0.0167, Math.PI / 2, 0.0549, 0.5, '14:30');
 out.frame1 = {
     sunRx: parseFloat(elements['sun-orbit-line']._attrs.rx),
@@ -133,12 +134,15 @@ class TestEllipticalMatrixWeb(unittest.TestCase):
         return json.loads(proc.stdout)
 
     def test_angle_cardinal_mapping(self):
-        """Noon=top(0), Sunrise=right(+π/2), Night=bottom(π), Sunset=left(−π/2)."""
+        """Midnight=bottom(0), Sunrise=left(π/2), Noon=top(π), Sunset=right(3π/2)."""
         out = self._run()
-        self.assertAlmostEqual(out["angles"]["sunNoon"], 0.0, places=6)
+        self.assertAlmostEqual(out["angles"]["sunNoon"], math.pi, places=6)
         self.assertAlmostEqual(out["angles"]["sunSunrise"], math.pi / 2, places=6)
-        self.assertAlmostEqual(abs(out["angles"]["sunNight"]), math.pi, places=6)
-        self.assertAlmostEqual(out["angles"]["sunSunset"], -math.pi / 2, places=6)
+        # Midnight is 0 rad (bottom) — the engine returns 0 or 2π−ε on one
+        # side of the day boundary.
+        night = out["angles"]["sunMidnight"] % (2 * math.pi)
+        self.assertAlmostEqual(min(night, 2 * math.pi - night), 0.0, places=6)
+        self.assertAlmostEqual(out["angles"]["sunSunset"], 3 * math.pi / 2, places=6)
 
     def test_moon_node_angle(self):
         out = self._run()
@@ -147,17 +151,19 @@ class TestEllipticalMatrixWeb(unittest.TestCase):
 
     def test_elliptical_distance_and_bead_lock(self):
         out = self._run()
-        # At θ=0: sunDistance = 1 − 0.0167 → rx=165·(1−0.0167), ry=rx·(1−0.0167).
+        # At θ=0 (midnight): sunDistance = 1 − 0.0167 → rx=165·(1−0.0167),
+        # ry=rx·(1−0.0167); the bead sits BOTTOM on the new celestial axis.
         self.assertAlmostEqual(out["frame1"]["sunRx"], 165 * (1 - 0.0167), places=4)
         self.assertAlmostEqual(out["frame1"]["sunRy"],
                                165 * (1 - 0.0167) ** 2, places=4)
         self.assertAlmostEqual(out["frame1"]["sunX"], 400.0, places=4)
         self.assertAlmostEqual(out["frame1"]["sunY"],
-                               400 - 165 * (1 - 0.0167) ** 2, places=4)
-        # Moon at +π/2: cos=0 → distance=1 → rx=285, ry=285·(1−0.0549).
+                               400 + 165 * (1 - 0.0167) ** 2, places=4)
+        # Moon at +π/2 (sunrise): cos=0 → distance=1 → rx=285, ry=285·(1−0.0549);
+        # the bead sits LEFT (east) on the true celestial axis.
         self.assertAlmostEqual(out["frame1"]["moonRx"], 285.0, places=4)
         self.assertAlmostEqual(out["frame1"]["moonRy"], 285 * (1 - 0.0549), places=4)
-        self.assertAlmostEqual(out["frame1"]["moonX"], 685.0, places=4)
+        self.assertAlmostEqual(out["frame1"]["moonX"], 115.0, places=4)
         self.assertAlmostEqual(out["frame1"]["moonY"], 400.0, places=4)
         # Beads sit on their ellipses.
         sx = (out["frame1"]["sunX"] - 400) / out["frame1"]["sunRx"]

@@ -250,16 +250,18 @@ matrix (and available for other layers):
 ## Concentric observation matrix (elliptical, counter-clockwise)
 
 The #kstDisplay master spatial panel maps the Sun and Moon along
-counter-clockwise orbits — Noon at the top (0 rad), Sunrise right (+π/2),
-Night bottom (π), Sunset left (−π/2) — with a minimalist Gregorian clock
+counter-clockwise orbits on the true celestial axis (facing south) —
+Midnight at the bottom (0 rad), Sunrise LEFT / east (π/2), Noon at the top
+(π), Sunset RIGHT / west (3π/2) — with a minimalist Gregorian clock
 pinned at the centre. The paths are TRUE <ellipse> layers (sun rx 165 /
 ry 162 rotated 102°, moon rx 285 / ry 270) whose rx/ry stretch dynamically
 with the eccentric radial factors, so supermoons, micromoons, and total vs
 annular eclipses become visible when the bodies share an angular vector.
 
 - `web/static/js/astronomy_engine.js` — `CelestialMetrics` (shared client
-  math): radial factors, the counter-clockwise angle solver (equation of
-  time, lunar elongation), and the lunar-node detector.
+  math): radial factors, the day-as-position dial solver (local clock × 360°,
+  identical to the solar-time engine, plus lunar elongation), and the
+  lunar-node detector.
 - `web/static/js/canvas_renderer.js` — `updatePlanetaryCanvas(sunAngle,
   sunEccentricity, moonAngle, moonEccentricity, moonNodeAngle,
   targetGregorianTime)`: true elliptical distances (`1 − e·cos θ`) with the

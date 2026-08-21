@@ -12,13 +12,15 @@
 
         <!-- Dynamic Alignment Crosshairs -->
         <line x1="400" y1="40" x2="400" y2="760" class="matrix-axis" />   <!-- Noon to Night Axis -->
-        <line x1="40" y1="400" x2="760" y2="400" class="matrix-axis" />   <!-- Sunset to Sunrise Axis -->
+        <line x1="40" y1="400" x2="760" y2="400" class="matrix-axis" />   <!-- Sunrise to Sunset Axis -->
 
-        <!-- FIXED GEOMETRIC LABELS (Embedded in SVG to prevent breaking) -->
+        <!-- FIXED GEOMETRIC LABELS (Embedded in SVG to prevent breaking).
+             True celestial axis: the sun rises in the EAST (left) and sets
+             in the WEST (right), facing south. -->
         <text x="400" y="30" text-anchor="middle" class="quadrant-label">NOON</text>
-        <text x="775" y="405" text-anchor="start" class="quadrant-label">SUNRISE</text>
+        <text x="25" y="405" text-anchor="end" class="quadrant-label">SUNRISE</text>
         <text x="400" y="785" text-anchor="middle" class="quadrant-label">NIGHT / MIDNIGHT</text>
-        <text x="25" y="405" text-anchor="end" class="quadrant-label">SUNDOWN / SUNSET</text>
+        <text x="775" y="405" text-anchor="start" class="quadrant-label">SUNDOWN / SUNSET</text>
 
         <!-- True Breathing Elliptical Tracks -->
         <!-- Stretched out and rotated to match true Earth/Moon orbital paths -->

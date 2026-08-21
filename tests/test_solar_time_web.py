@@ -43,8 +43,10 @@ class TestSolarTimeJs(unittest.TestCase):
             "process.stdout.write(JSON.stringify({\n"
             "  degrees: st.getSolarDegrees(),\n"
             "  display: st.getKairosTimeDisplay(),\n"
-            "  q06: st.degreesToKairosTime(90),\n"
+            "  midnight: st.degreesToKairosTime(0),\n"
+            "  sunrise: st.degreesToKairosTime(90),\n"
             "  noon: st.degreesToKairosTime(180),\n"
+            "  sunset: st.degreesToKairosTime(270),\n"
             "  greg: st.getGregorianTime()\n"
             "}));\n"
         )
@@ -52,12 +54,15 @@ class TestSolarTimeJs(unittest.TestCase):
                               text=True, encoding="utf-8")
         self.assertEqual(proc.returncode, 0, proc.stderr)
         out = json.loads(proc.stdout)
-        # 12:00 local = half a 24h day = 180° on the 360° dial.
-        self.assertEqual(out["degrees"], 180.0)
+        # The dial: 0°=midnight (bottom), 90°=sunrise (LEFT), 180°=noon (top),
+        # 270°=sunset (RIGHT) — the displayed degrees are the bead's position.
+        self.assertEqual(out["degrees"], 180.0)          # 12:00 = half a day
         self.assertTrue(out["display"].startswith("12:00 ("))
         self.assertIn("180.0", out["display"])
-        self.assertEqual(out["q06"], "06:00")
+        self.assertEqual(out["midnight"], "00:00")
+        self.assertEqual(out["sunrise"], "06:00")
         self.assertEqual(out["noon"], "12:00")
+        self.assertEqual(out["sunset"], "18:00")
         self.assertRegex(out["greg"], r"^\d{2}:\d{2}$")
 
 

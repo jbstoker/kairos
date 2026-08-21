@@ -1,11 +1,13 @@
 /* Kairos — Planetary Canvas Renderer
  * True elliptical orbits + eclipse detection.
  *
- * Maps the counter-clockwise orbital angles onto the master spatial viewport
- * (the #kstDisplay panel). Sun and Moon distances are derived from the true
- * eccentricities (1 − e·cos θ), so the <ellipse> tracks and beads breathe
- * together. When the bodies align AND the Moon is at a node, an eclipse is
- * detected and the beads glow + the status line lights up.
+ * Maps the orbital angles onto the master spatial viewport (the #kstDisplay
+ * panel) with the true celestial axis: facing south, the sun rises in the
+ * east (LEFT, θ=π/2) and sets in the west (RIGHT, θ=3π/2); noon is TOP
+ * (θ=π) and midnight BOTTOM (θ=0). Sun and Moon distances are derived from
+ * the true eccentricities (1 − e·cos θ), so the <ellipse> tracks and beads
+ * breathe together. When the bodies align AND the Moon is at a node, an
+ * eclipse is detected and the beads glow + the status line lights up.
  */
 
 function updatePlanetaryCanvas(sunAngle, sunEccentricity, moonAngle, moonEccentricity, moonNodeAngle, targetGregorianTime) {
@@ -37,8 +39,10 @@ function updatePlanetaryCanvas(sunAngle, sunEccentricity, moonAngle, moonEccentr
     if (sunTrack && sunBead) {
         sunTrack.setAttribute('rx', sunRx);
         sunTrack.setAttribute('ry', sunRy);
-        sunBead.setAttribute('cx', cx + sunRx * Math.sin(sunAngle));
-        sunBead.setAttribute('cy', cy - sunRy * Math.cos(sunAngle));
+        // True celestial axis: x = cx − rx·sin(θ), y = cy + ry·cos(θ), so
+        // sunrise (θ=π/2) sits LEFT, noon (θ=π) TOP, sunset (θ=3π/2) RIGHT.
+        sunBead.setAttribute('cx', cx - sunRx * Math.sin(sunAngle));
+        sunBead.setAttribute('cy', cy + sunRy * Math.cos(sunAngle));
         if (isEclipse) {
             sunBead.setAttribute('fill', '#ff6b35');
             sunBead.setAttribute('r', '20');
@@ -56,8 +60,8 @@ function updatePlanetaryCanvas(sunAngle, sunEccentricity, moonAngle, moonEccentr
     if (moonTrack && moonBead) {
         moonTrack.setAttribute('rx', moonRx);
         moonTrack.setAttribute('ry', moonRy);
-        moonBead.setAttribute('cx', cx + moonRx * Math.sin(moonAngle));
-        moonBead.setAttribute('cy', cy - moonRy * Math.cos(moonAngle));
+        moonBead.setAttribute('cx', cx - moonRx * Math.sin(moonAngle));
+        moonBead.setAttribute('cy', cy + moonRy * Math.cos(moonAngle));
         if (isEclipse) {
             moonBead.setAttribute('fill', '#8b0000');
             moonBead.setAttribute('r', '14');

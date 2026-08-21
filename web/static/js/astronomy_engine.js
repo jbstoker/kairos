@@ -1,19 +1,22 @@
 /* Kairos shared client math — CelestialMetrics.
  *
- * Computes the counter-clockwise orbital geometry of the concentric
- * observation matrix:
+ * Computes the orbital geometry of the concentric observation matrix with the
+ * true celestial axis (facing south, northern hemisphere): the sun rises in
+ * the east (LEFT) and sets in the west (RIGHT).
  *
- *     Top (0 rad)      = NOON   (solar culmination)
- *     Right (π/2 rad)  = SUNRISE (dawn)
- *     Bottom (π rad)   = NIGHT  (midnight)
- *     Left (3π/2 rad)  = SUNSET / SUNDOWN (dusk)
+ *     Bottom (0 rad)   = MIDNIGHT (0:00)
+ *     Left (π/2 rad)   = SUNRISE  (east, 6:00)
+ *     Top (π rad)      = NOON     (solar culmination)
+ *     Right (3π/2 rad) = SUNSET / SUNDOWN (west, 18:00)
  *
- * All movement is counter-clockwise. The radial distance factors breathe
- * with the true eccentric anomalies (perihelion/aphelion for the Sun,
- * perigee/apogee for the Moon), so the layout visually exposes supermoons,
- * micromoons, and total vs annular eclipses when the bodies share an angular
- * vector. Pure client-side — no backend needed (GitHub Pages, file://,
- * offline).
+ * The angle is the fraction of the LOCAL day × 360° — exactly the dial the
+ * solar-time engine displays — so the displayed degrees ARE the bead's
+ * position. All movement is counter-clockwise over the day: midnight → sunrise
+ * → noon → sunset. The radial distance factors breathe with the true
+ * eccentric anomalies (perihelion/aphelion for the Sun, perigee/apogee for
+ * the Moon), so the layout visually exposes supermoons, micromoons, and total
+ * vs annular eclipses when the bodies share an angular vector. Pure
+ * client-side — no backend needed (GitHub Pages, file://, offline).
  */
 
 class CelestialMetrics {
@@ -57,7 +60,7 @@ class CelestialMetrics {
         return 1 + 0.0549 * Math.cos(anomaly);
     }
 
-    // ---- Angles (counter-clockwise sweep, Noon = 0 at the top zenith) -------
+    // ---- Angles (the day as a position: 0 rad = midnight, π = noon) -----------
 
     dayOfYearUTC(unixTimestamp) {
         const d = new Date(unixTimestamp * 1000);
@@ -70,6 +73,12 @@ class CelestialMetrics {
         return 9.87 * Math.sin(2 * b) - 7.53 * Math.cos(b) - 1.5 * Math.sin(b);
     }
 
+    /**
+     * True solar hour angle (radians) — the astronomical variant with the
+     * equation of time and configured longitude. Kept for API completeness;
+     * the dial itself (getSunAngle/getMoonAngle) reads the local wall clock
+     * so its position always matches the displayed degrees.
+     */
     solarHourAngleRadians(unixTimestamp) {
         const ts = Number(unixTimestamp);
         const utcHours = (((ts % this.SECONDS_PER_DAY) + this.SECONDS_PER_DAY)
@@ -77,6 +86,20 @@ class CelestialMetrics {
         const eotHours = this.equationOfTimeMinutes(this.dayOfYearUTC(ts)) / 60;
         const lst = (((utcHours + this.longitudeDeg / this.DEG_PER_HOUR + eotHours) % 24) + 24) % 24;
         return (lst - 12) * this.RAD_PER_HOUR;
+    }
+
+    /**
+     * Dial position from the LOCAL wall clock (fraction of the local day × 2π),
+     * identical to web/static/js/solar_time.js's getSolarDegrees — so the
+     * displayed degrees ARE the bead's position:
+     * 0 rad = midnight (bottom), π/2 = sunrise (left), π = noon (top),
+     * 3π/2 = sunset (right).
+     */
+    dayPositionRadians(unixTimestamp) {
+        const d = new Date(unixTimestamp * 1000);
+        const ms = d.getHours() * 3600000 + d.getMinutes() * 60000
+                   + d.getSeconds() * 1000 + d.getMilliseconds();
+        return ms / 86400000 * 2 * Math.PI;
     }
 
     lunarAgeDays(unixTimestamp) {
@@ -87,16 +110,18 @@ class CelestialMetrics {
     }
 
     getSunAngle(unixTimestamp) {
-        // θ_sun = −H: H=0 at solar noon → top; −π/2 at sunrise → right, etc.
-        return -this.solarHourAngleRadians(unixTimestamp);
+        // θ_sun = fraction of the LOCAL day × 360°: 0 at midnight (bottom),
+        // π/2 at sunrise (left), π at noon (top), 3π/2 at sunset (right).
+        return this.dayPositionRadians(unixTimestamp);
     }
 
     getMoonAngle(unixTimestamp) {
-        // The Moon's elongation (read from its age) shifts the solar hour
-        // angle: new moon shares the Sun's ray (eclipse), full moon opposes it.
+        // The Moon's elongation (read from its age) shifts the sun's dial
+        // position: new moon shares the Sun's ray (eclipse), full moon
+        // opposes it.
         const elongation = this.lunarAgeDays(unixTimestamp)
                            / this.SYNODIC_MONTH_DAYS * 2 * Math.PI;
-        return -(this.solarHourAngleRadians(unixTimestamp) + elongation);
+        return this.dayPositionRadians(unixTimestamp) + elongation;
     }
 
     /**
