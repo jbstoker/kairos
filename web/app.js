@@ -141,36 +141,13 @@ function updateDisplay() {
 
     const d = traditionDate(dayOfYear(new Date()), TRADITIONS[tradition]);
 
-    const noon = getLast('solar_noon');
-    let noonText = '';
-    if (noon) {
-        const n = new Date(noon.timestamp);
-        const hh = String(n.getHours()).padStart(2, '0');
-        const mm = String(n.getMinutes()).padStart(2, '0');
-        noonText = t('app.noon_observed', { time: `${hh}:${mm}` });
-    }
-
-    const solarEl = document.getElementById('solarTime');
-    if (solarEl) {
-        solarEl.textContent = solarTime;
-        solarEl.title = solar
-            ? t('app.solar_noon_title')
-            : t('app.solar_no_noon_title');
-    }
-    if (!window.__kstActive) {
-        // KST (celestial engine) owns the moon display when it is live.
-        document.getElementById('moonDisplay').textContent = moonEmoji;
-    }
-    document.getElementById('seasonDisplay').textContent =
-        season ? `${trName('season.', season)} (${TRADITION_LABEL[tradition] || tradition})` : t('display.observing');
-    document.getElementById('calendarDisplay').textContent = `${trName('month.', d.month)} ${d.day}`;
-    document.getElementById('noonDisplay').textContent = noonText;
-    document.getElementById('gregorian').textContent =
-        t('gregorian.prefix', { date: new Date().toLocaleString() });
-    const tradEl = document.getElementById('traditionDisplay');
-    if (tradEl) {
-        tradEl.textContent = `${TRADITION_EMOJI[tradition] || '🌌'} ${TRADITION_LABEL[tradition] || tradition} · ${t('app.optional_layer')}`;
-    }
+    // The unified kstDisplay panel header carries the active context:
+    // tradition · calendar date · observation-driven solar time.
+    const datePart = `${trName('month.', d.month)} ${d.day}`;
+    let context = `${TRADITION_EMOJI[tradition] || '🌌'} ${TRADITION_LABEL[tradition] || tradition} · ${datePart}`;
+    if (solar) context += ` · ☀️ ${solarTime}`;
+    window.KAIROS_CONTEXT_LABEL = context;
+    if (window.refreshUnifiedPanel) window.refreshUnifiedPanel();
     document.getElementById('status').textContent = t('app.status_moon_season', {
         moon: moonIdx !== null ? trName('moon.', phaseName(moonIdx)) : t('app.unknown'),
         season: season ? trName('season.', season) : t('display.observing')
@@ -224,16 +201,17 @@ async function updateSelfCheck() {
 let capturedMomentDataURL = null;
 
 function getKairosDisplayString() {
-    const kst = document.getElementById('kstDisplay');
+    const kst = document.getElementById('kstDisplayLine');
     if (kst && kst.textContent && !kst.textContent.startsWith('--')) return kst.textContent;
-    const time = document.getElementById('solarTime')?.textContent || '--:--';
-    const season = document.getElementById('seasonDisplay')?.textContent || 'Observing...';
-    return `${time} · ${season}`;
+    const context = document.getElementById('observed-date-label')?.textContent || 'Observing Active Context...';
+    return context;
 }
 
 function buildShareText() {
     const kst = getKairosDisplayString();
-    const greg = document.getElementById('gregorian')?.textContent || '';
+    const clock = document.getElementById('gregorian-center-clock')?.textContent
+        || new Date().toLocaleTimeString();
+    const greg = `(Gregorian: ${new Date().toLocaleDateString()} ${clock})`;
     const season = (window.__kstData && window.__kstData.season) || '—';
     let loc = '';
     try {

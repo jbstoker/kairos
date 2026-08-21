@@ -270,6 +270,24 @@ eclipses become visible when the bodies share an angular vector.
 - Fully client-side: no backend required, so it runs on GitHub Pages and
   offline, in lockstep with the observation-driven app.
 
+## Unified kstDisplay panel (consolidated dashboard)
+
+The plain `.display` card and the scattered KST layers (one-line, Gregorian
+line, tradition line, seasonal wheel, metric rows) were removed and
+consolidated into a single `#kstDisplay` dashboard panel:
+
+- **Active Selected Date Context Header** (`#observed-date-label`) — the
+  tradition · calendar date · observation-driven solar time.
+- **The Integrated Concentric Planetary Layout** — the observation matrix,
+  with the Gregorian anchor clock pinned at its centre.
+- **Consolidated metadata grid** — solar longitude, lunar age, active
+  planets, and celestial season.
+- `web/static/js/app_controller.js` — `updateUnifiedDisplayPanel
+  (selectedDateTimeState)` binds the panel to the current real-time (or an
+  optionally selected date), re-routing the observation/tradition layers
+  straight into the unified nodes and triggering the counter-clockwise
+  canvas redraw.
+
 ## Precession checksum
 
 The first celestial checksum — a verifiable relationship between the

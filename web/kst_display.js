@@ -211,7 +211,7 @@
         const yearStr = formatYear(getEarthAge(now));
         const dayIcon = DAY_ICONS[kd.weekday] || '';
         const seasonIcon = SEASON_ICONS[kairosSeason] || '';
-        setText('kstDisplay',
+        setText('kstDisplayLine',
             `${timeStr} · ${dayIcon}${trName('day.', kd.weekday)} · ${trName('month.', kd.month)} ${kd.day} · ${seasonIcon}${trName('season.', kairosSeason)} · ${yearStr}`);
     }
 
@@ -277,33 +277,16 @@
     function renderKST(data) {
         if (!data) return;
         const season = data.season || getSeason(data.solar_longitude);
-        const color = SEASON_COLORS[season] || '#4a6fa5';
-        const wheel = document.getElementById('kstWheel');
-        if (wheel) {
-            wheel.style.background = `radial-gradient(circle at center, ${color} 0%, #0b0e14 100%)`;
-        }
-        const sun = document.getElementById('sunIndicator');
-        if (sun) sun.style.transform = `rotate(${(data.solar_longitude || 0) % 360}deg)`;
 
-        const moonEmojis = ['🌑', '🌒', '🌓', '🌔', '🌕', '🌖', '🌗', '🌘'];
-        const phaseIndex = Math.floor(((data.lunar_phase || 0) % 1) * 8) % 8;
-        const moonEl = document.getElementById('moonDisplay');
-        if (moonEl) moonEl.textContent = data.moon_emoji || moonEmojis[phaseIndex];
-
-        setText('solarLongitude', `${data.solar_longitude ?? '--'}°`);
-        setText('lunarAge', `${data.lunar_age ?? '--'} ${t('kst.days')}`);
-        setText('siderealDisplay', data.sidereal_time || '--:--');
-        setText('kstSeason', trName('season.', season));
-
-        renderStarDisplay(data);
-
-        // Let the help/energy layer (help.js) consume the fresh snapshot.
+        // The unified kstDisplay panel (web/static/js/app_controller.js)
+        // renders the concentric matrix, the Gregorian anchor, the metadata
+        // grid and the observed context from this fresh snapshot.
         window.__kstData = data;
         if (window.renderTodaysEnergy) renderTodaysEnergy(data);
-        if (window.renderPlanetStrip) renderPlanetStrip(data);
 
         // One-line KST summary: "14:32 · Solaris 16 · Summer · 4.54B / 2026.624"
         updateKSTSummary(season);
+        if (window.refreshUnifiedPanel) window.refreshUnifiedPanel();
     }
 
     // ---- Update loop ----------------------------------------------------------

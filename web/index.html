@@ -57,56 +57,72 @@
     <!-- Tab: the top view — what the sky is saying now -->
     <div class="tab-panel" id="tabNow">
 
-    <!-- Concentric observation matrix — counter-clockwise orbit layout
-         (canonical source: web/templates/concentric_view.html) -->
-    <div class="kairos-spatial-container">
-        <svg id="kairos-observation-matrix" viewBox="0 0 800 800" width="100%" height="100%">
-            <!-- Structural Axis Bars -->
-            <line x1="400" y1="0" x2="400" y2="800" class="matrix-axis-line" /> <!-- Noon to Night -->
-            <line x1="0" y1="400" x2="800" y2="400" class="matrix-axis-line" /> <!-- Sunset to Sunrise -->
+    <!-- Kairos Time (KST) — the unified display panel. Consolidates the old
+         plain .display card, the KST one-line, the Gregorian anchor, the
+         tradition line, the seasonal wheel and the metric rows into a single
+         dashboard. Concentric fragment: web/templates/concentric_view.html -->
+    <div id="kstDisplay" class="card kst-unified-display-panel">
+        <!-- Active Selected Date Context Header -->
+        <div class="display-header">
+            <span id="observed-date-label">Observing Active Context...</span>
+        </div>
 
-            <!-- Elastic Orbital Guide Tracks -->
-            <circle id="sun-track-vector" cx="400" cy="400" r="160" class="orbit-path inner-layer" />
-            <circle id="moon-track-vector" cx="400" cy="400" r="280" class="orbit-path outer-layer" />
+        <!-- The Kairos Time one-line (wall clock · day · month · season · year) -->
+        <div class="kst-primary-line" id="kstDisplayLine">--:-- · -- · -- · -- · --</div>
 
-            <!-- Moving Observation Spheres -->
-            <circle id="sun-bead-node" cx="400" cy="240" r="15" class="celestial-node sun-element" />
-            <circle id="moon-bead-node" cx="400" cy="120" r="11" class="celestial-node moon-element" />
+        <!-- The Integrated Concentric Planetary Layout Container -->
+        <div class="spatial-matrix-wrapper">
+            <div class="kairos-spatial-container">
+                <svg id="kairos-observation-matrix" viewBox="0 0 800 800" width="100%" height="100%">
+                    <!-- Structural Axis Bars -->
+                    <line x1="400" y1="0" x2="400" y2="800" class="matrix-axis-line" /> <!-- Noon to Night -->
+                    <line x1="0" y1="400" x2="800" y2="400" class="matrix-axis-line" /> <!-- Sunset to Sunrise -->
 
-            <!-- Pinned Center Rosetta Translation Anchor -->
-            <g class="gregorian-translation-hub">
-                <circle cx="400" cy="400" r="65" class="center-anchor-plate" />
-                <text x="400" y="406" id="gregorian-center-clock" text-anchor="middle">--:--</text>
-            </g>
-        </svg>
-    </div>
+                    <!-- Elastic Orbital Guide Tracks -->
+                    <circle id="sun-track-vector" cx="400" cy="400" r="160" class="orbit-path inner-layer" />
+                    <circle id="moon-track-vector" cx="400" cy="400" r="280" class="orbit-path outer-layer" />
 
-    <div class="display">
-        <div class="time" id="solarTime">--:--</div>
-        <div class="moon" id="moonDisplay">🌑</div>
-        <div class="season" id="seasonDisplay" data-i18n="display.observing">Observing...</div>
-        <div class="calendar" id="calendarDisplay"></div>
-        <div class="calendar" id="noonDisplay"></div>
-    </div>
+                    <!-- Moving Observation Spheres -->
+                    <circle id="sun-bead-node" cx="400" cy="240" r="15" class="celestial-node sun-element" />
+                    <circle id="moon-bead-node" cx="400" cy="120" r="11" class="celestial-node moon-element" />
 
-    <!-- Kairos Time (KST) — the primary display. All else is a reference. -->
-    <div class="kst-primary" id="kstDisplay">--:-- · -- · -- · -- · --</div>
-    <div class="kst-gregorian" id="gregorian">(Gregorian: --)</div>
-    <div class="kst-tradition" id="traditionDisplay">--</div>
-    <div class="kst-actions">
-        <button class="action-btn" id="captureBtn" data-i18n="action.capture" data-i18n-title="action.capture.title" title="Take a photo and stamp it with this Kairos moment">📸 Capture Moment</button>
-        <button class="action-btn" id="shareBtn" data-i18n="action.share" data-i18n-title="action.share.title" title="Export this moment as text or image">📤 Share This Moment</button>
-    </div>
-    <div class="kst-wheel" id="kstWheel">
-        <div class="sun-indicator" id="sunIndicator">☀️</div>
-    </div>
-    <div class="kst-display">
-        <div class="kst-row"><span data-i18n="kst.solar_longitude">🌞 Solar Longitude</span><span id="solarLongitude">--°</span></div>
-        <div class="kst-row"><span data-i18n="kst.lunar_age">🌙 Lunar Age</span><span id="lunarAge">-- days</span></div>
-        <div class="kst-row"><span data-i18n="kst.sidereal_time">🌀 Sidereal Time</span><span id="siderealDisplay">--:--</span></div>
-        <div class="kst-row"><span data-i18n="kst.visible_star">⭐ Visible Star</span><span id="starDisplay">--</span></div>
-        <div class="kst-row"><span data-i18n="kst.celestial_season">🌍 Celestial Season</span><span id="kstSeason">--</span></div>
-        <div class="kst-row"><span data-i18n="kst.planets">🪐 Planets</span><span id="planetDisplay">--</span></div>
+                    <!-- Pinned Center Rosetta Translation Anchor -->
+                    <g class="gregorian-translation-hub">
+                        <circle cx="400" cy="400" r="65" class="center-anchor-plate" />
+                        <text x="400" y="406" id="gregorian-center-clock" text-anchor="middle">--:--</text>
+                    </g>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Consolidated Environmental & Planet Metrics Metadata Footer -->
+        <div class="celestial-metadata-grid">
+            <div class="meta-item">
+                <span class="meta-icon">🌞</span>
+                <span class="meta-label">Solar Longitude:</span>
+                <span id="solar-longitude-val">--°</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-icon">🌙</span>
+                <span class="meta-label">Lunar Age:</span>
+                <span id="lunar-age-val">-- days</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-icon">🪐</span>
+                <span class="meta-label">Planets:</span>
+                <span id="active-planets-val">--</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-icon">🌍</span>
+                <span class="meta-label">Celestial Season:</span>
+                <span id="celestial-season-val">--</span>
+            </div>
+        </div>
+
+        <div class="kst-actions">
+            <button class="action-btn" id="captureBtn" data-i18n="action.capture" data-i18n-title="action.capture.title" title="Take a photo and stamp it with this Kairos moment">📸 Capture Moment</button>
+            <button class="action-btn" id="shareBtn" data-i18n="action.share" data-i18n-title="action.share.title" title="Export this moment as text or image">📤 Share This Moment</button>
+        </div>
     </div>
 
     <!-- Today's energy -->
@@ -368,5 +384,6 @@
 <script src="static/js/canvas.js"></script>
 <script src="static/js/astronomy_engine.js"></script>
 <script src="static/js/canvas_renderer.js"></script>
+<script src="static/js/app_controller.js"></script>
 </body>
 </html>

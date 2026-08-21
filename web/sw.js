@@ -10,7 +10,7 @@
 //     newly deployed app takes control of already-open tabs right away, and
 //     any older cache versions are deleted.
 
-const CACHE_NAME = 'kairos-v15';
+const CACHE_NAME = 'kairos-v16';
 const APP_SHELL = [
     'index.html', 'style.css', 'i18n.js', 'app.js', 'checksum_selfcheck.js',
     'tabs.js', 'planets.js', 'observation_methods.js', 'seasonal_defaults.js',
@@ -18,7 +18,9 @@ const APP_SHELL = [
     'phytochemical_display.js', 'kst_display.js', 'help_data.js', 'help.js',
     'lib/suncalc.js', 'manifest.json', 'site.webmanifest', 'logo.svg',
     'favicon-16x16.png', 'favicon-32x32.png', 'apple-touch-icon.png',
-    'icon-192.png'
+    'icon-192.png',
+    'static/js/canvas.js', 'static/js/astronomy_engine.js',
+    'static/js/canvas_renderer.js', 'static/js/app_controller.js'
 ];
 
 self.addEventListener('install', e => {

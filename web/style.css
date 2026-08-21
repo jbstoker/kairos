@@ -1001,3 +1001,76 @@ select {
     font-variant-numeric: tabular-nums;
 }
 
+
+/* ---- Unified kstDisplay panel (consolidated dashboard) ---- */
+.kst-unified-display-panel {
+    background: #1e2632;
+    border-radius: 24px;
+    padding: 16px 14px 14px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.display-header {
+    text-align: center;
+    margin-bottom: 6px;
+}
+
+#observed-date-label {
+    color: #b7c9e2;
+    font-size: 0.82rem;
+    letter-spacing: 1px;
+}
+
+.kst-primary-line {
+    font-size: 0.95rem;
+    font-weight: 300;
+    letter-spacing: 0.5px;
+    color: #f5e6c4;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.spatial-matrix-wrapper {
+    margin: 4px 0;
+}
+
+.spatial-matrix-wrapper .kairos-spatial-container {
+    max-width: 340px;
+    margin: 0 auto 10px;
+    background: transparent;
+    border: none;
+    padding: 0;
+}
+
+.celestial-metadata-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 6px;
+}
+
+.meta-item {
+    background: #141a24;
+    border: 1px solid #2a3442;
+    border-radius: 14px;
+    padding: 8px 10px;
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    font-size: 0.8rem;
+}
+
+.meta-icon { font-size: 0.95rem; }
+
+.meta-label {
+    color: #8e9ab0;
+    white-space: nowrap;
+}
+
+.meta-item span:last-child {
+    margin-left: auto;
+    color: #f5e6c4;
+    text-align: right;
+}
+
