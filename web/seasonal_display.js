@@ -167,18 +167,6 @@
         if (labelEl) labelEl.textContent = trName('season.', season);
         if (!container) return;
 
-        // Seasonal accent on the card border (Emergence/Radiance/Release/Stillness).
-        const seasonalCard = document.querySelector('.seasonal');
-        if (seasonalCard) {
-            ['season-emergence', 'season-radiance', 'season-release', 'season-stillness']
-                .forEach(c => seasonalCard.classList.remove(c));
-            const accent = {
-                Emergence: 'season-emergence', Radiance: 'season-radiance',
-                Release: 'season-release', Stillness: 'season-stillness'
-            }[season];
-            if (accent) seasonalCard.classList.add(accent);
-        }
-
         const result = filtered(season, tradition, region);
         const cards = [];
         result.produce.forEach(item => cards.push(renderCard(item)));

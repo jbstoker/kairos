@@ -387,18 +387,6 @@ select {
     margin: 0 0 12px;
 }
 .config-section select { width: 100%; max-width: none; }
-.seasonal-tune {
-    background: none;
-    border: 1px solid #2a3442;
-    color: #7f93a9;
-    border-radius: 40px;
-    padding: 4px 12px;
-    font-size: 0.75rem;
-    cursor: pointer;
-    font-family: inherit;
-    transition: 0.2s;
-}
-.seasonal-tune:hover { color: #f5e6c4; background: #2c384a; }
 
 /* ---- Calibration & observation controls (Configure tab) ---- */
 .obs-grid {
@@ -496,10 +484,16 @@ select {
     .enter-times-grid .action-btn { margin-top: 0; }
 }
 
-/* ---- Seasonal layer ---- */
+/* Everything with a `hidden` attribute must be truly hidden, even when a
+   class sets a display value (e.g. the collapsible seasonal/energy cards). */
+[hidden] {
+    display: none !important;
+}
+
+/* ---- Seasonal layer (styled like the energy card) ---- */
 .seasonal {
     margin-top: 18px;
-    background: rgba(20, 26, 36, 0.55);
+    background: #1e2632;
     border: 1px solid #2a3442;
     border-radius: 24px;
     padding: 16px;
@@ -691,11 +685,8 @@ select {
     text-align: left;
 }
 
-/* ---- Seasonal accent colours (borders & highlights only, not text) ---- */
-.season-emergence { border-color: #5a8f4a; }
-.season-radiance  { border-color: #d4a54a; }
-.season-release   { border-color: #c4734a; }
-.season-stillness { border-color: #6a7a8a; }
+/* ---- Seasonal cards share the neutral card outline (unified with the
+       energy card — no per-season yellow/coloured borders). ---- */
 
 /* ---- Single-colour, shape-distinct day icons ------------------------------ */
 /* `content` only works on pseudo-elements, so the icon rides ::before.

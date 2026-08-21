@@ -37,8 +37,7 @@
 
     root.switchTab = switchTab;
 
-    // One delegated listener handles the tab buttons and the seasonal
-    // "⚙️ tune" button (which jumps to Configure). Walking up with
+    // One delegated listener handles the tab buttons. Walking up with
     // parentNode keeps it working when `closest` is unavailable.
     document.addEventListener('click', function (e) {
         var el = e.target;
@@ -47,10 +46,6 @@
                 var tab = el.getAttribute('data-tab') ||
                     (el.id === 'tabConfigBtn' ? 'config' : 'now');
                 switchTab(tab);
-                return;
-            }
-            if (el.id === 'seasonalTuneBtn') {
-                switchTab('config');
                 return;
             }
             el = el.parentNode;

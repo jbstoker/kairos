@@ -49,7 +49,7 @@ function makeEl(id) {
     return e;
 }
 const elements = {};
-['tabNow', 'tabConfig', 'tabNowBtn', 'tabConfigBtn', 'seasonalTuneBtn']
+['tabNow', 'tabConfig', 'tabNowBtn', 'tabConfigBtn']
     .forEach(id => elements[id] = makeEl(id));
 const documentStub = {
     getElementById: (id) => elements[id] || null,
@@ -61,7 +61,7 @@ const container = {
     classList: { add() {}, remove() {}, contains() { return false; } },
     getAttribute: () => null
 };
-['tabNowBtn', 'tabConfigBtn', 'seasonalTuneBtn']
+['tabNowBtn', 'tabConfigBtn']
     .forEach(id => elements[id].parentNode = container);
 global.document = documentStub;
 global.window = global;
@@ -79,8 +79,6 @@ click(elements.tabConfigBtn);
 out.afterConfig = JSON.parse(state());
 click(elements.tabNowBtn);
 out.afterNow = JSON.parse(state());
-click(elements.seasonalTuneBtn);
-out.afterTune = JSON.parse(state());
 click(container); // a non-tab click must change nothing
 out.afterNonTab = JSON.parse(state());
 process.stdout.write(JSON.stringify(out));
@@ -117,14 +115,9 @@ class TestTabsWeb(unittest.TestCase):
         self.assertTrue(out["afterNow"]["cfgHidden"])
         self.assertTrue(out["afterNow"]["nowActive"])
 
-    def test_tune_button_jumps_to_configure(self):
-        out = self._run()
-        self.assertTrue(out["afterTune"]["nowHidden"])
-        self.assertFalse(out["afterTune"]["cfgHidden"])
-
     def test_non_tab_click_is_ignored(self):
         out = self._run()
-        self.assertEqual(out["afterNonTab"], out["afterTune"])
+        self.assertEqual(out["afterNonTab"], out["afterNow"])
 
 
 if __name__ == "__main__":

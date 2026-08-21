@@ -31,15 +31,21 @@
         <div class="spatial-matrix-wrapper">
             <svg id="kairos-observation-matrix" viewBox="0 0 800 800" style="width: 90%; max-width: 550px; height: auto; overflow: visible;">
                 <style>
-                    .matrix-axis { stroke: #111111; stroke-width: 2; }
+                    .matrix-axis { stroke: #d4d9e6; stroke-width: 1.5; }
                     .orbit-track { fill: none; stroke: #222222; stroke-width: 1.5; stroke-dasharray: 6,4; }
                     .quadrant-label { fill: #ffffff; font-family: system-ui, sans-serif; font-size: 16px; font-weight: 700; letter-spacing: 2px; opacity: 0.9; }
-                    .rosetta-text { fill: #ffffff; font-family: monospace; font-size: 20px; font-weight: bold; }
+                    .rosetta-text { fill: #ffffff; font-family: monospace; font-size: 28px; font-weight: bold; }
                 </style>
 
-                <!-- Dynamic Alignment Crosshairs -->
-                <line x1="400" y1="40" x2="400" y2="760" class="matrix-axis" />   <!-- Noon to Night Axis -->
-                <line x1="40" y1="400" x2="760" y2="400" class="matrix-axis" />   <!-- Sunrise to Sunset Axis -->
+                <!-- Dynamic Alignment Crosshairs (short, white — like clock hours) -->
+                <line x1="400" y1="120" x2="400" y2="680" class="matrix-axis" />   <!-- Noon to Night Axis -->
+                <line x1="120" y1="400" x2="680" y2="400" class="matrix-axis" />   <!-- Sunrise to Sunset Axis -->
+
+                <!-- Orbital path band — light grey annulus between the sun and
+                     moon rings so the orbit path reads clearly -->
+                <path fill="rgba(220, 225, 235, 0.15)" fill-rule="evenodd"
+                      d="M115,400 A285,270 0 1 1 685,400 A285,270 0 1 1 115,400
+                         M235,400 A165,162 0 1 1 565,400 A165,162 0 1 1 235,400" />
 
                 <!-- FIXED GEOMETRIC LABELS (Embedded in SVG to prevent breaking).
                      True celestial axis: the sun rises in the EAST (left) and
@@ -110,7 +116,6 @@
                 <span class="seasonal-toggle-icon">▸</span>
                 <span class="seasonal-toggle-label"><span data-i18n="seasonal.in_season">🌿 In season</span> · <b id="seasonalSeasonLabel">--</b></span>
             </button>
-            <button class="seasonal-tune" id="seasonalTuneBtn" data-i18n="seasonal.tune" data-i18n-title="seasonal.tune.title" title="Filters and editing">⚙️ tune</button>
         </div>
         <div class="seasonal-container" id="seasonalContainer">
             <span class="seasonal-note" data-i18n="seasonal.looking_up">Looking up the sky…</span>
