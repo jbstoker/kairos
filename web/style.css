@@ -993,14 +993,6 @@ select {
     stroke-width: 1;
 }
 
-#gregorian-center-clock {
-    fill: #f5e6c4;
-    font-size: 22px;
-    font-weight: 300;
-    letter-spacing: 2px;
-    font-variant-numeric: tabular-nums;
-}
-
 
 /* ---- Unified kstDisplay spatial panel (master elliptical viewport) ---- */
 .kst-unified-spatial-panel {

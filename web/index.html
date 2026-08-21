@@ -25,42 +25,47 @@
          plain .display card, the KST one-line, the Gregorian anchor, the
          tradition line, the seasonal wheel and the metric rows into a single
          dashboard. Concentric fragment: web/templates/concentric_view.html -->
-    <div id="kstDisplay" class="card kst-unified-spatial-panel">
-        <!-- Active Selected Date Context Header -->
-        <div class="display-header">
-            <span id="observed-date-label">Observing Active Context...</span>
+    <div id="kstDisplay" class="card kst-unified-spatial-panel" style="background: #000; padding: 25px; display: flex; flex-direction: column; align-items: center; border-radius: 12px; border: 1px solid #1a1a1a;">
+        <div class="display-header" style="color: #555; margin-bottom: 20px; font-size: 0.85rem; font-family: monospace; letter-spacing: 1px;">
+            <span id="observed-date-label">OBSERVING CELESTIAL ALIGNMENT</span>
         </div>
 
         <!-- The Kairos Time one-line (wall clock · day · month · season · year) -->
         <div class="kst-primary-line" id="kstDisplayLine">--:-- · -- · -- · -- · --</div>
 
-        <!-- The 24-Hour Spatial Matrix Canvas (true elliptical orbits) -->
+        <!-- Master Unified Astronomical Viewport -->
         <div class="spatial-matrix-wrapper">
-            <svg id="kairos-observation-matrix" viewBox="0 0 800 800" style="width:100%; max-width:600px; height:auto;">
-                <!-- Axis Crosshairs (Defining the 4 Solar Turning Quadrants) -->
-                <line x1="400" y1="20" x2="400" y2="780" stroke="#1a1a1a" stroke-width="2" /> <!-- Noon (Top) to Night (Bottom) -->
-                <line x1="20" y1="400" x2="780" y2="400" stroke="#1a1a1a" stroke-width="2" /> <!-- Sunset (Left) to Sunrise (Right) -->
+            <svg id="kairos-observation-matrix" viewBox="0 0 800 800" style="width: 100%; max-width: 550px; height: auto; overflow: visible;">
+                <style>
+                    .matrix-axis { stroke: #111111; stroke-width: 2; }
+                    .orbit-track { fill: none; stroke: #222222; stroke-width: 1.5; stroke-dasharray: 6,4; }
+                    .quadrant-label { fill: #ffffff; font-family: system-ui, sans-serif; font-size: 16px; font-weight: 700; letter-spacing: 2px; opacity: 0.9; }
+                    .rosetta-text { fill: #ffffff; font-family: monospace; font-size: 20px; font-weight: bold; }
+                </style>
 
-                <!-- Geometrically Placed Fixed Labels (Matching the Sketch Layout) -->
-                <text x="400" y="45" text-anchor="middle" fill="#fff" font-size="18" font-weight="600" letter-spacing="1">NOON</text>
-                <text x="755" y="406" text-anchor="start" fill="#fff" font-size="18" font-weight="600" letter-spacing="1">SUNRISE</text>
-                <text x="400" y="770" text-anchor="middle" fill="#fff" font-size="18" font-weight="600" letter-spacing="1">NIGHT / MIDNIGHT</text>
-                <text x="45" y="406" text-anchor="end" fill="#fff" font-size="18" font-weight="600" letter-spacing="1">SUNDOWN / SUNSET</text>
+                <!-- Dynamic Alignment Crosshairs -->
+                <line x1="400" y1="40" x2="400" y2="760" class="matrix-axis" />   <!-- Noon to Night Axis -->
+                <line x1="40" y1="400" x2="760" y2="400" class="matrix-axis" />   <!-- Sunset to Sunrise Axis -->
 
-                <!-- True Elastic Elliptical Orbits (Rx and Ry stretch dynamically) -->
-                <!-- Transform rotates the periapsis axis so the orbits tilt realistically -->
-                <ellipse id="sun-orbit-line" cx="400" cy="400" rx="165" ry="162" fill="none" stroke="#222" stroke-width="2" stroke-dasharray="6,4" transform="rotate(102, 400, 400)" />
-                <ellipse id="moon-orbit-line" cx="400" cy="400" rx="285" ry="270" fill="none" stroke="#222" stroke-width="2" stroke-dasharray="6,4" />
+                <!-- FIXED GEOMETRIC LABELS (Embedded in SVG to prevent breaking) -->
+                <text x="400" y="30" text-anchor="middle" class="quadrant-label">NOON</text>
+                <text x="775" y="405" text-anchor="start" class="quadrant-label">SUNRISE</text>
+                <text x="400" y="785" text-anchor="middle" class="quadrant-label">NIGHT / MIDNIGHT</text>
+                <text x="25" y="405" text-anchor="end" class="quadrant-label">SUNDOWN / SUNSET</text>
 
-                <!-- Celestial Observation Nodes (Locked permanently to the edge of the rings) -->
-                <circle id="sun-bead" cx="400" cy="235" r="16" fill="#f39c12" filter="drop-shadow(0px 0px 8px rgba(243,156,18,0.5))" />
-                <circle id="moon-bead" cx="400" cy="115" r="11" fill="#ecf0f1" filter="drop-shadow(0px 0px 6px rgba(236,240,241,0.4))" />
+                <!-- True Breathing Elliptical Tracks -->
+                <!-- Stretched out and rotated to match true Earth/Moon orbital paths -->
+                <ellipse id="sun-orbit-line" cx="400" cy="400" rx="165" ry="162" class="orbit-track" transform="rotate(102, 400, 400)" />
+                <ellipse id="moon-orbit-line" cx="400" cy="400" rx="285" ry="270" class="orbit-track" />
 
-                <!-- Rosetta Center Structural Hub (The Universal Translation Core) -->
+                <!-- Shifting Observation Nodes (Always locked to the edge of the ellipses) -->
+                <circle id="sun-bead" cx="400" cy="235" r="16" fill="#f39c12" style="filter: drop-shadow(0px 0px 8px rgba(243,156,18,0.6));" />
+                <circle id="moon-bead" cx="400" cy="115" r="11" fill="#ecf0f1" style="filter: drop-shadow(0px 0px 6px rgba(236,240,241,0.5));" />
+
+                <!-- Central Rosetta Hub (Gregorian Reference Window) -->
                 <g class="gregorian-translation-hub">
-                    <circle cx="400" cy="400" r="65" fill="#0d0d0d" stroke="#333" stroke-width="2" />
-                    <!-- Shows the target date of the option/history layer seamlessly -->
-                    <text x="400" y="408" id="gregorian-center-clock" text-anchor="middle" fill="#fff" font-size="20" font-family="monospace" font-weight="bold">--:--</text>
+                    <circle cx="400" cy="400" r="65" fill="#050505" stroke="#252525" stroke-width="2" />
+                    <text x="400" y="407" id="gregorian-center-clock" text-anchor="middle" class="rosetta-text">--:--</text>
                 </g>
             </svg>
         </div>
