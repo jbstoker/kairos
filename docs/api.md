@@ -266,6 +266,12 @@ annular eclipses become visible when the bodies share an angular vector.
   beads locked to their rings, plus natural eclipse detection — when the
   bodies align AND the Moon is at a lunar node, the beads glow (sun `#ff6b35`,
   moon `#8b0000`) and the `#eclipse-status` line lights up.
+- `web/static/css/mobile.css` + `web/static/js/mobile.js` — the mobile
+  optimisation layer (`@media (max-width: 600px)`): larger, brighter text,
+  full-width container, SVG matrix capped at `min(100%, 70vh)`, larger touch
+  targets (action buttons, moon emoji grid, chips, tab bar) and delegated
+  double-tap-zoom prevention. Selectors target the consolidated `#kstDisplay`
+  layout.
 - `web/templates/concentric_view.html` — the canonical SVG fragment;
   the identical markup is injected into `web/index.html` inside the panel.
 - Fully client-side: no backend required, so it runs on GitHub Pages and

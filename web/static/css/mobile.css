@@ -1,0 +1,297 @@
+/* ============================================================
+   Kairos — Mobile Optimization Styles
+   ============================================================
+   Implemented from the MOBILE OPTIMIZATION addendum, adapted to the
+   consolidated #kstDisplay layout: the old .display card, the scattered
+   kst-display / kst-row rows, the .buttons emoji grid, the .wheel and the
+   legacy observation-panel wrapper were removed during the unified
+   spatial-panel refactor, so their selectors here target the current
+   equivalents (.kst-primary-line, #kstDisplay, .meta-item,
+   .moon-grid button, .modal, .config-section). */
+
+@media (max-width: 600px) {
+    /* --- Base mobile adjustments --- */
+    body {
+        font-size: 18px;
+        line-height: 1.5;
+        padding: 8px;
+        background: #0b0e14;
+    }
+
+    /* Container: full width, less padding */
+    .container {
+        max-width: 100%;
+        padding: 16px;
+        border-radius: 20px;
+        background: #141a24;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.8);
+    }
+
+    /* --- Main time display (KST one-line) --- */
+    .kst-primary-line {
+        font-size: 1.4rem;
+        font-weight: 400;
+        color: #f5e6c4;
+        letter-spacing: 0.5px;
+        word-wrap: break-word;
+        line-height: 1.6;
+        text-shadow: 0 0 20px rgba(240, 194, 127, 0.1);
+    }
+
+    .display-header {
+        margin-bottom: 10px;
+    }
+
+    #observed-date-label {
+        font-size: 0.95rem;
+        color: #b7c9e2;
+    }
+
+    /* --- Sub-labels (hints, notes) --- */
+    .config-hint, .seasonal-note {
+        font-size: 1rem;
+        color: #b7c9e2;
+    }
+
+    /* --- SVG canvas: scale to fit screen --- */
+    svg#kairos-observation-matrix {
+        /* min(100%, 70vh) beats the inline max-width:550px on phones, and
+           with the base aspect-ratio:1/1 the square is capped at 70vh. */
+        width: min(100%, 70vh);
+        max-width: 100%;
+        height: auto;
+        max-height: 70vh;
+    }
+
+    /* --- Labels inside SVG: make them larger and brighter --- */
+    .quadrant-label {
+        font-size: 14px !important;
+        fill: #ffffff !important;
+        opacity: 1 !important;
+        font-weight: 700;
+    }
+
+    .rosetta-text {
+        font-size: 18px !important;
+        fill: #f5e6c4 !important;
+    }
+
+    /* Bead radii are intentionally NOT overridden here: canvas_renderer sets
+       r dynamically (super/micromoon + eclipse sizing) and a CSS r: would
+       override the renderer's attributes. */
+
+    /* --- Buttons: larger, easier to tap --- */
+    .action-btn {
+        font-size: 1rem;
+        padding: 14px 20px;
+        min-width: 80px;
+        margin: 4px;
+        border-radius: 40px;
+        background: #2a3442;
+        color: #f0e3d0;
+        border: 1px solid #3a4658;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        touch-action: manipulation;
+    }
+
+    .action-btn:active {
+        transform: scale(0.95);
+        background: #3a4658;
+    }
+
+    .kst-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .kst-actions .action-btn {
+        width: 100%;
+        margin: 4px 0;
+    }
+
+    /* --- Moon emoji buttons: larger grid --- */
+    .moon-grid button {
+        font-size: 2.4rem;
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: #1e2632;
+        border: 1px solid #2a3442;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+        touch-action: manipulation;
+    }
+
+    .moon-grid button:active {
+        transform: scale(0.9);
+        background: #2c384a;
+    }
+
+    /* --- KST panel + metadata: larger, brighter text --- */
+    #kstDisplay {
+        background: #1e2632;
+        border-radius: 20px;
+        padding: 16px;
+        margin: 12px 0;
+        border: 1px solid #2a3442;
+        color: #d4d9e6;
+    }
+
+    .celestial-metadata-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .meta-item {
+        font-size: 1rem;
+        padding: 10px 12px;
+    }
+
+    .meta-label {
+        color: #8e9ab0;
+    }
+
+    .meta-item span:last-child {
+        color: #f5e6c4;
+        font-weight: 500;
+    }
+
+    /* --- Status messages --- */
+    .status {
+        font-size: 0.95rem;
+        color: #a0b3c9;
+        padding: 8px;
+        background: #141a24;
+        border-radius: 12px;
+        margin-top: 12px;
+        text-align: center;
+    }
+
+    /* --- Eclipse status (pill only when lit, so no empty bar shows) --- */
+    #eclipse-status:not(:empty) {
+        font-size: 1.2rem;
+        padding: 8px;
+        margin-top: 8px;
+        background: #1e2632;
+        border-radius: 40px;
+        border: 1px solid #2a3442;
+        text-align: center;
+    }
+
+    /* --- Tradition / language / filter selects --- */
+    select {
+        font-size: 1rem;
+        padding: 12px 16px;
+        background: #1e2632;
+        color: #d4d9e6;
+        border: 1px solid #2a3442;
+        border-radius: 40px;
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 12px;
+        touch-action: manipulation;
+    }
+
+    /* --- Config sections (the observation panel) --- */
+    .config-section {
+        background: #1e2632;
+        border-radius: 20px;
+        padding: 16px;
+        margin: 12px 0;
+        border: 1px solid #2a3442;
+    }
+
+    .config-section .action-btn {
+        width: 100%;
+        margin: 4px 0;
+    }
+
+    .seasonal-filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .seasonal-filters select {
+        width: 100%;
+    }
+
+    /* --- Seasonal items --- */
+    .seasonal-item {
+        font-size: 1rem;
+        padding: 8px 16px;
+        margin: 4px;
+        background: #1e2632;
+        border-radius: 40px;
+        border: 1px solid #2a3442;
+        display: inline-block;
+        touch-action: manipulation;
+    }
+
+    /* --- Modal --- */
+    .modal {
+        max-width: 95%;
+        padding: 1.5rem;
+        margin: 10% auto;
+        background: #141a24;
+        border-radius: 24px;
+        border: 1px solid #2a3442;
+        color: #d4d9e6;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .modal h2 {
+        font-size: 1.8rem;
+        color: #f0c27f;
+    }
+
+    .modal-close {
+        font-size: 1.1rem;
+        width: 44px;
+        height: 44px;
+        background: #2a3442;
+        border: none;
+        border-radius: 50%;
+        color: #f5e6c4;
+        touch-action: manipulation;
+    }
+
+    /* --- Footer --- */
+    .footer {
+        font-size: 0.7rem;
+        color: #4a5a6c;
+        margin-top: 16px;
+        text-align: center;
+    }
+
+    /* --- Fix for dark text on dark backgrounds --- */
+    #kstDisplay, .energy-card, .seasonal, #checksumLine {
+        background: #1a2230;
+        border: 1px solid #2a3442;
+        border-radius: 20px;
+        padding: 16px;
+        color: #d4d9e6;
+    }
+
+    #kstDisplay .kst-primary-line,
+    .seasonal-title,
+    #checksumLine {
+        color: #f5e6c4;
+    }
+
+    #checksumLine {
+        font-size: 0.8rem;
+        line-height: 1.5;
+        word-wrap: break-word;
+    }
+
+    /* --- Tabs: larger touch targets --- */
+    .tab-btn {
+        font-size: 1.05rem;
+        padding: 14px 12px;
+        touch-action: manipulation;
+    }
+
+    /* --- Ensure all text is readable --- */
+    * {
+        color-adjust: exact;
+        -webkit-text-size-adjust: 100%;
+    }
+}
