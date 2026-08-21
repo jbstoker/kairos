@@ -211,8 +211,15 @@
         const yearStr = formatYear(getEarthAge(now));
         const dayIcon = DAY_ICONS[kd.weekday] || '';
         const seasonIcon = SEASON_ICONS[kairosSeason] || '';
-        setText('kstDisplayLine',
-            `${timeStr} · ${dayIcon}${trName('day.', kd.weekday)} · ${trName('month.', kd.month)} ${kd.day} · ${seasonIcon}${trName('season.', kairosSeason)} · ${yearStr}`);
+        const kairosString =
+            `${timeStr} · ${dayIcon}${trName('day.', kd.weekday)} · ${trName('month.', kd.month)} ${kd.day} · ${seasonIcon}${trName('season.', kairosSeason)} · ${yearStr}`;
+        setText('kstDisplayLine', kairosString);
+        // FINAL UNIFIED HEADER: the primary line adapts to the selected
+        // tradition (Gregorian lives only in the matrix's centre clock).
+        if (window.updateDisplay) {
+            window.updateDisplay(kairosString,
+                window.getSelectedTradition ? window.getSelectedTradition() : 'tartarian');
+        }
     }
 
     // ---- Visible-star row: primary star + expandable "+N more" -------------
