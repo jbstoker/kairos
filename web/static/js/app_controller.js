@@ -27,7 +27,8 @@
     let celestialMetrics = null;
     if (typeof CelestialMetrics !== 'undefined') {
         celestialMetrics = new CelestialMetrics(
-            (typeof window !== 'undefined' && window.KAIROS_LONGITUDE) || 0);
+            (typeof window !== 'undefined' && window.KAIROS_LONGITUDE) || 5,
+            (typeof window !== 'undefined' && window.KAIROS_LATITUDE) || 52);
     }
 
     // ---- Metric helpers (prefer the fresh KST snapshot; compute on demand) --
@@ -115,12 +116,14 @@
         const seasonVal = document.getElementById('celestial-season-val');
         if (seasonVal) seasonVal.textContent = getCurrentCelestialSeason(timestamp);
 
-        // 5. Trigger the elliptical canvas redraw with the eccentricity
-        //    values, the lunar node angle and the selected Gregorian anchor.
+        // 5. Trigger the sky-dome redraw with the real Sun/Moon altitude +
+        //    azimuth, the lunar node angle and the selected Gregorian anchor.
         if (celestialMetrics && typeof updatePlanetaryCanvas === 'function') {
+            const sun = celestialMetrics.getSunPositionDeg(timestamp);
+            const moon = celestialMetrics.getMoonPositionDeg(timestamp);
             updatePlanetaryCanvas(
-                celestialMetrics.getSunAngle(timestamp), 0.0167,
-                celestialMetrics.getMoonAngle(timestamp), 0.0549,
+                sun.altitudeDeg, sun.azimuthDeg,
+                moon.altitudeDeg, moon.azimuthDeg,
                 celestialMetrics.moonNodeAngleRadians(timestamp),
                 gregorianString
             );

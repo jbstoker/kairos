@@ -1,9 +1,9 @@
 """Web test: the /api/radial stream and the unified spatial panel page.
 
 The root serves web/index.html — the #kstDisplay master spatial panel (the
-counter-clockwise elliptical observation matrix on top of the preserved
-classic Kairos body: tabs, forms and configuration mechanics). /api/radial
-streams the raw radial distance factors straight from
+sky-dome observation matrix — real Sun/Moon altitude + azimuth — on top of
+the preserved classic Kairos body: tabs, forms and configuration mechanics).
+/api/radial streams the raw radial distance factors straight from
 core.astronomy.CelestialRadialMetrics; the matrix itself runs fully
 client-side via web/static/js/astronomy_engine.js + canvas_renderer.js.
 """

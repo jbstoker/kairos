@@ -20,13 +20,39 @@
  */
 
 class CelestialMetrics {
-    constructor(longitudeDeg) {
-        this.longitudeDeg = longitudeDeg || 0;   // east positive
+    constructor(longitudeDeg, latitudeDeg) {
+        // The app's documented observer default is 52°N 5°E (kst_display.js
+        // DEFAULT_LOCATION); the geolocation-stored kairos_location and the
+        // KAIROS_LONGITUDE/KAIROS_LATITUDE globals override it live.
+        this.longitudeDeg = longitudeDeg || 5;
+        this.latitudeDeg = (latitudeDeg == null) ? 52.0 : latitudeDeg;
         this.SYNODIC_MONTH_DAYS = 29.53058867;
         this.KNOWN_NEW_MOON_UNIX = 947182440;    // 2000-01-06 18:14 UTC
         this.RAD_PER_HOUR = Math.PI / 12;
         this.DEG_PER_HOUR = 15;
         this.SECONDS_PER_DAY = 86400;
+    }
+
+    // Live observer location: prefer the geolocation stored by kst_display.js
+    // (kairos_location), falling back to the configured/default coordinates.
+    _location() {
+        let lat = this.latitudeDeg;
+        let lon = this.longitudeDeg;
+        try {
+            const saved = JSON.parse(localStorage.getItem('kairos_location') || 'null');
+            if (saved && typeof saved.lat === 'number' && typeof saved.lon === 'number') {
+                lat = saved.lat;
+                lon = saved.lon;
+            }
+        } catch (e) { /* ignore */ }
+        return { lat, lon };
+    }
+
+    // SunCalc azimuths are measured from SOUTH, clockwise; convert to the
+    // dial's north-based compass (east=90°, south=180°, west=270°) in degrees.
+    _northAzimuthDeg(southAzimuthRad) {
+        return (((southAzimuthRad + Math.PI) % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI)
+            * 180 / Math.PI;
     }
 
     /**
@@ -122,6 +148,48 @@ class CelestialMetrics {
         const elongation = this.lunarAgeDays(unixTimestamp)
                            / this.SYNODIC_MONTH_DAYS * 2 * Math.PI;
         return this.dayPositionRadians(unixTimestamp) + elongation;
+    }
+
+    /**
+     * Real Sun position (altitude + north-based azimuth, degrees) for a
+     * timestamp. Prefers the vendored SunCalc (with the live location from
+     * kairos_location); without SunCalc it falls back to the corrected dial —
+     * altitude 0 on the horizon ring, azimuth = local day fraction × 360
+     * (midnight=north/bottom, sunrise=east/left, noon=south/top,
+     * sunset=west/right).
+     */
+    getSunPositionDeg(unixTimestamp) {
+        const loc = this._location();
+        if (typeof SunCalc !== 'undefined' && SunCalc.getPosition) {
+            const pos = SunCalc.getPosition(new Date(unixTimestamp * 1000), loc.lat, loc.lon);
+            return {
+                altitudeDeg: pos.altitude * 180 / Math.PI,
+                azimuthDeg: this._northAzimuthDeg(pos.azimuth)
+            };
+        }
+        return {
+            altitudeDeg: 0,
+            azimuthDeg: this.dayPositionRadians(unixTimestamp) * 180 / Math.PI
+        };
+    }
+
+    /**
+     * Real Moon position (altitude + north-based azimuth, degrees), same
+     * SunCalc-first strategy; the fallback uses the dial angle.
+     */
+    getMoonPositionDeg(unixTimestamp) {
+        const loc = this._location();
+        if (typeof SunCalc !== 'undefined' && SunCalc.getMoonPosition) {
+            const pos = SunCalc.getMoonPosition(new Date(unixTimestamp * 1000), loc.lat, loc.lon);
+            return {
+                altitudeDeg: pos.altitude * 180 / Math.PI,
+                azimuthDeg: this._northAzimuthDeg(pos.azimuth)
+            };
+        }
+        return {
+            altitudeDeg: 0,
+            azimuthDeg: this.getMoonAngle(unixTimestamp) * 180 / Math.PI
+        };
     }
 
     /**

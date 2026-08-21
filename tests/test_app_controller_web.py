@@ -3,8 +3,9 @@
 Pins updateUnifiedDisplayPanel(selectedDateTimeState): it binds the
 Gregorian anchor to the matrix centre, the active context to the panel
 header, the consolidated metric grid (solar longitude, lunar age, planets,
-celestial season) and triggers the counter-clockwise canvas redraw with the
-orbital radial factors. Runs under node with a minimal DOM stub.
+celestial season) and triggers the sky-dome canvas redraw with the real
+Sun/Moon altitude + azimuth positions. Runs under node with a minimal DOM
+stub.
 """
 
 import json

@@ -247,26 +247,29 @@ matrix (and available for other layers):
   (web/static/js/astronomy_engine.js), so it runs fully statically on
   GitHub Pages and offline.
 
-## Concentric observation matrix (elliptical, counter-clockwise)
+## Concentric observation matrix (sky dome: altitude + azimuth)
 
-The #kstDisplay master spatial panel maps the Sun and Moon along
-counter-clockwise orbits on the true celestial axis (facing south) —
-Midnight at the bottom (0 rad), Sunrise LEFT / east (π/2), Noon at the top
-(π), Sunset RIGHT / west (3π/2) — with a minimalist Gregorian clock
-pinned at the centre. The paths are TRUE <ellipse> layers (sun rx 165 /
-ry 162 rotated 102°, moon rx 285 / ry 270) whose rx/ry stretch dynamically
-with the eccentric radial factors, so supermoons, micromoons, and total vs
-annular eclipses become visible when the bodies share an angular vector.
+The #kstDisplay master spatial panel maps the REAL Sun/Moon altitude and
+azimuth on the true celestial axis (facing south) — Midnight at the bottom
+(az 0° / north), Sunrise LEFT / east (az 90°), Noon at the top (az 180° /
+south), Sunset RIGHT / west (az 270°) — with a minimalist Gregorian clock
+pinned at the centre. Altitude is the distance from the horizon rings
+(alt 0°: sun rx 165 / ry 162, moon rx 285 / ry 270) to the zenith at the
+centre (alt 90°); below the horizon the bead moves beyond its ring
+(underground). Without a location, the engine falls back to the dial
+(altitude 0, azimuth = local day fraction × 360).
 
 - `web/static/js/astronomy_engine.js` — `CelestialMetrics` (shared client
-  math): radial factors, the day-as-position dial solver (local clock × 360°,
-  identical to the solar-time engine, plus lunar elongation), and the
-  lunar-node detector.
-- `web/static/js/canvas_renderer.js` — `updatePlanetaryCanvas(sunAngle,
-  sunEccentricity, moonAngle, moonEccentricity, moonNodeAngle,
-  targetGregorianTime)`: true elliptical distances (`1 − e·cos θ`) with the
-  beads locked to their rings, plus natural eclipse detection — when the
-  bodies align AND the Moon is at a lunar node, the beads glow (sun `#ff6b35`,
+  math): `getSunPositionDeg` / `getMoonPositionDeg` (real altitude + north
+  azimuth via the vendored SunCalc and the live observer location from
+  `kairos_location` / `KAIROS_LONGITUDE` / `KAIROS_LATITUDE`, default 52°N
+  5°E), the dial fallback (local clock × 360°, identical to the solar-time
+  engine, plus lunar elongation), and the lunar-node detector.
+- `web/static/js/canvas_renderer.js` — `updatePlanetaryCanvas(sunAltitudeDeg,
+  sunAzimuthDeg, moonAltitudeDeg, moonAzimuthDeg, moonNodeAngle,
+  targetGregorianTime)`: altitude/azimuth bead placement on the static
+  horizon rings, plus natural eclipse detection — when the bodies share an
+  azimuth AND the Moon is at a lunar node, the beads glow (sun `#ff6b35`,
   moon `#8b0000`) and the `#eclipse-status` line lights up.
 - `web/static/css/mobile.css` + `web/static/js/mobile.js` — the mobile
   optimisation layer (`@media (max-width: 600px)`): larger, brighter text,
