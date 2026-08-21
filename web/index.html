@@ -13,11 +13,41 @@
 </head>
 <body>
 <div class="container" id="app">
-    <div class="header-with-logo">
-        <img src="logo.svg" data-i18n-alt="logo.alt" alt="Kairos logo" width="40" height="40" style="vertical-align: middle; margin-right: 12px;">
-        <h1 style="display: inline-block;">☀️ Kairos <button class="help-btn" id="helpBtn" data-i18n-title="helpBtn.title" title="What does this mean?">?</button></h1>
-    </div>
-    <div class="sub" data-i18n="app.tagline">time you observe</div>
+    <header class="kairos-planetary-header">
+        <button class="help-btn header-help" id="helpBtn" data-i18n-title="helpBtn.title" title="What does this mean?">?</button>
+        <div class="header-clock-wrapper">
+            <svg id="header-concentric-clock" viewBox="0 0 400 400" width="100%" height="100%">
+                <!-- Fixed Axis System: Vertical/Horizontal Realities -->
+                <line x1="200" y1="0" x2="200" y2="400" class="axis-line vertical" />   <!-- Top: SUNDOWN | Bottom: SUNRISE -->
+                <line x1="0" y1="200" x2="400" y2="200" class="axis-line horizontal" /> <!-- Left: NIGHT | Right: NOON -->
+
+                <!-- Structural Environmental Labels -->
+                <text x="200" y="25" text-anchor="middle" class="axis-lbl">SUNDOWN</text>
+                <text x="200" y="385" text-anchor="middle" class="axis-lbl">SUNRISE</text>
+                <text x="365" y="205" text-anchor="end" class="axis-lbl">NOON</text>
+                <text x="35" y="205" text-anchor="start" class="axis-lbl">NIGHT</text>
+
+                <!-- Concentric Radial Tracks: Diameters breathe in/out dynamically -->
+                <circle id="hdr-moon-ring" cx="200" cy="200" r="80" class="distance-ring moon-track" />
+                <circle id="hdr-sun-ring" cx="200" cy="200" r="140" class="distance-ring sun-track" />
+
+                <!-- Shifting Beads: Permanently locked to the vertical axis coordinate -->
+                <circle id="hdr-moon-bead" cx="200" cy="120" r="6" class="radial-bead moon-element" />
+                <circle id="hdr-sun-bead" cx="200" cy="60" r="10" class="radial-bead sun-element" />
+
+                <!-- Core Rosetta Anchor (The Machine Clock Interface) -->
+                <g class="center-rosetta-anchor">
+                    <circle cx="200" cy="200" r="28" class="anchor-bg" />
+                    <text x="200" y="205" id="gregorian-clock-readout" text-anchor="middle">00:00</text>
+                </g>
+            </svg>
+        </div>
+
+        <div class="manifesto-layer">
+            <p class="wish-statement">Faith returned to the entity that feeds all us animals.</p>
+            <button id="eye-override-trigger" class="header-sensory-btn">Re-Anchor to My Eyes</button>
+        </div>
+    </header>
 
     <div class="tabs">
         <button class="tab-btn active" id="tabNowBtn" data-tab="now" data-i18n="tabs.now">🌅 Now</button>
@@ -311,5 +341,6 @@
 <script src="help_data.js"></script>
 <script src="help.js"></script>
 <script src="kst_display.js"></script>
+<script src="static/js/canvas.js"></script>
 </body>
 </html>

@@ -235,6 +235,22 @@ The PWA works **two ways**:
 Location for the offline mode comes from browser geolocation if granted,
 else `localStorage['kairos_location']`, else 52°N 5°E.
 
+## Radial header gauge
+
+The top of the page (`web/index.html`) carries the **non-crossing axis
+gauge** header: the Sun and Moon slide up and down a single static vertical
+axis (they never cross linearly, so eclipses stay out of view), while the
+concentric ring diameters breathe with the true radial distance anomalies.
+
+- `core/astronomy.py` — `CelestialRadialMetrics`: `get_sun_distance_factor`
+  (~0.983–1.017) and `get_moon_distance_factor` (~0.94–1.06).
+- `GET /api/radial?ts=…` — streams the raw floats `{timestamp, gregorian,
+  sun_radial, moon_radial}` to the header loop (`web/static/js/canvas.js`).
+- The gauge also runs **fully statically** (GitHub Pages, `file://`,
+  offline): when `/api/radial` is unreachable, `canvas.js` computes the
+  same anomaly formulas in the browser and ticks the Gregorian readout from
+  the local clock.
+
 ## Precession checksum
 
 The first celestial checksum — a verifiable relationship between the

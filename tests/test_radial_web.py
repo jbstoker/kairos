@@ -1,9 +1,10 @@
-"""Web test: the /api/radial stream and the radial header template.
+"""Web test: the /api/radial stream and the radial header page.
 
-The root now serves web/templates/index.html — the non-crossing axis gauge
-<header> on top of the preserved classic Kairos body (tabs, forms and
-configuration mechanics). /api/radial streams the raw radial distance
-factors straight from core.astronomy.CelestialRadialMetrics.
+The root serves web/index.html — the non-crossing axis gauge <header> on
+top of the preserved classic Kairos body (tabs, forms and configuration
+mechanics). /api/radial streams the raw radial distance factors straight
+from core.astronomy.CelestialRadialMetrics; the header gauge also works
+fully statically via the client-side fallback in web/static/js/canvas.js.
 """
 
 import unittest

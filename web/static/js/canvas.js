@@ -5,6 +5,10 @@
  * bead positions in the <header> clock. The beads are permanently locked to
  * the vertical centre axis (X = 200): they slide purely up/down, so the Sun
  * and Moon never cross linearly (eclipses are obscured from view).
+ *
+ * Static fallback: when no /api/radial backend is reachable (GitHub Pages,
+ * file://, offline) the same anomaly formulas are evaluated in the browser
+ * and the Gregorian readout ticks from the local clock.
  */
 
 function updateHeaderDistanceClock(sunRadialFactor, moonRadialFactor) {
@@ -36,18 +40,50 @@ function updateHeaderReadout(gregorian) {
     if (el && gregorian) el.textContent = gregorian;
 }
 
+// ---- Static fallback: client-side mirror of CelestialRadialMetrics --------
+function dayOfYearUTC(ts) {
+    const d = new Date(ts * 1000);
+    return Math.floor((d - Date.UTC(d.getUTCFullYear(), 0, 1)) / 86400000) + 1;
+}
+
+function computeSunRadial(ts) {
+    const anomaly = 2 * Math.PI * (dayOfYearUTC(ts) - 3) / 365.25;
+    return 1 + 0.0167 * Math.cos(anomaly);
+}
+
+function computeMoonRadial(ts) {
+    const monthSeconds = 27.55455 * 24 * 3600;
+    const phase = (((ts - 1705147200) % monthSeconds) + monthSeconds) % monthSeconds / monthSeconds;
+    return 1 + 0.0549 * Math.cos(2 * Math.PI * phase);
+}
+
+function pad2(n) { return (n < 10 ? '0' : '') + n; }
+
+function localTimeHHMMSS(d) {
+    return pad2(d.getHours()) + ':' + pad2(d.getMinutes()) + ':' + pad2(d.getSeconds());
+}
+
+function renderLocally() {
+    const ts = Date.now() / 1000;
+    updateHeaderDistanceClock(computeSunRadial(ts), computeMoonRadial(ts));
+    updateHeaderReadout(localTimeHHMMSS(new Date()));
+}
+
 function tickRadialGauge() {
     fetch('/api/radial', { cache: 'no-store' })
         .then(res => res.ok ? res.json() : null)
         .then(data => {
-            if (!data) return;
-            updateHeaderDistanceClock(data.sun_radial, data.moon_radial);
-            updateHeaderReadout(data.gregorian);
+            if (data) {
+                updateHeaderDistanceClock(data.sun_radial, data.moon_radial);
+                updateHeaderReadout(data.gregorian);
+                return;
+            }
+            renderLocally(); // backend absent → compute in the browser
         })
-        .catch(() => { /* keep the last good frame; backend offline */ });
+        .catch(() => renderLocally());
 }
 
-// Manual trigger: re-anchor by forcing an immediate frame fetch.
+// Manual trigger: re-anchor by forcing an immediate frame.
 const eyeTrigger = document.getElementById('eye-override-trigger');
 if (eyeTrigger) eyeTrigger.addEventListener('click', tickRadialGauge);
 

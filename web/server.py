@@ -9,7 +9,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from flask import Flask, jsonify, render_template, request, send_from_directory  # noqa: E402
+from flask import Flask, jsonify, request, send_from_directory  # noqa: E402
 
 from core.timekeeper import Kairos  # noqa: E402
 
@@ -32,8 +32,13 @@ _kairos = _make_kairos()
 
 @app.route("/")
 def index():
-    """The main view — the radial planetary header + the classic Kairos body."""
-    return render_template("index.html")
+    """The main view — the radial planetary header + the classic Kairos body.
+
+    ``web/index.html`` is a fully static page (the header gauge falls back to
+    client-side radial computation in web/static/js/canvas.js when no backend
+    is reachable), so the same file powers Flask, GitHub Pages, and offline.
+    """
+    return send_from_directory(WEB_DIR, "index.html")
 
 
 @app.route("/api/radial")
