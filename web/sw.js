@@ -10,7 +10,7 @@
 //     newly deployed app takes control of already-open tabs right away, and
 //     any older cache versions are deleted.
 
-const CACHE_NAME = 'kairos-v17';
+const CACHE_NAME = 'kairos-v18';
 const APP_SHELL = [
     'index.html', 'style.css', 'i18n.js', 'app.js', 'checksum_selfcheck.js',
     'tabs.js', 'planets.js', 'observation_methods.js', 'seasonal_defaults.js',

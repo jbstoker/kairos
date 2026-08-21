@@ -54,6 +54,8 @@ class TestRadialApi(unittest.TestCase):
         self.assertIn('id="moon-orbit-line"', html)
         self.assertIn('id="sun-bead"', html)
         self.assertIn('id="moon-bead"', html)
+        self.assertIn('id="eclipse-status"', html)
+
         self.assertIn('id="observed-date-label"', html)
         # Geometrically placed fixed axis labels:
         self.assertIn("NOON", html)
