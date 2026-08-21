@@ -295,7 +295,7 @@ select {
 }
 .help-btn:hover { background: #3a4658; transform: scale(1.05); }
 
-/* ---- Today's energy card ---- */
+/* ---- Today's energy card (collapsible) ---- */
 .energy-card {
     background: #1e2632;
     border-radius: 24px;
@@ -303,6 +303,28 @@ select {
     margin-bottom: 18px;
     text-align: left;
 }
+.energy-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    background: none;
+    border: none;
+    color: #f5e6c4;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 4px 0;
+    font-family: inherit;
+    text-align: left;
+    touch-action: manipulation;
+}
+.energy-toggle-icon {
+    color: #f0c27f;
+    transition: transform 0.2s;
+}
+.energy-toggle:hover { color: #f0c27f; }
+.energy-body { padding-top: 2px; }
 .energy-line {
     display: flex;
     flex-wrap: wrap;
@@ -1006,24 +1028,15 @@ select {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
 }
 
-.display-header {
-    text-align: center;
-    margin-bottom: 6px;
-}
-
-#observed-date-label {
-    color: #b7c9e2;
-    font-size: 0.82rem;
-    letter-spacing: 1px;
-}
-
 .kst-primary-line {
-    font-size: 0.95rem;
+    font-size: clamp(0.75rem, 2.2vw, 0.95rem);
     font-weight: 300;
     letter-spacing: 0.5px;
     color: #f5e6c4;
     text-align: center;
     margin-bottom: 10px;
+    max-width: 100%;
+    overflow-wrap: anywhere;
 }
 
 .spatial-matrix-wrapper {

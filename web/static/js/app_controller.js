@@ -98,11 +98,7 @@
         const clock = document.getElementById('gregorian-center-clock');
         if (clock) clock.textContent = gregorianString;
 
-        // 3. Update the active date title frame of the kstDisplay card.
-        const label = document.getElementById('observed-date-label');
-        if (label) label.textContent = selectedDateTimeState.getCustomTraditionLabel();
-
-        // 4. Update the combined metric nodes inside the kstDisplay footer.
+        // 3. Update the combined metric nodes inside the kstDisplay footer.
         const solarLongitudeVal = document.getElementById('solar-longitude-val');
         if (solarLongitudeVal) {
             solarLongitudeVal.textContent = `${calculateSolarLongitude(timestamp).toFixed(1)}°`;
@@ -116,7 +112,7 @@
         const seasonVal = document.getElementById('celestial-season-val');
         if (seasonVal) seasonVal.textContent = getCurrentCelestialSeason(timestamp);
 
-        // 5. Trigger the sky-dome redraw with the real Sun/Moon altitude +
+        // 4. Trigger the sky-dome redraw with the real Sun/Moon altitude +
         //    azimuth, the lunar node angle and the selected Gregorian anchor.
         if (celestialMetrics && typeof updatePlanetaryCanvas === 'function') {
             const sun = celestialMetrics.getSunPositionDeg(timestamp);

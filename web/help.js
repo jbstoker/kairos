@@ -53,7 +53,24 @@ function buildEnergyHTML(kstData) {
 
 function renderTodaysEnergy(kstData) {
     const card = document.getElementById('energyCard');
-    if (card) card.innerHTML = buildEnergyHTML(kstData);
+    if (!card) return;
+    const body = buildEnergyHTML(kstData);
+    // Collapsible: collapsed by default so the card saves room.
+    card.innerHTML =
+        `<button type="button" class="energy-toggle" id="energyToggle" aria-expanded="false" aria-controls="energyCardBody">` +
+        `<span class="energy-toggle-icon">▸</span> <span>☀️ ${t('help.todays_energy')}</span></button>` +
+        `<div class="energy-body" id="energyCardBody" hidden>${body}</div>`;
+    const toggle = document.getElementById('energyToggle');
+    const bodyEl = document.getElementById('energyCardBody');
+    if (toggle && bodyEl) {
+        toggle.addEventListener('click', () => {
+            const open = bodyEl.hidden;
+            bodyEl.hidden = !open;
+            toggle.setAttribute('aria-expanded', String(open));
+            const icon = toggle.querySelector('.energy-toggle-icon');
+            if (icon) icon.textContent = open ? '▾' : '▸';
+        });
+    }
 }
 
 function renderPlanetStrip(kstData) {

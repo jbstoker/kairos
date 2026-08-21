@@ -29,22 +29,15 @@
 
     /* --- Main time display (KST one-line) --- */
     .kst-primary-line {
-        font-size: 1.4rem;
+        font-size: 1.1rem;
         font-weight: 400;
         color: #f5e6c4;
         letter-spacing: 0.5px;
         word-wrap: break-word;
+        overflow-wrap: anywhere;
+        max-width: 100%;
         line-height: 1.6;
         text-shadow: 0 0 20px rgba(240, 194, 127, 0.1);
-    }
-
-    .display-header {
-        margin-bottom: 10px;
-    }
-
-    #observed-date-label {
-        font-size: 0.95rem;
-        color: #b7c9e2;
     }
 
     /* --- Sub-labels (hints, notes) --- */

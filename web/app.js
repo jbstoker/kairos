@@ -203,7 +203,7 @@ let capturedMomentDataURL = null;
 function getKairosDisplayString() {
     const kst = document.getElementById('kstDisplayLine');
     if (kst && kst.textContent && !kst.textContent.startsWith('--')) return kst.textContent;
-    const context = document.getElementById('observed-date-label')?.textContent || 'Observing Active Context...';
+    const context = window.KAIROS_CONTEXT_LABEL || 'Observing Active Context...';
     return context;
 }
 

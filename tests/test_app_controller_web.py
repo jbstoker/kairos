@@ -1,11 +1,10 @@
 """Web test: unified kstDisplay panel controller (web/static/js/app_controller.js).
 
 Pins updateUnifiedDisplayPanel(selectedDateTimeState): it binds the
-Gregorian anchor to the matrix centre, the active context to the panel
-header, the consolidated metric grid (solar longitude, lunar age, planets,
-celestial season) and triggers the sky-dome canvas redraw with the real
-Sun/Moon altitude + azimuth positions. Runs under node with a minimal DOM
-stub.
+Gregorian anchor to the matrix centre, the consolidated metric grid (solar
+longitude, lunar age, planets, celestial season) and triggers the sky-dome
+canvas redraw with the real Sun/Moon altitude + azimuth positions. Runs
+under node with a minimal DOM stub.
 """
 
 import json
@@ -34,7 +33,7 @@ function makeEl(id) {
         textContent: ''
     };
 }
-['gregorian-center-clock', 'observed-date-label', 'solar-longitude-val',
+['gregorian-center-clock', 'solar-longitude-val',
  'lunar-age-val', 'active-planets-val', 'celestial-season-val',
  'sun-bead', 'moon-bead', 'sun-orbit-line', 'moon-orbit-line']
     .forEach(id => elements[id] = makeEl(id));
@@ -64,7 +63,6 @@ app.updateUnifiedDisplayPanel(state);
 
 const out = {
     centerClock: elements['gregorian-center-clock'].textContent,
-    dateLabel: elements['observed-date-label'].textContent,
     solarLongitude: elements['solar-longitude-val'].textContent,
     lunarAge: elements['lunar-age-val'].textContent,
     planets: elements['active-planets-val'].textContent,
@@ -75,14 +73,6 @@ const out = {
     sunRingRy: parseFloat(elements['sun-orbit-line']._attrs.ry),
     moonRingRx: parseFloat(elements['moon-orbit-line']._attrs.rx)
 };
-
-// Default context (no state label) falls back to the app's context or the
-// observing placeholder.
-global.KAIROS_CONTEXT_LABEL = 'Vedic · Ashwina 7';
-const defaultState = app.createSelectedDateTime(ts);
-app.updateUnifiedDisplayPanel(defaultState);
-out.defaultLabel = elements['observed-date-label'].textContent;
-delete global.KAIROS_CONTEXT_LABEL;
 
 process.stdout.write(JSON.stringify(out));
 process.exit(0);
@@ -104,11 +94,6 @@ class TestAppControllerWeb(unittest.TestCase):
         ts = datetime(2026, 4, 20, 14, 30, 0, tzinfo=timezone.utc).timestamp()
         expected = datetime.fromtimestamp(ts).strftime("%H:%M")  # local, like the browser
         self.assertEqual(out["centerClock"], expected)
-
-    def test_active_date_context_header(self):
-        out = self._run()
-        self.assertEqual(out["dateLabel"], "Tartarian · Telluris 9")
-        self.assertEqual(out["defaultLabel"], "Vedic · Ashwina 7")
 
     def test_metadata_grid_from_snapshot(self):
         out = self._run()

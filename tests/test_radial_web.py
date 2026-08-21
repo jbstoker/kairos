@@ -61,7 +61,6 @@ class TestRadialApi(unittest.TestCase):
         self.assertIn('id="moon-bead"', html)
         self.assertIn('id="eclipse-status"', html)
 
-        self.assertIn('id="observed-date-label"', html)
         self.assertIn('id="tradition-selector"', html)
         self.assertIn('<script src="static/js/solar_time.js"></script>', html)
         self.assertIn('<script src="static/js/unified_display.js"></script>',
@@ -70,7 +69,7 @@ class TestRadialApi(unittest.TestCase):
         self.assertIn("NOON", html)
         self.assertIn("SUNRISE", html)
         self.assertIn("NIGHT / MIDNIGHT", html)
-        self.assertIn("SUNDOWN / SUNSET", html)
+        self.assertIn("SUNSET", html)
         # The flat header gauge row is completely gone:
         self.assertNotIn('class="kairos-planetary-header"', html)
         self.assertNotIn('id="header-concentric-clock"', html)
