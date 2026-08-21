@@ -10,7 +10,7 @@
 //     newly deployed app takes control of already-open tabs right away, and
 //     any older cache versions are deleted.
 
-const CACHE_NAME = 'kairos-v23';
+const CACHE_NAME = 'kairos-v24';
 const APP_SHELL = [
     'index.html', 'style.css', 'static/css/mobile.css', 'i18n.js', 'app.js',
     'checksum_selfcheck.js',

@@ -204,6 +204,19 @@
         margin: 4px 0;
     }
 
+    /* --- Observer location row: keep the inputs + buttons inline --- */
+    .location-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+    .location-row .action-btn {
+        width: auto;
+        flex: 0 0 auto;
+        margin: 4px 0;
+    }
+
     .seasonal-filters {
         flex-direction: column;
         align-items: stretch;

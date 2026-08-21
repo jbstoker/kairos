@@ -503,6 +503,65 @@ document.getElementById('traditionSelect').addEventListener('change', (e) => {
     document.getElementById('status').textContent = t('obs.tradition_switched', { tradition: e.target.value });
 });
 
+// --- Observer location: pin the sky to where you are (kairos_location) ------
+function getStoredLocation() {
+    try {
+        const saved = JSON.parse(localStorage.getItem('kairos_location') || 'null');
+        if (saved && typeof saved.lat === 'number' && typeof saved.lon === 'number') return saved;
+    } catch (e) { /* ignore */ }
+    return { lat: 52.0, lon: 5.0 };
+}
+
+function saveLocation(lat, lon) {
+    try { localStorage.setItem('kairos_location', JSON.stringify({ lat, lon })); } catch (e) { /* ignore */ }
+    // The dial engine reads kairos_location live every tick; refresh the other layers.
+    if (window.refreshKST) window.refreshKST();
+    if (window.refreshUnifiedPanel) window.refreshUnifiedPanel();
+}
+
+(function initLocationControls() {
+    const latInput = document.getElementById('locationLat');
+    const lonInput = document.getElementById('locationLon');
+    const saveBtn = document.getElementById('saveLocationBtn');
+    const gpsBtn = document.getElementById('useGpsBtn');
+    const status = document.getElementById('status');
+    if (!latInput || !lonInput || !saveBtn || !status) return;
+    const loc = getStoredLocation();
+    latInput.value = loc.lat;
+    lonInput.value = loc.lon;
+    saveBtn.addEventListener('click', () => {
+        const lat = parseFloat(latInput.value);
+        const lon = parseFloat(lonInput.value);
+        if (Number.isNaN(lat) || Number.isNaN(lon) || lat < -90 || lat > 90 || lon < -180 || lon > 180) {
+            status.textContent = '⚠️ Location must be valid — latitude −90…90, longitude −180…180.';
+            return;
+        }
+        saveLocation(lat, lon);
+        status.textContent = `📍 Location set: ${lat.toFixed(4)}°, ${lon.toFixed(4)}°`;
+    });
+    if (gpsBtn) {
+        gpsBtn.addEventListener('click', () => {
+            if (!navigator.geolocation) {
+                status.textContent = '📡 GPS unavailable here — enter your location manually.';
+                return;
+            }
+            status.textContent = '📡 Finding your position…';
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    const lat = pos.coords.latitude;
+                    const lon = pos.coords.longitude;
+                    latInput.value = lat.toFixed(4);
+                    lonInput.value = lon.toFixed(4);
+                    saveLocation(lat, lon);
+                    status.textContent = `📡 GPS position set: ${lat.toFixed(4)}°, ${lon.toFixed(4)}°`;
+                },
+                () => { status.textContent = '📡 GPS denied — enter your location manually.'; },
+                { timeout: 8000, maximumAge: 600000 }
+            );
+        });
+    }
+})();
+
 document.getElementById('shareBtn').addEventListener('click', openShareModal);
 document.getElementById('captureBtn').addEventListener('click', captureMoment);
 document.getElementById('shareClose').addEventListener('click', closeShareModal);
