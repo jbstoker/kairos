@@ -64,6 +64,14 @@
         font-weight: 700;
     }
 
+    /* --- Degree wheel labels: smaller on mobile --- */
+    .degree-label {
+        font-size: 10px !important;
+    }
+    .cardinal-label {
+        font-size: 14px !important;
+    }
+
     .rosetta-text {
         font-size: 24px !important;
         fill: #f5e6c4 !important;
