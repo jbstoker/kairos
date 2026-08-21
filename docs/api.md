@@ -261,10 +261,11 @@ annular eclipses become visible when the bodies share an angular vector.
   math): radial factors, the counter-clockwise angle solver (equation of
   time, lunar elongation), and the lunar-node detector.
 - `web/static/js/canvas_renderer.js` — `updatePlanetaryCanvas(sunAngle,
-  sunRadialFactor, moonAngle, moonRadialFactor, isAtLunarNode,
-  targetGregorianTime)`: ellipse rx/ry breathing + the 3D Tilt Node Filter
-  that decorrelates the Moon's ring when it is NOT at a lunar node
-  (preventing false monthly overlaps), with the beads locked to their rings.
+  sunEccentricity, moonAngle, moonEccentricity, moonNodeAngle,
+  targetGregorianTime)`: true elliptical distances (`1 − e·cos θ`) with the
+  beads locked to their rings, plus natural eclipse detection — when the
+  bodies align AND the Moon is at a lunar node, the beads glow (sun `#ff6b35`,
+  moon `#8b0000`) and the `#eclipse-status` line lights up.
 - `web/templates/concentric_view.html` — the canonical SVG fragment;
   the identical markup is injected into `web/index.html` inside the panel.
 - Fully client-side: no backend required, so it runs on GitHub Pages and

@@ -118,20 +118,27 @@ class CelestialMetrics {
     }
 
     /**
-     * True when the Moon is near its ascending/descending node — the only
-     * alignments where the shared-ray geometry can be a real eclipse (the
-     * 3D Tilt Node Filter uses this to prevent false monthly overlaps).
-     * The ascending-node longitude precesses over the ~18.6-year cycle.
+     * Signed angular distance (radians) from the Moon to the nearest lunar
+     * ascending/descending node — |angle| < 0.1 rad means the Moon is at a
+     * node (the only alignments where a shared-ray geometry can eclipse).
      */
-    isMoonAtLunarNode(unixTimestamp, toleranceDeg) {
+    moonNodeAngleRadians(unixTimestamp) {
         const ts = Number(unixTimestamp);
-        const tol = toleranceDeg || 12;
         const d = (ts - 946728000) / 86400; // days since J2000.0
         const omega = (125.1228 - 0.0529538083 * d) % 360; // ascending node
         const moonLon = this.approximateMoonEclipticLongitude(ts);
-        const distAsc = Math.abs(((((moonLon - omega) % 360) + 540) % 360) - 180);
-        const distDesc = Math.abs(((((moonLon - (omega + 180)) % 360) + 540) % 360) - 180);
-        return Math.min(distAsc, distDesc) < tol;
+        const distAsc = ((moonLon - omega + 540) % 360) - 180;
+        const distDesc = ((moonLon - (omega + 180) + 540) % 360) - 180;
+        const distDeg = Math.abs(distAsc) < Math.abs(distDesc) ? distAsc : distDesc;
+        return distDeg * Math.PI / 180;
+    }
+
+    /**
+     * True when the Moon is near its ascending/descending node.
+     */
+    isMoonAtLunarNode(unixTimestamp, toleranceDeg) {
+        const tolRad = (toleranceDeg == null ? 12 : toleranceDeg) * Math.PI / 180;
+        return Math.abs(this.moonNodeAngleRadians(unixTimestamp)) < tolRad;
     }
 
     snapshot(unixTimestamp) {

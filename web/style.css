@@ -1063,3 +1063,28 @@ select {
     text-align: right;
 }
 
+
+
+/* ---- Eclipse status line ---- */
+#eclipse-status {
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-top: 10px;
+    min-height: 30px;
+    color: transparent;
+    transition: all 0.3s ease;
+    letter-spacing: 2px;
+    text-shadow: 0 0 20px rgba(255, 107, 53, 0.3);
+}
+
+/* Eclipse glow animation */
+@keyframes eclipseGlow {
+    0% { text-shadow: 0 0 10px rgba(255, 107, 53, 0.3); }
+    50% { text-shadow: 0 0 30px rgba(255, 107, 53, 0.8); }
+    100% { text-shadow: 0 0 10px rgba(255, 107, 53, 0.3); }
+}
+
+#eclipse-status.active {
+    animation: eclipseGlow 2s ease-in-out infinite;
+}

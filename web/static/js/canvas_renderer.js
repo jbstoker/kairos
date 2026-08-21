@@ -1,66 +1,98 @@
-/* Kairos elliptical observation matrix — polar-to-ellipse mapper.
+/* Kairos — Planetary Canvas Renderer
+ * True elliptical orbits + eclipse detection.
  *
- * Maps the counter-clockwise orbital angles + eccentric radial factors onto
- * the master spatial viewport (the #kstDisplay panel). The Sun and Moon
- * travel TRUE <ellipse> layers whose rx/ry stretch dynamically with the
- * orbital eccentricities; the beads stay locked on their rings, so the paths
- * and nodes expand/contract together.
- *
- * 3D Tilt Node Filter: when the Moon is NOT at a lunar node, a small radius
- * offset decorrelates the two rings, preventing false monthly overlaps.
- * When the bodies do share an angular vector the radial breathing exposes
- * the eclipse geometry (total vs annular).
+ * Maps the counter-clockwise orbital angles onto the master spatial viewport
+ * (the #kstDisplay panel). Sun and Moon distances are derived from the true
+ * eccentricities (1 − e·cos θ), so the <ellipse> tracks and beads breathe
+ * together. When the bodies align AND the Moon is at a node, an eclipse is
+ * detected and the beads glow + the status line lights up.
  */
 
-function updatePlanetaryCanvas(sunAngle, sunRadialFactor, moonAngle, moonRadialFactor, isAtLunarNode, targetGregorianTime) {
+function updatePlanetaryCanvas(sunAngle, sunEccentricity, moonAngle, moonEccentricity, moonNodeAngle, targetGregorianTime) {
     const cx = 400;
     const cy = 400;
 
-    // Core structural baselines from the system sketch
+    // Base radii (defined in SVG)
     const baseSunRx = 165;
     const baseMoonRx = 285;
 
-    // Compute the dynamic elliptical stretch variables
-    const sunRx = baseSunRx * sunRadialFactor;
-    const sunRy = baseSunRx * (1 - 0.0167) * sunRadialFactor; // Factoring solar eccentricity
+    // --- Sun true elliptical position ---
+    const sunDistance = 1 - 0.0167 * Math.cos(sunAngle); // Earth's orbit eccentricity
+    const sunRx = baseSunRx * sunDistance;
+    const sunRy = baseSunRx * (1 - 0.0167) * sunDistance; // Elliptical shape
 
-    // 3D Tilt Node Filter: Prevents false monthly overlaps
-    let nodeOffset = 0;
-    if (!isAtLunarNode) {
-        nodeOffset = 25 * Math.sin(moonAngle - sunAngle);
-    }
+    // --- Moon true elliptical position ---
+    const moonDistance = 1 - 0.0549 * Math.cos(moonAngle); // Lunar orbit eccentricity
+    const moonRx = baseMoonRx * moonDistance;
+    const moonRy = baseMoonRx * (1 - 0.0549) * moonDistance;
 
-    const moonRx = baseMoonRx * moonRadialFactor + nodeOffset;
-    const moonRy = baseMoonRx * (1 - 0.0549) * moonRadialFactor + nodeOffset; // Factoring lunar eccentricity
+    // --- Eclipse detection ---
+    const isAligned = Math.abs((sunAngle - moonAngle) % (2 * Math.PI)) < 0.01;
+    const isAtNode = Math.abs(moonNodeAngle) < 0.1;
+    const isEclipse = isAligned && isAtNode;
 
-    // 1. Sync and scale the Sun orbit line and position
+    // --- Update Sun orbit and bead ---
     const sunTrack = document.getElementById('sun-orbit-line');
     const sunBead = document.getElementById('sun-bead');
     if (sunTrack && sunBead) {
         sunTrack.setAttribute('rx', sunRx);
         sunTrack.setAttribute('ry', sunRy);
-
-        // Counter-clockwise layout mapping from Top Noon Zenith
         sunBead.setAttribute('cx', cx + sunRx * Math.sin(sunAngle));
         sunBead.setAttribute('cy', cy - sunRy * Math.cos(sunAngle));
+        if (isEclipse) {
+            sunBead.setAttribute('fill', '#ff6b35');
+            sunBead.setAttribute('r', '20');
+            sunBead.style.filter = 'drop-shadow(0px 0px 20px rgba(255,107,53,0.8))';
+        } else {
+            sunBead.setAttribute('fill', '#f39c12');
+            sunBead.setAttribute('r', '16');
+            sunBead.style.filter = 'drop-shadow(0px 0px 8px rgba(243,156,18,0.6))';
+        }
     }
 
-    // 2. Sync and scale the Moon orbit line and position
+    // --- Update Moon orbit and bead ---
     const moonTrack = document.getElementById('moon-orbit-line');
     const moonBead = document.getElementById('moon-bead');
     if (moonTrack && moonBead) {
         moonTrack.setAttribute('rx', moonRx);
         moonTrack.setAttribute('ry', moonRy);
-
         moonBead.setAttribute('cx', cx + moonRx * Math.sin(moonAngle));
         moonBead.setAttribute('cy', cy - moonRy * Math.cos(moonAngle));
+        if (isEclipse) {
+            moonBead.setAttribute('fill', '#8b0000');
+            moonBead.setAttribute('r', '14');
+            moonBead.style.filter = 'drop-shadow(0px 0px 15px rgba(139,0,0,0.8))';
+        } else {
+            moonBead.setAttribute('fill', '#ecf0f1');
+            moonBead.setAttribute('r', '11');
+            moonBead.style.filter = 'drop-shadow(0px 0px 6px rgba(236,240,241,0.5))';
+        }
     }
 
-    // 3. Inject the active target date string straight into the Rosetta Center Hub
+    // --- Update central clock ---
     const centralClock = document.getElementById('gregorian-center-clock');
     if (centralClock) {
         centralClock.textContent = targetGregorianTime;
     }
+
+    // --- Update eclipse status ---
+    const eclipseStatus = document.getElementById('eclipse-status');
+    if (eclipseStatus) {
+        if (isEclipse) {
+            eclipseStatus.textContent = '🌑 ECLIPSE IN PROGRESS';
+            eclipseStatus.style.color = '#ff6b35';
+            eclipseStatus.style.fontWeight = 'bold';
+            eclipseStatus.classList.add('active');
+        } else {
+            eclipseStatus.textContent = '';
+            eclipseStatus.style.color = 'transparent';
+            eclipseStatus.style.fontWeight = 'normal';
+            eclipseStatus.classList.remove('active');
+        }
+    }
+
+    // --- Optional: Log distances for debugging ---
+    console.debug(`Sun distance: ${sunDistance.toFixed(3)} AU, Moon distance: ${moonDistance.toFixed(3)} (relative)`);
 }
 
 function pad2(n) { return (n < 10 ? '0' : '') + n; }
@@ -76,9 +108,9 @@ function initConcentricClock() {
     function tick() {
         const ts = Date.now() / 1000;
         updatePlanetaryCanvas(
-            metrics.getSunAngle(ts), metrics.getSunRadialFactor(ts),
-            metrics.getMoonAngle(ts), metrics.getMoonRadialFactor(ts),
-            metrics.isMoonAtLunarNode(ts),
+            metrics.getSunAngle(ts), 0.0167,
+            metrics.getMoonAngle(ts), 0.0549,
+            metrics.moonNodeAngleRadians(ts),
             formatCenterClock(new Date())
         );
     }

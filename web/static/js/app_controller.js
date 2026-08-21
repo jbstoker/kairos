@@ -115,15 +115,13 @@
         const seasonVal = document.getElementById('celestial-season-val');
         if (seasonVal) seasonVal.textContent = getCurrentCelestialSeason(timestamp);
 
-        // 5. Trigger the elliptical canvas redraw with orbital factors,
-        //    the lunar-node filter and the selected Gregorian anchor time.
+        // 5. Trigger the elliptical canvas redraw with the eccentricity
+        //    values, the lunar node angle and the selected Gregorian anchor.
         if (celestialMetrics && typeof updatePlanetaryCanvas === 'function') {
             updatePlanetaryCanvas(
-                celestialMetrics.getSunAngle(timestamp),
-                celestialMetrics.getSunRadialFactor(timestamp),
-                celestialMetrics.getMoonAngle(timestamp),
-                celestialMetrics.getMoonRadialFactor(timestamp),
-                celestialMetrics.isMoonAtLunarNode(timestamp),
+                celestialMetrics.getSunAngle(timestamp), 0.0167,
+                celestialMetrics.getMoonAngle(timestamp), 0.0549,
+                celestialMetrics.moonNodeAngleRadians(timestamp),
                 gregorianString
             );
         }

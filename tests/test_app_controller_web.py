@@ -29,6 +29,7 @@ function makeEl(id) {
         setAttribute: (k, v) => { attrs[k] = String(v); },
         getAttribute: (k) => attrs[k] || null,
         addEventListener: () => {},
+        style: {},
         textContent: ''
     };
 }
@@ -38,6 +39,8 @@ function makeEl(id) {
     .forEach(id => elements[id] = makeEl(id));
 global.document = { getElementById: (id) => elements[id] || null };
 global.window = global;
+// The renderer's optional distance debug log must not pollute stdout JSON.
+global.console.debug = () => {};
 global.KairosI18n = { t: (k) => (k === 'kst.days' ? 'days' : k), trName: (p, n) => n };
 
 // Fresh KST snapshot the app_controller should read from.

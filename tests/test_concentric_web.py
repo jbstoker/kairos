@@ -1,11 +1,11 @@
-"""Web test: elliptical observation matrix geometry.
+"""Web test: true elliptical orbits + eclipse detection.
 
 Pins the counter-clockwise layout (web/static/js/astronomy_engine.js +
 web/static/js/canvas_renderer.js): Noon at the top (0 rad), Sunrise right
-(+π/2), Night bottom (π), Sunset left (−π/2); the TRUE <ellipse> orbits
-stretch rx/ry dynamically with the eccentric radial factors; the beads stay
-locked on their rings; and the 3D Tilt Node Filter decorrelates the Moon's
-ring when it is NOT at a lunar node (preventing false monthly overlaps).
+(+π/2), Night bottom (π), Sunset left (−π/2). Sun/Moon distances derive
+from the true eccentricities (1 − e·cos θ) so the <ellipse> tracks and
+beads breathe together; when the bodies align AND the Moon is at a node an
+eclipse is detected with glowing-bead + status feedback.
 
 Runs under node with a minimal DOM stub, like the other web tests.
 """
@@ -26,20 +26,31 @@ _NODE_SCRIPT = r"""
 const elements = {};
 function makeEl(id) {
     const attrs = {};
+    const classes = new Set();
     return {
         id: id,
         _attrs: attrs,
+        _classes: classes,
         setAttribute: (k, v) => { attrs[k] = String(v); },
         getAttribute: (k) => attrs[k] || null,
         addEventListener: () => {},
+        classList: {
+            add: (c) => classes.add(c),
+            remove: (c) => classes.delete(c),
+            contains: (c) => classes.has(c),
+            toggle: (c) => classes.has(c) ? classes.delete(c) : classes.add(c)
+        },
+        style: {},
         textContent: ''
     };
 }
 ['sun-orbit-line', 'moon-orbit-line', 'sun-bead', 'moon-bead',
- 'gregorian-center-clock']
+ 'gregorian-center-clock', 'eclipse-status']
     .forEach(id => elements[id] = makeEl(id));
 global.document = { getElementById: (id) => elements[id] || null };
 global.window = global;
+// The renderer's optional distance debug log must not pollute stdout JSON.
+global.console.debug = () => {};
 
 const engine = require('./web/static/js/astronomy_engine.js');
 const renderer = require('./web/static/js/canvas_renderer.js');
@@ -60,18 +71,16 @@ const out = {
         sunNight: m.getSunAngle(noon - 12 * 3600),
         sunSunset: m.getSunAngle(noon + 6 * 3600)
     },
-    radialBounds: {
-        sun: m.getSunRadialFactor(noon),
-        moon: m.getMoonRadialFactor(noon)
-    },
-    lunarNode: {
-        now: m.isMoonAtLunarNode(Date.now() / 1000),
-        isBoolean: typeof m.isMoonAtLunarNode(noon) === 'boolean'
+    nodeAngle: {
+        value: m.moonNodeAngleRadians(noon),
+        isFinite: isFinite(m.moonNodeAngleRadians(noon)),
+        boolAgrees: (Math.abs(m.moonNodeAngleRadians(noon)) * 180 / Math.PI < 12)
+            === m.isMoonAtLunarNode(noon)
     }
 };
 
-// Sun at Noon (0), Moon at Sunrise (+π/2), factors 1.0, NOT at a node.
-renderer.updatePlanetaryCanvas(0, 1.0, Math.PI / 2, 1.0, false, '14:30');
+// Frame: sun Noon (0), moon Sunrise (+π/2) → not aligned → no eclipse.
+renderer.updatePlanetaryCanvas(0, 0.0167, Math.PI / 2, 0.0549, 0.5, '14:30');
 out.frame1 = {
     sunRx: parseFloat(elements['sun-orbit-line']._attrs.rx),
     sunRy: parseFloat(elements['sun-orbit-line']._attrs.ry),
@@ -81,21 +90,32 @@ out.frame1 = {
     sunY: parseFloat(elements['sun-bead']._attrs.cy),
     moonX: parseFloat(elements['moon-bead']._attrs.cx),
     moonY: parseFloat(elements['moon-bead']._attrs.cy),
-    clock: elements['gregorian-center-clock'].textContent
+    clock: elements['gregorian-center-clock'].textContent,
+    sunFill: elements['sun-bead']._attrs.fill,
+    sunR: elements['sun-bead']._attrs.r,
+    moonFill: elements['moon-bead']._attrs.fill,
+    moonR: elements['moon-bead']._attrs.r,
+    status: elements['eclipse-status'].textContent
 };
 
-// Node filter: at new-moon alignment Δ=0 → offset 0; at a node → offset 0.
-renderer.updatePlanetaryCanvas(0, 1.0, 0, 1.0, false, 'x');
-out.aligned = parseFloat(elements['moon-orbit-line']._attrs.rx);
-renderer.updatePlanetaryCanvas(0, 1.0, 0, 1.0, true, 'x');
-out.atNode = parseFloat(elements['moon-orbit-line']._attrs.rx);
+// Eclipse: aligned (Δ=0.005 rad) AND at node (0.05 rad).
+renderer.updatePlanetaryCanvas(0, 0.0167, 0.005, 0.0549, 0.05, 'x');
+out.eclipse = {
+    sunFill: elements['sun-bead']._attrs.fill,
+    sunR: elements['sun-bead']._attrs.r,
+    moonFill: elements['moon-bead']._attrs.fill,
+    moonR: elements['moon-bead']._attrs.r,
+    statusText: elements['eclipse-status'].textContent,
+    active: elements['eclipse-status']._classes.has('active')
+};
 
-// Breathing: sun factor 1.017, moon factor 0.945, offset active (Δ=π/2).
-renderer.updatePlanetaryCanvas(0, 1.017, Math.PI / 2, 0.945, false, 'x');
-out.frame2 = {
-    sunRx: parseFloat(elements['sun-orbit-line']._attrs.rx),
-    sunRy: parseFloat(elements['sun-orbit-line']._attrs.ry),
-    moonRx: parseFloat(elements['moon-orbit-line']._attrs.rx)
+// Aligned but NOT at a node → no eclipse.
+renderer.updatePlanetaryCanvas(0, 0.0167, 0.005, 0.0549, 0.5, 'x');
+out.alignedNotNode = {
+    sunFill: elements['sun-bead']._attrs.fill,
+    sunR: elements['sun-bead']._attrs.r,
+    statusText: elements['eclipse-status'].textContent,
+    active: elements['eclipse-status']._classes.has('active')
 };
 
 process.stdout.write(JSON.stringify(out));
@@ -120,48 +140,57 @@ class TestEllipticalMatrixWeb(unittest.TestCase):
         self.assertAlmostEqual(abs(out["angles"]["sunNight"]), math.pi, places=6)
         self.assertAlmostEqual(out["angles"]["sunSunset"], -math.pi / 2, places=6)
 
-    def test_radial_factors_in_bounds(self):
+    def test_moon_node_angle(self):
         out = self._run()
-        self.assertTrue(0.98 <= out["radialBounds"]["sun"] <= 1.02)
-        self.assertTrue(0.94 <= out["radialBounds"]["moon"] <= 1.06)
+        self.assertTrue(out["nodeAngle"]["isFinite"])
+        self.assertTrue(out["nodeAngle"]["boolAgrees"])
 
-    def test_lunar_node_flag_is_boolean(self):
+    def test_elliptical_distance_and_bead_lock(self):
         out = self._run()
-        self.assertTrue(out["lunarNode"]["isBoolean"])
-
-    def test_ellipse_structure_and_bead_lock(self):
-        out = self._run()
-        # Sun ellipse: rx=165, ry=165*(1−0.0167); bead at top of the ellipse.
-        self.assertAlmostEqual(out["frame1"]["sunRx"], 165.0, places=4)
-        self.assertAlmostEqual(out["frame1"]["sunRy"], 165.0 * (1 - 0.0167), places=4)
+        # At θ=0: sunDistance = 1 − 0.0167 → rx=165·(1−0.0167), ry=rx·(1−0.0167).
+        self.assertAlmostEqual(out["frame1"]["sunRx"], 165 * (1 - 0.0167), places=4)
+        self.assertAlmostEqual(out["frame1"]["sunRy"],
+                               165 * (1 - 0.0167) ** 2, places=4)
         self.assertAlmostEqual(out["frame1"]["sunX"], 400.0, places=4)
-        self.assertAlmostEqual(out["frame1"]["sunY"], 400 - 165.0 * (1 - 0.0167), places=4)
-        # Bead sits on the ellipse: (x−400)²/rx² + (y−400)²/ry² = 1.
+        self.assertAlmostEqual(out["frame1"]["sunY"],
+                               400 - 165 * (1 - 0.0167) ** 2, places=4)
+        # Moon at +π/2: cos=0 → distance=1 → rx=285, ry=285·(1−0.0549).
+        self.assertAlmostEqual(out["frame1"]["moonRx"], 285.0, places=4)
+        self.assertAlmostEqual(out["frame1"]["moonRy"], 285 * (1 - 0.0549), places=4)
+        self.assertAlmostEqual(out["frame1"]["moonX"], 685.0, places=4)
+        self.assertAlmostEqual(out["frame1"]["moonY"], 400.0, places=4)
+        # Beads sit on their ellipses.
         sx = (out["frame1"]["sunX"] - 400) / out["frame1"]["sunRx"]
         sy = (out["frame1"]["sunY"] - 400) / out["frame1"]["sunRy"]
         self.assertAlmostEqual(sx * sx + sy * sy, 1.0, places=4)
 
-    def test_node_filter_offsets_moon_ring(self):
+    def test_no_eclipse_when_not_aligned(self):
         out = self._run()
-        # Δ=π/2, not at a node → nodeOffset=25 → moonRx = 285 + 25.
-        self.assertAlmostEqual(out["frame1"]["moonRx"], 285 + 25, places=4)
-        self.assertAlmostEqual(out["frame1"]["moonRy"],
-                               285 * (1 - 0.0549) + 25, places=4)
-        # At alignment (Δ=0) the offset is 0 → moonRx = 285.
-        self.assertAlmostEqual(out["aligned"], 285.0, places=4)
-        # At a lunar node the filter is disabled → moonRx = 285.
-        self.assertAlmostEqual(out["atNode"], 285.0, places=4)
+        self.assertEqual(out["frame1"]["sunFill"], "#f39c12")
+        self.assertEqual(out["frame1"]["sunR"], "16")
+        self.assertEqual(out["frame1"]["moonFill"], "#ecf0f1")
+        self.assertEqual(out["frame1"]["moonR"], "11")
+        self.assertEqual(out["frame1"]["status"], "")
+
+    def test_eclipse_detected_when_aligned_and_at_node(self):
+        out = self._run()
+        self.assertEqual(out["eclipse"]["sunFill"], "#ff6b35")
+        self.assertEqual(out["eclipse"]["sunR"], "20")
+        self.assertEqual(out["eclipse"]["moonFill"], "#8b0000")
+        self.assertEqual(out["eclipse"]["moonR"], "14")
+        self.assertEqual(out["eclipse"]["statusText"], "🌑 ECLIPSE IN PROGRESS")
+        self.assertTrue(out["eclipse"]["active"])
+
+    def test_no_eclipse_when_aligned_but_not_at_node(self):
+        out = self._run()
+        self.assertEqual(out["alignedNotNode"]["sunFill"], "#f39c12")
+        self.assertEqual(out["alignedNotNode"]["sunR"], "16")
+        self.assertEqual(out["alignedNotNode"]["statusText"], "")
+        self.assertFalse(out["alignedNotNode"]["active"])
 
     def test_center_clock_bound(self):
         out = self._run()
         self.assertEqual(out["frame1"]["clock"], "14:30")
-
-    def test_elliptical_breathing(self):
-        out = self._run()
-        self.assertAlmostEqual(out["frame2"]["sunRx"], 165 * 1.017, places=4)
-        self.assertAlmostEqual(out["frame2"]["sunRy"],
-                               165 * (1 - 0.0167) * 1.017, places=4)
-        self.assertAlmostEqual(out["frame2"]["moonRx"], 285 * 0.945 + 25, places=4)
 
 
 if __name__ == "__main__":
