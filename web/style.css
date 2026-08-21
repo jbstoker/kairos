@@ -511,16 +511,27 @@ select {
     flex-wrap: wrap;
     gap: 8px;
 }
-.seasonal-title {
-    font-size: 0.95rem;
-    letter-spacing: 1px;
-    color: #b7c9e2;
+.seasonal-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1 1 auto;
+    min-width: 0;
+    background: none;
+    border: none;
+    color: #f5e6c4;
+    font-size: 1rem;
+    font-weight: 600;
     cursor: pointer;
+    padding: 4px 0;
+    font-family: inherit;
+    text-align: left;
     touch-action: manipulation;
 }
-.seasonal-title b { color: #f0c27f; font-weight: 600; }
-.seasonal-toggle-icon { color: #f0c27f; }
-.seasonal-title:hover { color: #f5e6c4; }
+.seasonal-toggle-label { overflow-wrap: anywhere; }
+.seasonal-toggle-label b { color: #f0c27f; font-weight: 600; }
+.seasonal-toggle-icon { color: #f0c27f; transition: transform 0.2s; }
+.seasonal-toggle:hover { color: #f0c27f; }
 .seasonal-filters {
     display: flex;
     gap: 8px;

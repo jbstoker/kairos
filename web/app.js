@@ -573,15 +573,10 @@ function saveLocation(lat, lon) {
         toggle.setAttribute('aria-expanded', String(open));
         if (icon) icon.textContent = open ? '▾' : '▸';
     };
-    // Collapsed by default so the card saves room.
+    // Collapsed by default so the card saves room. The toggle is a real
+    // <button>, so Enter/Space are handled natively (click only).
     update(false);
     toggle.addEventListener('click', () => update(container.hidden));
-    toggle.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            update(container.hidden);
-        }
-    });
 })();
 
 document.getElementById('shareBtn').addEventListener('click', openShareModal);
