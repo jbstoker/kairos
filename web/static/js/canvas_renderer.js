@@ -38,13 +38,14 @@ function updatePlanetaryCanvas(sunAltitudeDeg, sunAzimuthDeg, moonAltitudeDeg, m
     const moonX = cx - moonDist * Math.sin(moonRad);
     const moonY = cy + moonDist * Math.cos(moonRad);
 
-    // --- Eclipse detection: shared azimuth (wrap-safe) AND lunar node.
-    //     Tolerances cover PARTIAL eclipses too (e.g. 89%): up to ~1.7° of
-    //     azimuth offset and ~19° from the lunar node. ---
+    // --- Eclipse detection: shared azimuth (wrap-safe), shared altitude AND
+    //     lunar node. Tolerances cover PARTIAL eclipses too (e.g. 89%): up to
+    //     ~1.7° of azimuth offset, ~5° of altitude, ~19° from the lunar node. ---
     const azDiff = Math.abs(((sunAzimuthDeg - moonAzimuthDeg) % 360) + 360) % 360;
-    const isAligned = Math.min(azDiff, 360 - azDiff) * Math.PI / 180 < 0.03;
+    const isAzAligned = Math.min(azDiff, 360 - azDiff) * Math.PI / 180 < 0.03;
+    const isAltAligned = Math.abs(sunAltitudeDeg - moonAltitudeDeg) < 5;
     const isAtNode = Math.abs(moonNodeAngle) < 0.33;
-    const isEclipse = isAligned && isAtNode;
+    const isEclipse = isAzAligned && isAltAligned && isAtNode;
 
     // --- Update Sun orbit and bead ---
     const sunTrack = document.getElementById('sun-orbit-line');

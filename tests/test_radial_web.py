@@ -54,6 +54,7 @@ class TestRadialApi(unittest.TestCase):
         # The master elliptical spatial panel:
         self.assertIn('class="card kst-unified-spatial-panel"', html)
         self.assertIn('id="kairos-observation-matrix"', html)
+        self.assertIn('id="sky-dome"', html)
         self.assertIn('id="gregorian-center-clock"', html)
         self.assertIn('id="sun-orbit-line"', html)
         self.assertIn('id="moon-orbit-line"', html)

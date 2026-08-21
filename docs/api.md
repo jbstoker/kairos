@@ -270,9 +270,13 @@ centre (alt 90°); below the horizon the bead moves beyond its ring
   targetGregorianTime)`: altitude/azimuth bead placement on a SHARED horizon
   radius (the outer ring), so bodies sharing a sky position overlap — plus
   natural eclipse detection with tolerances covering partial eclipses too
-  (≤ ~1.7° azimuth and ≤ ~19° from a lunar node); on an eclipse the beads
-  glow (sun `#ff6b35`, moon `#8b0000`) and the `#eclipse-status` line lights
-  up. The 2026-08-12 Wergea partial eclipse is pinned by a regression test.
+  (≤ ~1.7° azimuth, ~5° altitude, ~19° from a lunar node); on an eclipse the
+  beads glow (sun `#ff6b35`, moon `#8b0000`) and the `#eclipse-status` line
+  lights up. The 2026-08-12 Wergea partial eclipse is pinned by a regression
+  test.
+- The SVG matrix also carries a **sky-dome grid** (`#sky-dome`): four altitude
+  rings (r 60/120/180/240), compass diagonals, and degree labels on the
+  corrected axis — `180°/S` top, `90°/E` left, `0°/N` bottom, `270°/W` right.
 - `web/static/css/mobile.css` + `web/static/js/mobile.js` — the mobile
   optimisation layer (`@media (max-width: 600px)`): larger, brighter text,
   full-width container, SVG matrix capped at `min(100%, 70vh)`, larger touch
