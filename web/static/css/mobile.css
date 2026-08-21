@@ -48,10 +48,10 @@
 
     /* --- SVG canvas: scale to fit screen --- */
     svg#kairos-observation-matrix {
-        /* min(100%, 70vh) beats the inline max-width:550px on phones, and
-           with the base aspect-ratio:1/1 the square is capped at 70vh. */
-        width: min(100%, 70vh);
-        max-width: 100%;
+        /* 90% keeps the tracks + edge labels between the panel sides; with the
+           base aspect-ratio:1/1 the square is capped at 70vh. */
+        width: min(90%, 70vh);
+        max-width: 90%;
         height: auto;
         max-height: 70vh;
     }
