@@ -109,13 +109,13 @@ The system is organised in three layers:
 
 ## The Rhythm of Kairos
 
-Kairos is not a calendar. It is a *way of seeing time*.
+**Kairos is not a calendar. It is a way of seeing time.**
 
 Most calendars are inherited — built by empires, adjusted by popes, patched
-by politicians. They are useful tools, but they are not *true*. They drift.
+by politicians. They are useful tools, but they are not true. They drift.
 They correct. They forget.
 
-Kairos does not drift. It does not correct. It simply *observes*.
+Kairos does not drift. It does not correct. It simply observes.
 
 ---
 
@@ -178,6 +178,117 @@ turning year:
 These are *felt* — not taught.
 They are the same for all who watch the sky.
 
+### The Time — The Rhythm of the Day (7 · 13 · 20 · 26)
+
+If the year has 13 months of 28 days, and the week has 7 days, then the day
+itself should follow the same natural rhythm.
+
+**We define the day as 26 hours:**
+
+| Period | Hours |
+|--------|-------|
+| **Light** (sunrise to sunset) | 13 hours |
+| **Dark** (sunset to sunrise) | 13 hours |
+| **Total day** | 26 hours |
+
+**Each hour has 28 minutes.**  
+**Each minute has 7 seconds.**
+
+This gives us a fully self-similar system:
+
+| Level | Base | Unit | Count |
+|-------|------|------|-------|
+| **Year** | 13 | Months | 13 × 28 = 364 days |
+| **Month** | 28 | Days | 28 days = 4 weeks |
+| **Week** | 7 | Days | 7 days |
+| **Day** | 26 | Hours | 13 light + 13 dark |
+| **Hour** | 28 | Minutes | 28 minutes |
+| **Minute** | 7 | Seconds | 7 seconds |
+
+**Total seconds per day:** 26 × 28 × 7 = **5,096 seconds**  
+(Current day: 86,400 seconds — this is ~17× longer per "second")
+
+### The Natural Clock — Sunrise, Noon, Sunset
+
+In this system, the Sun's journey is mapped to numbers that belong to the
+sequence:
+
+| Event | Kairos Time | Why |
+|-------|-------------|-----|
+| **Sunrise** | 07:00 | 7 is in the sequence |
+| **Noon** | 13:00 | 13 is in the sequence |
+| **Sunset** | 20:00 | 7 + 13 = 20 — the sequence sums to the sunset anchor |
+| **Midnight** | 00:00 | The turn of the day |
+
+This means the clock and the sky are **aligned** — the numbers no longer feel
+arbitrary.
+
+### The Numbers — Echoes in History and Nature
+
+The sequence we use — 7, 13, 20, 26 — is not arbitrary. These numbers are not
+inventions of Kairos; they are **discoveries**. They are patterns observed in
+the sky, in the structures of plants, and in the cultures of our ancestors.
+They are a direct connection to a truth older than any single civilization.
+
+#### 7 — The Rhythm of Completion
+
+The number 7 is perhaps the most universally sacred number, appearing across
+cultures and disciplines.
+
+| Domain | Significance |
+|--------|--------------|
+| **In the Sky** | The phases of the Moon last approximately seven days. Many ancient cultures recognized seven "wandering bodies" in the sky: the Sun, the Moon, and the five visible planets (Mercury, Venus, Mars, Jupiter, Saturn). |
+| **In Culture** | It is the number of days in the week. In ancient Assyria and Babylon, it was a sacred number. It determined the stages of female life in Chinese tradition. In medieval education, students pursued the seven liberal arts. It is the number of notes in the musical scale. It appears in the seven ages of man, the seven deadly sins, and the seven candles of the Jewish menorah. It was central to the cult of Mithra and the Rosicrucians. |
+| **In Nature** | The 7-day rhythm mirrors the lunar quarter, the human menstrual cycle (4 × 7 = 28 days), and the seven directions (North, South, East, West, Up, Down, Center). |
+
+#### 13 — The Cycle of Renewal
+
+Often misunderstood as unlucky in later Western tradition, the number 13 is a
+number of transformation, rebirth, and the completion of a cycle.
+
+| Domain | Significance |
+|--------|--------------|
+| **In the Sky** | There are approximately 13 lunar cycles in a solar year (13 × 28 = 364 days). This is the foundation of our 13-month calendar. The Maya encoded it as a 260-unit matrix (13 numbers × 20 icons) known as the Tzolkin. |
+| **In Culture** | In African numerology, 13 meant transformation and the completion of a cycle, long before European cultural identity existed. In Chinese culture, the number thirteen (shisan) can actually be considered lucky. |
+| **In Nature** | The number 13 appears in the Fibonacci sequence (1, 1, 2, 3, 5, 8, 13, 21, 34…). |
+
+#### 20 — The Foundation of Wholeness
+
+The number 20 appears as a fundamental base in many unrelated cultures,
+suggesting a deep connection to human experience.
+
+| Domain | Significance |
+|--------|--------------|
+| **In the Sky** | The Maya used a vigesimal (base-20) numeral system. Their months had 20 days. The Law of Time states that the natural timing frequency is expressed as a ratio of **13:20**. |
+| **In Culture** | The number 20 appears in the Roman and Mayan systems, and is used 117 times in the Bible. A Mayan flag (tecpantli) represented the number 20. |
+| **In Nature** | It is the base of the numeral system of the Mexican and Central American tribes, and is considered the smallest sample size for extracting statistically significant information. |
+
+#### 26 — The Mirror of the Goddess
+
+The number 26 is the sum of 13 + 13, the doubling of the cycle.
+
+| Domain | Significance |
+|--------|--------------|
+| **In the Sky** | It is a galactic date which coincides with the rising of Sirius. It is the synchronization date for the Thirteen Moon Calendar. |
+| **In Culture** | In Hebrew gematria, 26 is the numerical value of the name of God, YHWH. It is traced back to Greek and Egyptian gods. It is the sacred number of the Goddess. It is the most prolific and profound number in history. |
+| **In Nature** | It is simply the doubling of the cycle (2 × 13), a mirror of the 13-day light and 13-day dark. |
+
+#### The Numbers in Plant Structures (Phyllotaxis)
+
+The natural world itself validates our sequence. The arrangement of leaves,
+petals, and seeds in plants follows mathematical patterns known as
+**phyllotaxis**.
+
+- The number of left- and right-winding spirals in a flower head, such as a
+  sunflower or gerbera, are typically **consecutive numbers from the
+  Fibonacci sequence** (1, 1, 2, 3, 5, 8, **13**, 21, 34,…).
+- Sunflower heads can have as many as 89 right-winding and 144 left-winding
+  spirals.
+- This pattern is not random. It arises from a mathematical and biological
+  model that explains a variety of plant forms.
+- **The number 13 is part of this fundamental pattern of life.** It is not an
+  invention; it is an observation of how life itself grows.
+
 ### The Year — The Deep Anchor
 
 The year in Kairos is not the year of kings or religions.
@@ -195,8 +306,22 @@ A continuous checksum validates it against the sky. If the Earth-age
 drifts, Kairos does not drift — it notifies.
 
 This is the anchor.
-Everything else — the day, the month, the season — is the rhythm that
-flows from it.
+Everything else — the day, the month, the season, the time — is the rhythm
+that flows from it.
+
+### Earth's Age in Kairos Time
+
+If we express the Earth's age in the Kairos Natural system (26·28·7):
+
+| Unit | Calculation | Result |
+|------|-------------|--------|
+| **Kairos years** | Unchanged | 4.54 billion years |
+| **Kairos days** | 4.54B × 365.2422 / 364 | ~4.555 billion days |
+| **Kairos hours** | 4.555B × 26 | ~118.43 billion hours |
+| **Kairos minutes** | 118.43B × 28 | ~3.316 trillion minutes |
+| **Kairos seconds** | 3.316T × 7 | ~23.21 trillion seconds |
+
+Or, in Kairos Natural notation: **23.21 × 10¹² seconds**
 
 ### Why This Matters
 
@@ -215,14 +340,20 @@ We are building a mirror.
 
 > "Kairos does not measure time. It invites you to observe it."
 
-> **Implementation note** — the observed names above are the canonical
-> Kairos constants (`core/constants.py`) and drive the **primary display**
-> (`14:32 · Sundial · Bloom Moon 16 · Radiance · 4.54B / 2026.624`).
-> They are also the **Rhythm** tradition in the app (select it in the
-> tradition menu). The default bundled tradition is Tartarian
-> (Solaris… / Sun, Moon, Fire…), which follows the same 13 × 28 + 1
-> calendar. The Earth-Age year and its continuous checksum are live:
-> `python core/timekeeper.py --checksum` and `GET /api/checksum`.
+### Back to [Wiki Home](https://github.com/jbstoker/kairos/wiki)
+
+> **Implementation note** — the day, month and season names above are the
+> canonical Kairos constants (`core/constants.py`) and drive the **primary
+> display** (`14:32 · Sundial · Bloom Moon 16 · Radiance · 4.54B / 2026.624`);
+> they are also the **Rhythm** tradition in the app. The 26-hour / 28-minute /
+> 7-second day is the shipped **🌿 Kairos Natural** reading mode
+> (`web/static/js/kairos_natural_time.js`): the dial is read from the app's
+> true solar time, so natural 13:00 is solar noon by construction and the
+> header keeps the Sun's azimuth — 07:00 / 13:00 / 20:00 are the standard-day
+> anchors the sequence is built around, while the app maps the real
+> sunrise/sunset onto the dial. The Earth-Age year and its continuous
+> checksum are live: `python core/timekeeper.py --checksum` and
+> `GET /api/checksum`.
 
 ## Installation
 

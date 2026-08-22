@@ -79,6 +79,43 @@ class TestWikiDocs(unittest.TestCase):
                          "WIKI_HOME.md"):
             self.assertIn(fragment, page, f"missing link '{fragment}'")
 
+    def test_rhythm_section_pins_the_complete_time_definition(self):
+        """TECHNICAL.md's 'The Rhythm of Kairos' section must keep the complete
+        time definition (7 · 13 · 20 · 26; 26h / 28m / 7s = 5,096 s/day) and
+        the corrected Earth-age notation (10¹², never the 1000×-too-large 10¹⁵)."""
+        with open(os.path.join(DOCS, "TECHNICAL.md"), encoding="utf-8") as f:
+            tech = f.read()
+        for fragment in ("7 · 13 · 20 · 26", "26 × 28 × 7 = **5,096",
+                         "~17×", "23.21 × 10¹²", "## The Rhythm of Kairos"):
+            self.assertIn(fragment, tech, f"missing '{fragment}'")
+        self.assertNotIn("23.21 × 10¹⁵", tech,
+                         "the Earth-age notation must stay 10¹² (trillion)")
+
+    def test_rhythm_section_anchor_survives(self):
+        """The section heading is unchanged, so TECHNICAL.md's table of
+        contents anchor (#the-rhythm-of-kairos) keeps working."""
+        with open(os.path.join(DOCS, "TECHNICAL.md"), encoding="utf-8") as f:
+            tech = f.read()
+        self.assertIn("## The Rhythm of Kairos", tech)
+        self.assertIn("- [The Rhythm of Kairos](#the-rhythm-of-kairos)", tech)
+
+    def test_rhythm_heading_levels_stay_under_h2(self):
+        """sync_wiki.py splits sections on '^## ', so every subsection of The
+        Rhythm of Kairos must be ###/#### — a raw ## would be dropped from the
+        generated wiki page."""
+        with open(os.path.join(DOCS, "TECHNICAL.md"), encoding="utf-8") as f:
+            lines = f.read().splitlines()
+        in_section = False
+        for line in lines:
+            if line.startswith("## The Rhythm of Kairos"):
+                in_section = True
+                continue
+            if in_section and line.startswith("## "):
+                break
+            if in_section:
+                self.assertFalse(line.startswith("## "),
+                                 f"subsection must be ###/####: {line}")
+
     def test_wiki_home_and_number_sequence_links_resolve(self):
         for path in (WIKI_HOME, NUMBER_SEQUENCE):
             for file_part, anchor in doc_links(path):
