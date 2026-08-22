@@ -102,3 +102,19 @@ Both choices persist on the device, and the energy card adapts instantly.
 ---
 
 > *“Kairos does not measure time. It invites you to observe it.”*
+
+## Wearable Watch Face
+
+Want Kairos on your wrist? Open **`watch.html`** — linked as *⌚ Wearable
+watch face* in the app's footer — a standalone page that shows **only the
+clock**:
+
+- **The time** — true solar time, huge: 12:00 is solar noon wherever you are.
+- **The date** — a small Kairos line below: *Sundial · Bloom Moon 16 ·
+  Radiance*.
+- **The sky** — a tiny caption with the Sun's azimuth and the Moon's phase.
+
+It uses the same location you already set in the app, runs fully offline, and
+installs as a fullscreen PWA (add it to your watch's home screen). For a pure
+clock with nothing else, use **`watch.html?min=1`**; to fix a location
+explicitly — e.g. a wall-mounted watch — use **`watch.html?lat=53.1&lon=5.8`**.

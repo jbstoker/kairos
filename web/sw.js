@@ -10,7 +10,7 @@
 //     newly deployed app takes control of already-open tabs right away, and
 //     any older cache versions are deleted.
 
-const CACHE_NAME = 'kairos-v44';
+const CACHE_NAME = 'kairos-v45';
 const APP_SHELL = [
     'index.html', 'style.css', 'static/css/mobile.css', 'i18n.js', 'app.js',
     'checksum_selfcheck.js',
@@ -25,7 +25,10 @@ const APP_SHELL = [
     'static/js/solar_time.js', 'static/js/astronomy_engine.js',
     'static/js/canvas_renderer.js',
     'static/js/app_controller.js', 'static/js/unified_display.js',
-    'static/js/mobile.js'
+    'static/js/mobile.js',
+    // Wearable watch face (web/watch.html) — isolated from the main app.
+    'watch.html', 'watch.webmanifest', 'static/css/watch.css',
+    'static/js/watch.js', 'static/js/kairos_calendar.js'
 ];
 
 self.addEventListener('install', e => {

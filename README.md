@@ -122,6 +122,7 @@ Kairos does not drift. It does not correct. It simply *observes*.
 | **Plan your meals** | Eat what is in season — see the full chemical inventory of any plant |
 | **Celebrate** | Mark festivals, rituals, and moments that matter to you |
 | **Share** | Capture your moment — with a photo, a date, and a place — and share it |
+| **Wear it** | Put the Kairos clock on your wrist — the standalone watch face (`web/watch.html`) shows only the solar time |
 | **Observe** | Check the checksum — the system shows you its assumptions, its sources, its limits |
 
 ---

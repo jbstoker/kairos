@@ -385,3 +385,9 @@ python core/timekeeper.py --lat 51.5 --lon -0.1     # cross-referenced noon
 The PWA in `web/` is fully client-side: observations live in
 `localStorage` and nothing ever leaves your device. Serve it with
 `python -m http.server 8000 --directory web` or open `web/index.html`.
+
+The **wearable watch face** is a second page, `web/watch.html`: it loads
+only the shared SunCalc + solar-time engine and renders just the clock
+(solar time, optional Kairos date line, `?min=1` for a pure clock). It
+shares the app's `kairos_location` and needs no API — open
+`http://host:8000/watch.html` on any watch with a browser.

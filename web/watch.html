@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <title>Kairos Watch</title>
+    <meta name="description" content="The Kairos solar clock — a wearable watch face. 12:00 is solar noon. Time as position, nothing else.">
+    <meta name="theme-color" content="#000000">
+    <link rel="manifest" href="watch.webmanifest">
+    <link rel="icon" type="image/svg+xml" href="logo.svg">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+    <link rel="stylesheet" href="static/css/watch.css">
+</head>
+<body>
+    <!-- Only the clock. ?min=1 hides the captions for a pure-clock face. -->
+    <main class="face" id="face">
+        <div id="time">--:--</div>
+        <div id="meta"></div>
+        <div id="date"></div>
+    </main>
+
+    <!-- Minimal, isolated engine: the main web app is never loaded here. -->
+    <script src="lib/suncalc.js"></script>
+    <script src="static/js/solar_time.js"></script>
+    <script src="static/js/kairos_calendar.js"></script>
+    <script src="static/js/watch.js"></script>
+</body>
+</html>

@@ -357,6 +357,11 @@ Press the button when the shadow is shortest — the display then counts
 solar time from your noon. Full wiring and flashing instructions are in
 `docs/hardware_guide.md`.
 
+For a watch with a screen, the PWA's **wearable watch face**
+(`web/watch.html`) is a ready-made reference implementation of the same
+solar-time display — open it on any watch with a browser or mirror its
+layout onto the SSD1306 canvas.
+
 > Note: the stock SSD1306 font can't render emoji, so the moon glyphs are
 > placeholders on the device itself.
 
@@ -522,6 +527,17 @@ worker). Open it two ways:
   self-check line sits below the community footer, the observation matrix
   scales to 90% width, and the shared
   action buttons (Capture · Share) form one segmented toolbar.
+- **Wearable watch face** — a fully isolated sibling page
+  (`web/watch.html`, linked as *⌚ Wearable watch face* in the footer).
+  It loads ONLY the shared engine (`lib/suncalc.js` +
+  `static/js/solar_time.js` + `static/js/kairos_calendar.js`) — never the
+  main app scripts — so it can't break the app. It renders only the clock:
+  true solar time large, a tiny ☀ azimuth + 🌙 phase caption, and the
+  compact Kairos date line (`web/static/js/watch.js`, `static/css/watch.css`).
+  `?min=1` hides the captions for a pure clock; `?lat=&lon=` fixes a
+  location (persisted to the shared `kairos_location`). Installs as a
+  fullscreen PWA (`watch.webmanifest`) and is cached by the service worker
+  for offline use.
 
 ## Data & file formats
 
@@ -889,7 +905,7 @@ modules/         food, energy, ritual layers
 data/            observations, traditions, star catalog, checksum log,
                  ephemeris, seasonal + phytochemical inventories
 web/             the PWA: index, styles, app logic, KST renderer, help
-                 layer, vendored SunCalc, Flask server
+                 layer, vendored SunCalc, Flask server, wearable watch face
 hardware/        Pico (MicroPython) + ESP32 (Arduino) firmware
 tests/           the pinned test suite
 docs/            philosophy, calibration, API, hardware guide, Wikipedia draft
