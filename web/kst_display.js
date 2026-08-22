@@ -283,7 +283,13 @@
 
     // ---- Primary display time: the solar position, not the wall clock ---------
     // "12:00 (180.0°)" — time as a position (web/static/js/solar_time.js).
+    // The optional Natural Time layer (web/static/js/natural_time.js) remaps
+    // the same solar day onto the 13h / 28m / 13s dial, keeping the degree —
+    // so the natural number and the sky-dome bead still agree.
     function primaryTime(now) {
+        if (typeof isNaturalTimeSelected === 'function' && isNaturalTimeSelected()) {
+            if (typeof getNaturalTimeDisplay === 'function') return getNaturalTimeDisplay();
+        }
         if (typeof getKairosTimeDisplay === 'function') return getKairosTimeDisplay();
         return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
     }

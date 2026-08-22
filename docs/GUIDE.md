@@ -118,3 +118,25 @@ It uses the same location you already set in the app, runs fully offline, and
 installs as a fullscreen PWA (add it to your watch's home screen). For a pure
 clock with nothing else, use **`watch.html?min=1`**; to fix a location
 explicitly — e.g. a wall-mounted watch — use **`watch.html?lat=53.1&lon=5.8`**.
+
+---
+
+## Natural Time (13 / 28 / 13)
+
+Want a clock that matches the 13-month calendar? In **⚙️ Configure → ⏱️ Time
+System** choose **🌿 Natural Time**: the same solar day is read as **13 hours
+per day, 28 minutes per hour, 13 seconds per minute** — a regular,
+self-similar rhythm instead of the 24 / 60 / 60 grid.
+
+- Natural **00:00** is solar midnight, natural **06:14** is solar noon,
+  natural **13:00** is the day's end.
+- It is a **reading layer, not a replacement**: it counts the app's true
+  solar time, so the degree in the header is still the Sun's azimuth — the
+  number and the sky-dome bead always agree.
+- While it's active, the header shows a small *🌿 Natural* pill under the
+  primary line.
+- Everything else (calendar, energy, seasons, the watch face) keeps working
+  unchanged — the watch face stays a pure solar clock.
+
+Switch back to **🌍 Current Time (24h / 60 / 60)** at any time — your choice
+is remembered on the device.

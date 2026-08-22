@@ -636,6 +636,34 @@ document.addEventListener('keydown', e => {
     });
 });
 
+// --- Time System (Natural Time layer) -----------------------------------------
+// ⚙️ Configure → ⏱️ Time System: "current" (24h / 60 / 60) or "natural" — the
+// 13h / 28m / 13s reading layer over the same true-solar day
+// (web/static/js/natural_time.js). Persisted in kairos_time_system.
+function getTimeSystem() {
+    try { return localStorage.getItem('kairos_time_system') || 'current'; }
+    catch (e) { return 'current'; }
+}
+
+function refreshTimeSystemBadge() {
+    const badge = document.getElementById('timeSystemBadge');
+    if (!badge) return;
+    badge.hidden = getTimeSystem() !== 'natural';
+}
+
+function initTimeSystem() {
+    const sel = document.getElementById('time-system');
+    if (!sel) return;
+    sel.value = getTimeSystem();
+    sel.addEventListener('change', () => {
+        try { localStorage.setItem('kairos_time_system', sel.value); } catch (e) { /* ignore */ }
+        refreshTimeSystemBadge();
+        if (window.refreshKST) window.refreshKST();
+    });
+    refreshTimeSystemBadge();
+}
+initTimeSystem();
+
 // Load saved lenses (calendar + energy) — lens_manager.js persists them.
 if (window.syncLensSelectors) window.syncLensSelectors();
 

@@ -71,6 +71,13 @@
                 'Read the same observed sky through a different calendar lens.',
             'config.language': '🌐 Language',
             'config.language_hint': 'Choose the language of this app.',
+            'config.time_system': '⏱️ Time System',
+            'config.time_system_hint':
+                'Read the same sky through a 13-based clock: 13 hours a day, '
+                + '28 minutes an hour, 13 seconds a minute — natural noon is solar noon.',
+            'config.time_system_current': '🌍 Current Time (24h / 60 / 60)',
+            'config.time_system_natural': '🌿 Natural Time (13h / 28 / 13)',
+            'config.time_system_natural_badge': '🌿 Natural',
             'config.seasonal_filters': '🌿 Seasonal filters & editing',
             'config.seasonal_filters_hint':
                 'Choose which items appear in "In season" on the Now tab.',
@@ -811,6 +818,14 @@
                 + 'kalenderlens.',
             'config.language': '🌐 Taal',
             'config.language_hint': 'Kies de taal van deze app.',
+            'config.time_system': '⏱️ Tijdsysteem',
+            'config.time_system_hint':
+                'Lees dezelfde hemel door een 13-delige klok: 13 uur per dag, '
+                + '28 minuten per uur, 13 seconden per minuut — natuurlijke '
+                + 'middag is zonsmiddag.',
+            'config.time_system_current': '🌍 Huidige tijd (24u / 60 / 60)',
+            'config.time_system_natural': '🌿 Natuurlijke tijd (13u / 28 / 13)',
+            'config.time_system_natural_badge': '🌿 Natuurlijk',
             'config.seasonal_filters': '🌿 Seizoensfilters en bewerken',
             'config.seasonal_filters_hint':
                 'Kies welke items in "In het seizoen" op het tabblad Nu '
@@ -1551,6 +1566,14 @@
                 'Lês deselde waarnommen himel troch in oare kalinderlens.',
             'config.language': '🌐 Taal',
             'config.language_hint': 'Kies de taal fan dizze app.',
+            'config.time_system': '⏱️ Tiidsysteem',
+            'config.time_system_hint':
+                'Lês deselde himel troch in 13-dielige klok: 13 oeren deis, '
+                + '28 minuten it oere, 13 sekonden de minút — natuerlike middei '
+                + 'is sinnemiddei.',
+            'config.time_system_current': '🌍 Aktuele tiid (24o / 60 / 60)',
+            'config.time_system_natural': '🌿 Natuerlike tiid (13o / 28 / 13)',
+            'config.time_system_natural_badge': '🌿 Natuerlik',
             'config.seasonal_filters': '🌿 Seizoenfilters en bewurkje',
             'config.seasonal_filters_hint':
                 'Kies hokker items yn "Yn it seizoen" op it ljepblêd No '
@@ -2295,6 +2318,14 @@
                 + 'Kalenderlinse lesen.',
             'config.language': '🌐 Sprache',
             'config.language_hint': 'Wählen Sie die Sprache dieser App.',
+            'config.time_system': '⏱️ Zeitsystem',
+            'config.time_system_hint':
+                'Lies denselben Himmel durch eine 13-basierte Uhr: 13 Stunden '
+                + 'am Tag, 28 Minuten je Stunde, 13 Sekunden je Minute — '
+                + 'natürlicher Mittag ist Sonnenmittag.',
+            'config.time_system_current': '🌍 Aktuelle Zeit (24h / 60 / 60)',
+            'config.time_system_natural': '🌿 Natürliche Zeit (13h / 28 / 13)',
+            'config.time_system_natural_badge': '🌿 Natürlich',
             'config.seasonal_filters': '🌿 Saisonfilter und Bearbeiten',
             'config.seasonal_filters_hint':
                 'Wählen Sie, welche Einträge auf dem Tab "Jetzt" unter '
@@ -3047,6 +3078,14 @@
                 + 'calendaire.',
             'config.language': '🌐 Langue',
             'config.language_hint': 'Choisissez la langue de cette application.',
+            'config.time_system': '⏱️ Système horaire',
+            'config.time_system_hint':
+                'Lisez le même ciel avec une horloge en base 13 : 13 heures par '
+                + 'jour, 28 minutes par heure, 13 secondes par minute — le midi '
+                + 'naturel est le midi solaire.',
+            'config.time_system_current': '🌍 Heure actuelle (24 h / 60 / 60)',
+            'config.time_system_natural': '🌿 Temps naturel (13 h / 28 / 13)',
+            'config.time_system_natural_badge': '🌿 Naturel',
             'config.seasonal_filters': '🌿 Filtres saisonniers et édition',
             'config.seasonal_filters_hint':
                 'Choisissez les éléments qui apparaissent dans « De saison » '
@@ -3811,6 +3850,14 @@
                 + 'calendárica.',
             'config.language': '🌐 Idioma',
             'config.language_hint': 'Elige el idioma de esta aplicación.',
+            'config.time_system': '⏱️ Sistema horario',
+            'config.time_system_hint':
+                'Lee el mismo cielo con un reloj en base 13: 13 horas al día, '
+                + '28 minutos por hora, 13 segundos por minuto: el mediodía '
+                + 'natural es el mediodía solar.',
+            'config.time_system_current': '🌍 Hora actual (24h / 60 / 60)',
+            'config.time_system_natural': '🌿 Tiempo natural (13h / 28 / 13)',
+            'config.time_system_natural_badge': '🌿 Natural',
             'config.seasonal_filters': '🌿 Filtros de temporada y edición',
             'config.seasonal_filters_hint':
                 'Elige qué elementos aparecen en "De temporada" en la '
@@ -4559,6 +4606,13 @@
                 '透过不同的历法视角，阅读同一片被观测的天空。',
             'config.language': '🌐 语言',
             'config.language_hint': '选择此应用的语言。',
+            'config.time_system': '⏱️ 时间系统',
+            'config.time_system_hint':
+                '用十三进制时钟阅读同一片天空：每天13小时，每小时28分钟，'
+                + '每分钟13秒——自然正午即太阳正午。',
+            'config.time_system_current': '🌍 当前时间（24小时 / 60 / 60）',
+            'config.time_system_natural': '🌿 自然时间（13小时 / 28 / 13）',
+            'config.time_system_natural_badge': '🌿 自然时间',
             'config.seasonal_filters': '🌿 季节筛选与编辑',
             'config.seasonal_filters_hint':
                 '选择哪些条目会出现在“现在”选项卡的“当季”中。',

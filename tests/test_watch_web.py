@@ -31,6 +31,7 @@ MAIN_APP_SCRIPTS = [
     'kst_display.js', 'static/js/astronomy_engine.js',
     'static/js/canvas_renderer.js', 'static/js/app_controller.js',
     'static/js/unified_display.js', 'static/js/mobile.js',
+    'static/js/natural_time.js',
 ]
 
 
@@ -85,7 +86,7 @@ class TestWatchPage(unittest.TestCase):
 
     def test_service_worker_caches_the_watch_face(self):
         sw = self.client.get("/sw.js").get_data(as_text=True)
-        self.assertIn("kairos-v45", sw)
+        self.assertIn("kairos-v46", sw)
         for asset in ["watch.html", "watch.webmanifest", "static/css/watch.css",
                       "static/js/watch.js", "static/js/kairos_calendar.js"]:
             self.assertIn(asset, sw)

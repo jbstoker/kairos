@@ -10,7 +10,7 @@
 //     newly deployed app takes control of already-open tabs right away, and
 //     any older cache versions are deleted.
 
-const CACHE_NAME = 'kairos-v45';
+const CACHE_NAME = 'kairos-v46';
 const APP_SHELL = [
     'index.html', 'style.css', 'static/css/mobile.css', 'i18n.js', 'app.js',
     'checksum_selfcheck.js',
@@ -22,7 +22,8 @@ const APP_SHELL = [
     'icon-192.png',
     'static/icons.svg',
     'static/js/lens_manager.js', 'static/js/energy_data.js',
-    'static/js/solar_time.js', 'static/js/astronomy_engine.js',
+    'static/js/solar_time.js', 'static/js/natural_time.js',
+    'static/js/astronomy_engine.js',
     'static/js/canvas_renderer.js',
     'static/js/app_controller.js', 'static/js/unified_display.js',
     'static/js/mobile.js',

@@ -538,6 +538,16 @@ worker). Open it two ways:
   location (persisted to the shared `kairos_location`). Installs as a
   fullscreen PWA (`watch.webmanifest`) and is cached by the service worker
   for offline use.
+- **Natural Time layer** — an optional reading mode
+  (`web/static/js/natural_time.js`): the same true-solar day is remapped
+  onto a 13-hour / 28-minute / 13-second dial (13 × 28 × 13 = 4732 natural
+  seconds, so the day's fraction maps 1:1 onto the sun's position — natural
+  06:14 is solar noon). Selected in ⚙️ Configure → ⏱️ Time System
+  (`kairos_time_system`); `primaryTime()` in `kst_display.js` uses
+  `getNaturalTimeDisplay()` while it's active, so the header keeps the Sun's
+  azimuth — the number and the bead still agree. It falls back to the wall
+  clock only without the solar engine; the watch face stays a pure solar
+  clock.
 
 ## Data & file formats
 

@@ -300,6 +300,15 @@ dial (altitude 0, azimuth = local day fraction × 360).
   Sun's azimuth — and the sky-dome bead always agree (sky-based, not
   clock-based). `getSolarDegrees()` / `degreesToKairosTime(deg)` remain as
   the no-SunCalc fallback.
+- `web/static/js/natural_time.js` — the optional **Natural Time layer**
+  (13h / 28m / 13s): `getNaturalTime()` → `{ hours, minutes, seconds,
+  formatted: "06:14", full: "06:14:00" }` (natural day = 13 × 28 × 13 =
+  4732 seconds, derived from the app's true solar time so natural 06:14 =
+  solar noon), `getNaturalSunrise(hour)` / `getNaturalSunset(hour)` map a
+  solar hour (0–24) onto the natural dial (06:00 → 03:07, 18:00 → 09:21),
+  `getNaturalTimeDisplay()` → `"06:14 (180.0°)"` (same shape as the
+  solar-time display, keeping the Sun's azimuth), and `isNaturalTimeSelected()`
+  (reads `kairos_time_system`). Selected in ⚙️ Configure → ⏱️ Time System.
 - `web/static/js/unified_display.js` — the FINAL UNIFIED HEADER layer: the
   calendar-lens-aware primary line — `window.updateDisplay(kairosString, tradition)`
   merges with app.js's own `updateDisplay()` (both call styles preserved) and
