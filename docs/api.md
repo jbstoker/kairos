@@ -253,11 +253,11 @@ The #kstDisplay master spatial panel maps the REAL Sun/Moon altitude and
 azimuth on the true celestial axis (facing south) — Midnight at the bottom
 (az 0° / north), Sunrise LEFT / east (az 90°), Noon at the top (az 180° /
 south), Sunset RIGHT / west (az 270°) — with a minimalist Gregorian clock
-pinned at the centre. Altitude is the distance from the horizon rings
-(alt 0°: sun rx 165 / ry 162, moon rx 285 / ry 270) to the zenith at the
-centre (alt 90°); below the horizon the bead moves beyond its ring
-(underground). Without a location, the engine falls back to the dial
-(altitude 0, azimuth = local day fraction × 360).
+pinned at the centre. Altitude is the distance from the horizon (the degree
+wheel edge, alt 0°: sun rx 165 / ry 162, moon rx 285 / ry 270) to the zenith
+at the centre (alt 90°); bodies below the horizon clamp to the wheel edge and
+render as dimmed ghost beads. Without a location, the engine falls back to the
+dial (altitude 0, azimuth = local day fraction × 360).
 
 - `web/static/js/astronomy_engine.js` — `CelestialMetrics` (shared client
   math): `getSunPositionDeg` / `getMoonPositionDeg` (real altitude + north

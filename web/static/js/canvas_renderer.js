@@ -6,39 +6,41 @@
  * above with the corrected celestial axis: facing south, the sun rises in
  * the east (LEFT, az 90°), culminates south (TOP, az 180°) and sets in the
  * west (RIGHT, az 270°); north (az 0°) is the bottom. Altitude is the
- * distance from the horizon ring (alt 0°) to the zenith at the centre
- * (alt 90°); below the horizon the bead moves beyond the ring (underground).
- * When the bodies share an azimuth AND the Moon is at a node, an eclipse is
- * detected and the beads glow + the status line lights up.
+ * distance from the horizon (the degree wheel edge, alt 0°) to the zenith at
+ * the centre (alt 90°); bodies below the horizon clamp to the wheel edge and
+ * render as dimmed ghost beads. When the bodies share an azimuth AND the
+ * Moon is at a node, an eclipse is detected and the beads glow + the status
+ * line lights up.
  */
 
 function updatePlanetaryCanvas(sunAltitudeDeg, sunAzimuthDeg, moonAltitudeDeg, moonAzimuthDeg, moonNodeAngle, targetGregorianTime) {
     const cx = 400;
     const cy = 400;
 
-    // Decorative orbit-path rings (the light-grey band between them) plus a
-    // SHARED horizon at the outer degree wheel: both bodies map altitude the
-    // same way, so when the Sun and Moon share a sky position (an eclipse)
-    // their beads overlap. Altitude 0° = the wheel edge (r280), 90° = the
-    // zenith at the centre; below the horizon the bead moves beyond the wheel.
+    // Decorative orbit-path rings plus a SHARED horizon at the outer degree
+    // wheel: both bodies map altitude the same way, so when the Sun and Moon
+    // share a sky position (an eclipse) their beads overlap. Altitude 0° =
+    // the wheel edge (r280), 90° = the zenith at the centre; below the
+    // horizon the bead clamps to the wheel edge and renders as a ghost.
     const sunRingRx = 165;
     const moonRingRx = 285;
     const maxRadius = 280;
-    const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 
     // --- Sun: altitude → distance from centre, azimuth → compass position ---
-    const sunAlt = clamp(sunAltitudeDeg, -90, 90);
-    const sunDist = Math.min(380, maxRadius * (1 - sunAlt / 90));
+    const sunVisualAlt = Math.max(0, sunAltitudeDeg);     // clamp below-horizon
+    const sunDist = maxRadius * (1 - sunVisualAlt / 90);
     const sunRad = sunAzimuthDeg * Math.PI / 180;
     const sunX = cx - sunDist * Math.sin(sunRad);
     const sunY = cy + sunDist * Math.cos(sunRad);
+    const sunBelowHorizon = sunAltitudeDeg < 0;
 
     // --- Moon ---
-    const moonAlt = clamp(moonAltitudeDeg, -90, 90);
-    const moonDist = Math.min(380, maxRadius * (1 - moonAlt / 90));
+    const moonVisualAlt = Math.max(0, moonAltitudeDeg);   // clamp below-horizon
+    const moonDist = maxRadius * (1 - moonVisualAlt / 90);
     const moonRad = moonAzimuthDeg * Math.PI / 180;
     const moonX = cx - moonDist * Math.sin(moonRad);
     const moonY = cy + moonDist * Math.cos(moonRad);
+    const moonBelowHorizon = moonAltitudeDeg < 0;
 
     // --- Eclipse detection: shared azimuth (wrap-safe), shared altitude AND
     //     lunar node. Tolerances cover PARTIAL eclipses too (e.g. 89%): up to
@@ -58,6 +60,14 @@ function updatePlanetaryCanvas(sunAltitudeDeg, sunAzimuthDeg, moonAltitudeDeg, m
         sunTrack.setAttribute('ry', sunRingRx * (1 - 0.0167));
         sunBead.setAttribute('cx', sunX);
         sunBead.setAttribute('cy', sunY);
+        // Ghost beads for below-horizon bodies (dimmed, outlined).
+        if (sunBelowHorizon) {
+            sunBead.setAttribute('opacity', '0.3');
+            sunBead.setAttribute('stroke', '#555');
+        } else {
+            sunBead.setAttribute('opacity', '0.9');
+            sunBead.setAttribute('stroke', '#fff');
+        }
         if (isEclipse) {
             sunBead.setAttribute('fill', '#ff6b35');
             sunBead.setAttribute('r', '20');
@@ -77,6 +87,14 @@ function updatePlanetaryCanvas(sunAltitudeDeg, sunAzimuthDeg, moonAltitudeDeg, m
         moonTrack.setAttribute('ry', moonRingRx * (1 - 0.0549));
         moonBead.setAttribute('cx', moonX);
         moonBead.setAttribute('cy', moonY);
+        // Ghost beads for below-horizon bodies (dimmed, outlined).
+        if (moonBelowHorizon) {
+            moonBead.setAttribute('opacity', '0.3');
+            moonBead.setAttribute('stroke', '#555');
+        } else {
+            moonBead.setAttribute('opacity', '0.9');
+            moonBead.setAttribute('stroke', '#fff');
+        }
         if (isEclipse) {
             moonBead.setAttribute('fill', '#8b0000');
             moonBead.setAttribute('r', '14');

@@ -446,8 +446,8 @@ worker). Open it two ways:
   real **altitude + azimuth** (vendored SunCalc, `web/static/js/
   astronomy_engine.js`) on a circular **degree wheel** (0–360° every 30°,
   on the corrected axis — facing south, east is left).
-  Subtle altitude rings + a light-grey orbital band between the sun/moon
-  rings show the sky position at a glance.
+  Subtle altitude rings (20/40/60/80°) show the sky position at a glance;
+  bodies below the horizon clamp to the wheel edge as dimmed ghost beads.
 - **Eclipse detection** — when the beads share azimuth (≤ ~1.7°), altitude
   (≤ 5°) and the Moon is near a lunar node (≤ ~19°), the beads glow and the
   `#eclipse-status` line lights up — tolerances cover partial eclipses

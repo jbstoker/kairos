@@ -123,6 +123,28 @@ out.alignedNotNode = {
     active: elements['eclipse-status']._classes.has('active')
 };
 
+// Below-horizon: bodies clamp to the wheel edge and render as dimmed ghosts.
+// Moon alt -20 → clamped to 0° → dist 280, az 90 → far LEFT (x 120).
+renderer.updatePlanetaryCanvas(10, 180, -20, 90, 0.5, 'x');
+out.ghostMoon = {
+    moonX: parseFloat(elements['moon-bead']._attrs.cx),
+    moonY: parseFloat(elements['moon-bead']._attrs.cy),
+    moonOpacity: elements['moon-bead']._attrs.opacity,
+    moonStroke: elements['moon-bead']._attrs.stroke,
+    sunOpacity: elements['sun-bead']._attrs.opacity,
+    sunStroke: elements['sun-bead']._attrs.stroke
+};
+
+// Sun alt -5 → clamped to 0° → dist 280, az 90 → far LEFT (x 120); moon lit.
+renderer.updatePlanetaryCanvas(-5, 90, 30, 180, 0.5, 'x');
+out.ghostSun = {
+    sunX: parseFloat(elements['sun-bead']._attrs.cx),
+    sunOpacity: elements['sun-bead']._attrs.opacity,
+    sunStroke: elements['sun-bead']._attrs.stroke,
+    moonOpacity: elements['moon-bead']._attrs.opacity,
+    moonStroke: elements['moon-bead']._attrs.stroke
+};
+
 // Real eclipse: the 2026-08-12 partial solar eclipse (89%) at Wergea,
 // Friesland (53.1503N, 5.8389E) — maximum 20:09 CEST. The beads must overlap
 // and the eclipse status must light up. (Loaded into `global` directly — no
@@ -201,6 +223,26 @@ class TestSkyDomeWeb(unittest.TestCase):
         # Beads stay inside the 800×800 viewport.
         for x, y in ((f["sunX"], f["sunY"]), (f["moonX"], f["moonY"])):
             self.assertTrue(0 <= x <= 800 and 0 <= y <= 800)
+
+    def test_below_horizon_clamps_to_wheel_and_ghosts(self):
+        """Bodies below the horizon clamp to the wheel edge (alt 0° → dist 280)
+        instead of drifting outside, and render as dimmed ghost beads."""
+        out = self._run()
+        g = out["ghostMoon"]
+        # Moon alt -20° clamps to 0° → dist 280 at az 90 (east/LEFT).
+        self.assertAlmostEqual(g["moonX"], 400.0 - 280.0, places=4)
+        self.assertAlmostEqual(g["moonY"], 400.0, places=4)
+        self.assertEqual(g["moonOpacity"], "0.3")   # ghost
+        self.assertEqual(g["moonStroke"], "#555")
+        # Sun alt 10° stays above the horizon → fully lit.
+        self.assertEqual(g["sunOpacity"], "0.9")
+        self.assertEqual(g["sunStroke"], "#fff")
+        s = out["ghostSun"]
+        self.assertAlmostEqual(s["sunX"], 400.0 - 280.0, places=4)
+        self.assertEqual(s["sunOpacity"], "0.3")
+        self.assertEqual(s["sunStroke"], "#555")
+        self.assertEqual(s["moonOpacity"], "0.9")
+        self.assertEqual(s["moonStroke"], "#fff")
 
     def test_no_eclipse_when_not_aligned(self):
         out = self._run()

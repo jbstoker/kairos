@@ -39,15 +39,9 @@
                     .rosetta-text { fill: #ffffff; font-family: monospace; font-size: 28px; font-weight: bold; }
                 </style>
 
-                <!-- Orbital path band — light grey annulus between the sun and
-                     moon rings so the orbit path reads clearly -->
-                <path fill="rgba(220, 225, 235, 0.15)" fill-rule="evenodd"
-                      d="M115,400 A285,270 0 1 1 685,400 A285,270 0 1 1 115,400
-                         M235,400 A165,162 0 1 1 565,400 A165,162 0 1 1 235,400" />
-
                 <!-- Sky-dome grid: compass lines (subtle). The altitude rings
-                     are drawn separately, above the orbital band and after the
-                     degree wheel, so they stay clearly visible. -->
+                     are drawn separately, after the degree wheel, so they stay
+                     clearly visible. -->
                 <g id="sky-dome" opacity="0.3">
                     <line x1="400" y1="120" x2="400" y2="680" stroke="#2a2a2a" stroke-width="1" />
                     <line x1="120" y1="400" x2="680" y2="400" stroke="#2a2a2a" stroke-width="1" />
@@ -62,7 +56,7 @@
 
                 <!-- Altitude rings (sky dome): 20/40/60/80° on the bead scale
                      (alt 0° = the degree wheel edge r280, 90° = the zenith at
-                     the centre), drawn above the orbital band so they are
+                     the centre), drawn after the degree wheel so they are
                      clearly visible — a bead at these altitudes lands exactly
                      on its ring (r 218/156/93/31). -->
                 <g id="altitude-rings" opacity="0.5">
