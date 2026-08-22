@@ -45,18 +45,10 @@
                       d="M115,400 A285,270 0 1 1 685,400 A285,270 0 1 1 115,400
                          M235,400 A165,162 0 1 1 565,400 A165,162 0 1 1 235,400" />
 
-                <!-- Sky-dome grid: altitude rings + compass lines (subtle).
-                     The altitude rings share the bead scale (alt 0° = horizon
-                     ring at r285, 90° = zenith at the centre), so a bead at
-                     20/40/60/80° altitude lands exactly on its ring
-                     (r 222/158/95/32). -->
+                <!-- Sky-dome grid: compass lines (subtle). The altitude rings
+                     are drawn separately, above the orbital band and after the
+                     degree wheel, so they stay clearly visible. -->
                 <g id="sky-dome" opacity="0.3">
-                    <g id="altitude-rings">
-                        <circle cx="400" cy="400" r="222" fill="none" stroke="#444" stroke-width="1" />  <!-- 20° -->
-                        <circle cx="400" cy="400" r="158" fill="none" stroke="#444" stroke-width="1" />  <!-- 40° -->
-                        <circle cx="400" cy="400" r="95" fill="none" stroke="#444" stroke-width="1" />   <!-- 60° -->
-                        <circle cx="400" cy="400" r="32" fill="none" stroke="#444" stroke-width="1" />   <!-- 80° -->
-                    </g>
                     <line x1="400" y1="120" x2="400" y2="680" stroke="#2a2a2a" stroke-width="1" />
                     <line x1="120" y1="400" x2="680" y2="400" stroke="#2a2a2a" stroke-width="1" />
                     <line x1="230" y1="230" x2="570" y2="570" stroke="#333" stroke-width="0.5" />
@@ -67,6 +59,18 @@
                      facing south, so 0° BOTTOM, 90° LEFT, 180° TOP,
                      270° RIGHT (matches the sun/moon bead positions). -->
                 <circle cx="400" cy="400" r="280" fill="none" stroke="#444" stroke-width="2" />
+
+                <!-- Altitude rings (sky dome): 20/40/60/80° on the bead scale
+                     (alt 0° = the degree wheel edge r280, 90° = the zenith at
+                     the centre), drawn above the orbital band so they are
+                     clearly visible — a bead at these altitudes lands exactly
+                     on its ring (r 218/156/93/31). -->
+                <g id="altitude-rings" opacity="0.5">
+                    <circle cx="400" cy="400" r="218" fill="none" stroke="#7a8ea5" stroke-width="1" />  <!-- 20° -->
+                    <circle cx="400" cy="400" r="156" fill="none" stroke="#7a8ea5" stroke-width="1" />  <!-- 40° -->
+                    <circle cx="400" cy="400" r="93" fill="none" stroke="#7a8ea5" stroke-width="1" />   <!-- 60° -->
+                    <circle cx="400" cy="400" r="31" fill="none" stroke="#7a8ea5" stroke-width="1" />   <!-- 80° -->
+                </g>
                 <!-- 0° (bottom) -->
                 <line x1="400" y1="680" x2="400" y2="666" class="degree-tick-major" />
                 <text x="400" y="720" class="degree-label">0°</text>

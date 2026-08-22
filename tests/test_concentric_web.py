@@ -186,17 +186,18 @@ class TestSkyDomeWeb(unittest.TestCase):
     def test_altitude_azimuth_bead_placement(self):
         out = self._run()
         f = out["frame1"]
-        # Sun alt 0 az 90 (east/LEFT): on the SHARED horizon ring, far left.
+        # Sun alt 0 az 90 (east/LEFT): on the SHARED horizon ring (the degree
+        # wheel edge), far left.
         self.assertAlmostEqual(f["sunRx"], 165.0, places=4)
         self.assertAlmostEqual(f["sunRy"], 165 * (1 - 0.0167), places=4)
-        self.assertAlmostEqual(f["sunX"], 400.0 - 285.0, places=4)   # 115
+        self.assertAlmostEqual(f["sunX"], 400.0 - 280.0, places=4)   # 120
         self.assertAlmostEqual(f["sunY"], 400.0, places=4)
         # Moon alt 45 az 180 (south/TOP): halfway from the moon band to the
-        # zenith → dist = 285·(1 − 45/90) = 142.5, straight up.
+        # zenith → dist = 280·(1 − 45/90) = 140, straight up.
         self.assertAlmostEqual(f["moonRx"], 285.0, places=4)
         self.assertAlmostEqual(f["moonRy"], 285 * (1 - 0.0549), places=4)
         self.assertAlmostEqual(f["moonX"], 400.0, places=4)
-        self.assertAlmostEqual(f["moonY"], 400.0 - 142.5, places=4)
+        self.assertAlmostEqual(f["moonY"], 400.0 - 140.0, places=4)
         # Beads stay inside the 800×800 viewport.
         for x, y in ((f["sunX"], f["sunY"]), (f["moonX"], f["moonY"])):
             self.assertTrue(0 <= x <= 800 and 0 <= y <= 800)

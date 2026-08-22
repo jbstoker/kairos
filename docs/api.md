@@ -275,8 +275,9 @@ centre (alt 90°); below the horizon the bead moves beyond its ring
   lights up. The 2026-08-12 Wergea partial eclipse is pinned by a regression
   test.
 - The SVG matrix carries a **sky-dome grid + circular degree wheel**: four
-  altitude rings (r 222/158/95/32 = 20/40/60/80° altitude, sharing the bead
-  scale so beads land on their rings), subtle compass lines, and 0–360° tick
+  altitude rings (r 218/156/93/31 = 20/40/60/80° altitude, sharing the bead
+  scale so beads land on their rings — 0° altitude is the degree wheel edge),
+  subtle compass lines, and 0–360° tick
   marks every 30° on the corrected axis — `180°` top, `90°` left, `0°`
   bottom, `270°` right (the white crosshairs are gone).
 - `web/static/css/mobile.css` + `web/static/js/mobile.js` — the mobile

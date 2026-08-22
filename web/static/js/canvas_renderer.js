@@ -17,23 +17,25 @@ function updatePlanetaryCanvas(sunAltitudeDeg, sunAzimuthDeg, moonAltitudeDeg, m
     const cy = 400;
 
     // Decorative orbit-path rings (the light-grey band between them) plus a
-    // SHARED horizon radius: both bodies map altitude the same way, so when
-    // the Sun and Moon share a sky position (an eclipse) their beads overlap.
+    // SHARED horizon at the outer degree wheel: both bodies map altitude the
+    // same way, so when the Sun and Moon share a sky position (an eclipse)
+    // their beads overlap. Altitude 0° = the wheel edge (r280), 90° = the
+    // zenith at the centre; below the horizon the bead moves beyond the wheel.
     const sunRingRx = 165;
     const moonRingRx = 285;
-    const horizonRx = 285;
+    const maxRadius = 280;
     const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 
     // --- Sun: altitude → distance from centre, azimuth → compass position ---
     const sunAlt = clamp(sunAltitudeDeg, -90, 90);
-    const sunDist = Math.min(380, horizonRx * (1 - sunAlt / 90));
+    const sunDist = Math.min(380, maxRadius * (1 - sunAlt / 90));
     const sunRad = sunAzimuthDeg * Math.PI / 180;
     const sunX = cx - sunDist * Math.sin(sunRad);
     const sunY = cy + sunDist * Math.cos(sunRad);
 
     // --- Moon ---
     const moonAlt = clamp(moonAltitudeDeg, -90, 90);
-    const moonDist = Math.min(380, horizonRx * (1 - moonAlt / 90));
+    const moonDist = Math.min(380, maxRadius * (1 - moonAlt / 90));
     const moonRad = moonAzimuthDeg * Math.PI / 180;
     const moonX = cx - moonDist * Math.sin(moonRad);
     const moonY = cy + moonDist * Math.cos(moonRad);
