@@ -1127,8 +1127,9 @@ select {
     overflow-wrap: anywhere;
 }
 
-/* Pill that appears under the primary line while the Natural Time layer
-   (13h / 28m / 13s, ⚙️ Configure → ⏱️ Time System) is active. */
+/* Pill that appears under the primary line while a Natural Time layer
+   (13h / 28m / 13s or the 26h / 28m / 7s "13 light + 13 dark" dial,
+   ⚙️ Configure → ⏱️ Time System) is active. */
 .time-system-badge {
     font-size: 0.65rem;
     color: #5a6a7c;

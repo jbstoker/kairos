@@ -309,6 +309,18 @@ dial (altitude 0, azimuth = local day fraction × 360).
   `getNaturalTimeDisplay()` → `"06:14 (180.0°)"` (same shape as the
   solar-time display, keeping the Sun's azimuth), and `isNaturalTimeSelected()`
   (reads `kairos_time_system`). Selected in ⚙️ Configure → ⏱️ Time System.
+- `web/static/js/kairos_natural_time.js` — the **26-hour Kairos Natural
+  layer** (26h / 28m / 7s): `getKairosNaturalTime()` → `{ hours, minutes,
+  seconds, isLight, period: "☀️ Light" | "🌙 Dark", formatted: "13:00",
+  full: "13:00:00", sunrise, noon: 13, sunset, midnight: 0 }` (26 × 28 × 7 =
+  5,096 seconds, derived from the app's true solar time so natural 13:00 =
+  solar noon; `isLight` and the ☀️ / 🌙 icon follow the real sun altitude,
+  sunrise/sunset are today's real ones rounded onto the dial — 7 / 20 only
+  without the engine), `getKairosNaturalSunrise(hour)` /
+  `getKairosNaturalSunset(hour)` map a solar hour onto the 26h dial (06:00 →
+  06:14, 18:00 → 19:14), `getKairosNaturalTimeDisplay()` → `"☀️ 13:00 (180.0°)"`
+  (light/dark icon + the Sun's azimuth) and `isKairosNaturalSelected()` (reads
+  `kairos_time_system`). Selected in ⚙️ Configure → ⏱️ Time System.
 - `web/static/js/unified_display.js` — the FINAL UNIFIED HEADER layer: the
   calendar-lens-aware primary line — `window.updateDisplay(kairosString, tradition)`
   merges with app.js's own `updateDisplay()` (both call styles preserved) and

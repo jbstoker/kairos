@@ -138,5 +138,21 @@ self-similar rhythm instead of the 24 / 60 / 60 grid.
 - Everything else (calendar, energy, seasons, the watch face) keeps working
   unchanged — the watch face stays a pure solar clock.
 
+### Kairos Natural (26 / 28 / 7)
+
+The same sky can also be read on a **26-hour dial — 13 light + 13 dark
+hours**, each hour 28 minutes, each minute 7 seconds (26 × 28 × 7 = 5,096
+natural seconds). Choose **🌿 Kairos Natural (26h / 28m / 7s)** in ⚙️
+Configure → ⏱️ Time System:
+
+- Natural **00:00** is solar midnight, natural **13:00** is solar noon,
+  natural **26:00** is the day's end.
+- The header shows the real day/night: **☀️** while the Sun is above the
+  horizon, **🌙** below it — the same truth the sky-dome bead shows.
+- Like the 13h dial, it counts the app's true solar time, so the degree
+  stays the Sun's azimuth and the number and the bead always agree.
+- The *🌿 Kairos Natural* pill replaces the *🌿 Natural* pill while it's
+  active.
+
 Switch back to **🌍 Current Time (24h / 60 / 60)** at any time — your choice
 is remembered on the device.

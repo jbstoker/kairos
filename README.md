@@ -74,10 +74,12 @@ The system calculates your local solar noon from these observations.
   (archetype, moon mood, element, festival, in-season food): Curanderismo,
   Taoist, Vedic, Pagan/Wiccan, Mesopotamian, Egyptian, Mayan — or **None**
   for pure Kairos. Your choices are remembered on the device.
-- Pick a **⏱️ Time System** — read the same sky through a 13-based clock:
-  13 hours per day, 28 minutes per hour, 13 seconds per minute. It counts
-  true solar time, so natural noon is solar noon and the header degree stays
-  the Sun's azimuth — the number and the sky-dome bead still agree.
+- Pick a **⏱️ Time System** — read the same sky through a 13-based clock
+  (13 hours per day, 28 minutes per hour, 13 seconds per minute) or the
+  **26-hour rhythm** — 13 light + 13 dark hours (26 hours per day,
+  28 minutes per hour, 7 seconds per minute). Both count true solar time,
+  so natural noon is solar noon and the header degree stays the Sun's
+  azimuth — the number and the sky-dome bead still agree.
 
 ### 🌐 Languages
 Kairos speaks seven languages — English (default), Dutch, Frisian, German,

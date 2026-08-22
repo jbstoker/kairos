@@ -636,10 +636,12 @@ document.addEventListener('keydown', e => {
     });
 });
 
-// --- Time System (Natural Time layer) -----------------------------------------
-// ⚙️ Configure → ⏱️ Time System: "current" (24h / 60 / 60) or "natural" — the
-// 13h / 28m / 13s reading layer over the same true-solar day
-// (web/static/js/natural_time.js). Persisted in kairos_time_system.
+// --- Time System (Natural Time layers) -----------------------------------------
+// ⚙️ Configure → ⏱️ Time System: "current" (24h / 60 / 60), "natural" (the
+// 13h / 28m / 13s reading layer, web/static/js/natural_time.js) or
+// "kairos_natural" (the 26h / 28m / 7s "13 light + 13 dark" layer,
+// web/static/js/kairos_natural_time.js) — all over the same true-solar day.
+// Persisted in kairos_time_system.
 function getTimeSystem() {
     try { return localStorage.getItem('kairos_time_system') || 'current'; }
     catch (e) { return 'current'; }
@@ -648,7 +650,18 @@ function getTimeSystem() {
 function refreshTimeSystemBadge() {
     const badge = document.getElementById('timeSystemBadge');
     if (!badge) return;
-    badge.hidden = getTimeSystem() !== 'natural';
+    const labels = {
+        natural: { key: 'config.time_system_natural_badge', fallback: '🌿 Natural' },
+        kairos_natural: { key: 'config.time_system_kairos_natural_badge', fallback: '🌿 Kairos Natural' }
+    };
+    const label = labels[getTimeSystem()];
+    badge.hidden = !label;
+    if (label) {
+        // Keep data-i18n in sync so i18n.apply() re-translates the badge on a
+        // language switch; set the text immediately for the current language.
+        badge.setAttribute('data-i18n', label.key);
+        badge.textContent = I18n ? t(label.key) : label.fallback;
+    }
 }
 
 function initTimeSystem() {

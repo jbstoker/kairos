@@ -62,10 +62,12 @@ When we use these numbers, we are **aligning** with something larger than oursel
 | **Time is not passive** | It is **participatory** — you are part of the rhythm |
 
 > **In the app:** this reading layer is implemented as the **Natural Time**
-> mode — ⚙️ Configure → ⏱️ Time System → **🌿 Natural Time (13u / 28 / 13)**.
-> It counts **true solar time** (natural noon `06:14` = solar noon, the day
-> begins at `00:00` and ends at `13:00`) and keeps the Sun's azimuth in the
-> header, so the natural number and the sky‑dome bead always agree. See
+> mode — ⚙️ Configure → ⏱️ Time System → **🌿 Natural Time (13u / 28 / 13)** —
+> or its 26-hour sibling **🌿 Kairos Natural (26u / 28m / 7s)**: 13 light +
+> 13 dark hours (natural noon `13:00`, day's end `26:00`). Both count **true
+> solar time** (natural noon `06:14` / `13:00` = solar noon) and keep the
+> Sun's azimuth in the header, so the natural number and the sky‑dome bead
+> always agree. See
 > [Natural Time (13 / 28 / 13)](GUIDE.md#natural-time-13--28--13) in the user guide.
 
 ---
