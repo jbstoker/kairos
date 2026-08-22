@@ -9,6 +9,7 @@ This wiki is a companion to the Kairos system. It contains the philosophy, the u
 ## Quick Links
 
 - [Philosophy](philosophy.md) — Why Kairos exists
+- [Number Sequence (13 · 28 · 7)](NUMBER_SEQUENCE.md) — The philosophical, mathematical, and spiritual foundation of Kairos Time
 - [User Guide](GUIDE.md) — How to use Kairos
 - [Data Sources](DATA_SOURCES.md) — Where the data comes from
 - [Community](COMMUNITY.md) — Share your moment, observe together
