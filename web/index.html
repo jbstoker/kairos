@@ -45,12 +45,18 @@
                       d="M115,400 A285,270 0 1 1 685,400 A285,270 0 1 1 115,400
                          M235,400 A165,162 0 1 1 565,400 A165,162 0 1 1 235,400" />
 
-                <!-- Sky-dome grid: altitude rings + compass lines (subtle) -->
+                <!-- Sky-dome grid: altitude rings + compass lines (subtle).
+                     The altitude rings share the bead scale (alt 0° = horizon
+                     ring at r285, 90° = zenith at the centre), so a bead at
+                     20/40/60/80° altitude lands exactly on its ring
+                     (r 222/158/95/32). -->
                 <g id="sky-dome" opacity="0.3">
-                    <circle cx="400" cy="400" r="60" fill="none" stroke="#444" stroke-width="1" />
-                    <circle cx="400" cy="400" r="120" fill="none" stroke="#444" stroke-width="1" />
-                    <circle cx="400" cy="400" r="180" fill="none" stroke="#444" stroke-width="1" />
-                    <circle cx="400" cy="400" r="240" fill="none" stroke="#444" stroke-width="1" />
+                    <g id="altitude-rings">
+                        <circle cx="400" cy="400" r="222" fill="none" stroke="#444" stroke-width="1" />  <!-- 20° -->
+                        <circle cx="400" cy="400" r="158" fill="none" stroke="#444" stroke-width="1" />  <!-- 40° -->
+                        <circle cx="400" cy="400" r="95" fill="none" stroke="#444" stroke-width="1" />   <!-- 60° -->
+                        <circle cx="400" cy="400" r="32" fill="none" stroke="#444" stroke-width="1" />   <!-- 80° -->
+                    </g>
                     <line x1="400" y1="120" x2="400" y2="680" stroke="#2a2a2a" stroke-width="1" />
                     <line x1="120" y1="400" x2="680" y2="400" stroke="#2a2a2a" stroke-width="1" />
                     <line x1="230" y1="230" x2="570" y2="570" stroke="#333" stroke-width="0.5" />
@@ -151,8 +157,12 @@
         </div>
 
         <div class="kst-actions">
-            <button class="action-btn" id="captureBtn" data-i18n="action.capture" data-i18n-title="action.capture.title" title="Take a photo and stamp it with this Kairos moment">📸 Capture Moment</button>
-            <button class="action-btn" id="shareBtn" data-i18n="action.share" data-i18n-title="action.share.title" title="Export this moment as text or image">📤 Share This Moment</button>
+            <button class="action-btn" id="captureBtn" data-i18n-title="action.capture.title" title="Take a photo and stamp it with this Kairos moment">
+                <svg class="icon-line" aria-hidden="true"><use href="static/icons.svg#icon-camera"/></svg><span data-i18n="action.capture">Capture Moment</span>
+            </button>
+            <button class="action-btn" id="shareBtn" data-i18n-title="action.share.title" title="Export this moment as text or image">
+                <svg class="icon-line" aria-hidden="true"><use href="static/icons.svg#icon-share"/></svg><span data-i18n="action.share">Share This Moment</span>
+            </button>
         </div>
     </div>
 
@@ -164,8 +174,8 @@
     <div class="seasonal">
         <div class="seasonal-head">
             <button type="button" class="seasonal-toggle" id="seasonalToggle" aria-expanded="false" aria-controls="seasonalContainer" title="Show/hide what's in season">
-                <span class="seasonal-toggle-icon">▸</span>
-                <span class="seasonal-toggle-label"><span data-i18n="seasonal.in_season">🌿 In season</span> · <b id="seasonalSeasonLabel">--</b></span>
+                <svg class="icon-line icon-line-no-margin seasonal-toggle-icon" aria-hidden="true"><use href="static/icons.svg#icon-chevron-down"/></svg>
+                <span class="seasonal-toggle-label"><span data-i18n="seasonal.in_season">In season</span> · <b id="seasonalSeasonLabel">--</b></span>
             </button>
         </div>
         <div class="seasonal-container" id="seasonalContainer">
@@ -179,15 +189,44 @@
         <div class="config-section">
             <h3 data-i18n="config.tradition">🕰️ Your tradition</h3>
             <p class="config-hint" data-i18n="config.tradition_hint">Read the same observed sky through a different calendar lens.</p>
-            <select id="traditionSelect">
-                <option value="rhythm">🌗 Rhythm</option>
-                <option value="tartarian">🌌 Tartarian</option>
-                <option value="celtic">🌿 Celtic</option>
-                <option value="chinese">🐉 Chinese</option>
-                <option value="vedic">🕉️ Vedic</option>
-                <option value="mesopotamian">🏛️ Mesopotamian</option>
-                <option value="mystical">🔮 Mystical</option>
-            </select>
+
+            <!-- ============================================================
+                 LENS SELECTORS (Calendar + Energy)
+                 The old single #traditionSelect is replaced by two
+                 independent lenses (web/static/js/lens_manager.js):
+                   · Calendar Lens — which calendar date the primary line shows
+                   · Energy Lens   — which tradition reinterprets today's energy
+                 ============================================================ -->
+            <div id="lens-selectors" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin: 12px 0;">
+                <div>
+                    <label for="calendar-lens" data-i18n="config.calendar_lens" style="color: #8e9ab0; font-size: 0.8rem; display: block; text-align: center;">
+                        📅 Calendar Lens
+                    </label>
+                    <select id="calendar-lens" style="background: #1e2632; color: #f5e6c4; border: 1px solid #2a3442; border-radius: 40px; padding: 6px 16px; font-size: 0.9rem; cursor: pointer;">
+                        <option value="kairos">🌌 Kairos</option>
+                        <option value="tartarian">🌿 Tartarian</option>
+                        <option value="celtic">🕊️ Celtic</option>
+                        <option value="chinese">🐉 Chinese</option>
+                        <option value="vedic">🕉️ Vedic</option>
+                        <option value="mystical">🔮 Mystical</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="energy-lens" data-i18n="config.energy_lens" style="color: #8e9ab0; font-size: 0.8rem; display: block; text-align: center;">
+                        🌿 Energy Lens
+                    </label>
+                    <select id="energy-lens" style="background: #1e2632; color: #f5e6c4; border: 1px solid #2a3442; border-radius: 40px; padding: 6px 16px; font-size: 0.9rem; cursor: pointer;">
+                        <option value="none">🌱 None (pure Kairos)</option>
+                        <option value="curanderismo">🌿 Curanderismo</option>
+                        <option value="taoist">☯️ Taoist</option>
+                        <option value="vedic">🕉️ Vedic</option>
+                        <option value="pagan">🕊️ Pagan / Wiccan</option>
+                        <option value="mesopotamian">🏛️ Mesopotamian</option>
+                        <option value="egyptian">🏺 Egyptian</option>
+                        <option value="mayan">🌎 Mayan</option>
+                    </select>
+                </div>
+            </div>
         </div>
 
         <div class="config-section">
@@ -277,10 +316,10 @@
             <h3 data-i18n="config.observe_season">🍂 Observe the season</h3>
             <p class="config-hint" data-i18n="config.observe_season_hint">Press the season that feels right.</p>
             <div class="season-grid">
-                <button class="action-btn" id="seasonSpring" data-i18n="season_button.Spring">🌸 Spring</button>
-                <button class="action-btn" id="seasonSummer" data-i18n="season_button.Summer">☀️ Summer</button>
-                <button class="action-btn" id="seasonAutumn" data-i18n="season_button.Autumn">🍂 Autumn</button>
-                <button class="action-btn" id="seasonWinter" data-i18n="season_button.Winter">❄️ Winter</button>
+                <button class="action-btn" id="seasonSpring"><svg class="icon-line" aria-hidden="true"><use href="static/icons.svg#icon-sprout"/></svg><span data-i18n="season_button.Spring">Spring</span></button>
+                <button class="action-btn" id="seasonSummer"><svg class="icon-line" aria-hidden="true"><use href="static/icons.svg#icon-radiance"/></svg><span data-i18n="season_button.Summer">Summer</span></button>
+                <button class="action-btn" id="seasonAutumn"><svg class="icon-line" aria-hidden="true"><use href="static/icons.svg#icon-leaf"/></svg><span data-i18n="season_button.Autumn">Autumn</span></button>
+                <button class="action-btn" id="seasonWinter"><svg class="icon-line" aria-hidden="true"><use href="static/icons.svg#icon-snowflake"/></svg><span data-i18n="season_button.Winter">Winter</span></button>
             </div>
         </div>
     </div><!-- /tabConfig -->
@@ -425,6 +464,8 @@
 </div>
 
 <script src="i18n.js"></script>
+<script src="static/js/lens_manager.js"></script>
+<script src="static/js/energy_data.js"></script>
 <script src="lib/suncalc.js"></script>
 <script src="planets.js"></script>
 <script src="observation_methods.js"></script>

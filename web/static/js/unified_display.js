@@ -3,8 +3,9 @@
  *
  * FINAL UNIFIED HEADER addendum, adapted to the consolidated #kstDisplay:
  * the Gregorian reference already lives only in the matrix's centre clock.
- * The tradition is set in the Configure tab (#traditionSelect), and this
- * layer makes the primary #kstDisplayLine show the SELECTED tradition's real
+ * The tradition is set in the Configure tab via the two lens selectors
+ * (#calendar-lens / #energy-lens, see web/static/js/lens_manager.js), and this
+ * layer makes the primary #kstDisplayLine show the SELECTED calendar lens's real
  * calendar date instead of a hardcoded string.
  *
  * The addendum's window.updateDisplay(kairosString, tradition) API is kept,
@@ -24,18 +25,27 @@
     window.__lastKairosString = '';
 
     function getSelectedTradition() {
-        // #traditionSelect is synced from localStorage by app.js.
-        const config = document.getElementById('traditionSelect');
+        // The Calendar Lens is the source of truth (synced from localStorage
+        // by lens_manager.js and app.js).
+        const config = document.getElementById('calendar-lens');
         if (config && config.value) return config.value;
-        return (typeof getTradition === 'function') ? getTradition() : 'tartarian';
+        if (typeof window.getCalendarLens === 'function') {
+            const v = window.getCalendarLens();
+            if (v) return v;
+        }
+        return (typeof getTradition === 'function') ? getTradition() : 'kairos';
     }
 
     function setSelectedTradition(value) {
-        const config = document.getElementById('traditionSelect');
+        const config = document.getElementById('calendar-lens');
         if (config) config.value = value;
-        try { localStorage.setItem('kairos_tradition', value); } catch (e) { /* ignore */ }
-        updateDisplay();            // 0-arg: context label + primary line refresh
-        if (window.refreshKST) window.refreshKST();
+        if (typeof window.setCalendarLens === 'function') {
+            window.setCalendarLens(value);   // persists + refreshes display
+        } else {
+            try { localStorage.setItem('kairos_calendar_lens', value); } catch (e) { /* ignore */ }
+            updateDisplay();            // 0-arg: context label + primary line refresh
+            if (window.refreshKST) window.refreshKST();
+        }
     }
 
     // Real tradition date, reusing app.js's calendar helpers (TRADITIONS,
@@ -61,10 +71,10 @@
     window.updateDisplay = function (kairosString, tradition) {
         if (arguments.length === 0 && appUpdateDisplay) {
             // app.js's periodic / setTradition / saveObs refresh — keep it
-            // working, then re-apply the primary line with the new tradition.
+            // working, then re-apply the primary line with the current lens.
             appUpdateDisplay();
             const current = getSelectedTradition();
-            const config = document.getElementById('traditionSelect');
+            const config = document.getElementById('calendar-lens');
             if (config && config.value !== current) config.value = current;
             if (window.__lastKairosString) {
                 window.updateDisplay(window.__lastKairosString, current);
@@ -74,7 +84,10 @@
         const line = document.getElementById('kstDisplayLine');
         if (!line) return;
         window.__lastKairosString = kairosString;
-        if (tradition && tradition !== 'rhythm') {
+        // The pure Kairos calendar (calendar lens 'kairos', legacy 'rhythm')
+        // passes the canonical line through unchanged; the other calendar
+        // lenses rebuild it with their own month names.
+        if (tradition && tradition !== 'rhythm' && tradition !== 'kairos') {
             line.textContent = buildTraditionLine(kairosString, tradition) || kairosString;
         } else {
             line.textContent = kairosString;

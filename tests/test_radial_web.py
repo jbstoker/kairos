@@ -55,6 +55,7 @@ class TestRadialApi(unittest.TestCase):
         self.assertIn('class="card kst-unified-spatial-panel"', html)
         self.assertIn('id="kairos-observation-matrix"', html)
         self.assertIn('id="sky-dome"', html)
+        self.assertIn('id="altitude-rings"', html)
         self.assertIn('id="gregorian-center-clock"', html)
         self.assertIn('id="sun-orbit-line"', html)
         self.assertIn('id="moon-orbit-line"', html)
@@ -78,7 +79,8 @@ class TestRadialApi(unittest.TestCase):
         # Preserved lower body — tabs, forms and configuration mechanics:
         self.assertIn('id="tabNow"', html)
         self.assertIn('id="tabConfig"', html)
-        self.assertIn('id="traditionSelect"', html)
+        self.assertIn('id="calendar-lens"', html)
+        self.assertIn('id="energy-lens"', html)
         self.assertIn('id="locationLat"', html)
         self.assertIn('id="locationLon"', html)
         self.assertIn('id="saveLocationBtn"', html)
@@ -112,6 +114,12 @@ class TestRadialApi(unittest.TestCase):
         solar_js = self.client.get("/static/js/solar_time.js")
         self.assertEqual(solar_js.status_code, 200)
         self.assertIn(b"getKairosTimeDisplay", solar_js.data)
+        lens_js = self.client.get("/static/js/lens_manager.js")
+        self.assertEqual(lens_js.status_code, 200)
+        self.assertIn(b"getCalendarLens", lens_js.data)
+        energy_js = self.client.get("/static/js/energy_data.js")
+        self.assertEqual(energy_js.status_code, 200)
+        self.assertIn(b"ENERGY_LENSES", energy_js.data)
 
     def test_unified_display_builds_real_tradition_line(self):
         """The primary line adapts to the selected tradition using the app's

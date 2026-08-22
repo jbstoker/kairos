@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+    <!-- Kairos line-icon sprite — FontAwesome-style, thin and consistent.
+         Referenced as <svg class="icon-line"><use href="static/icons.svg#icon-*"/></svg> -->
+
+    <!-- Sun -->
+    <symbol id="icon-sun" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="5" />
+        <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+    </symbol>
+
+    <!-- Moon -->
+    <symbol id="icon-moon" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+    </symbol>
+
+    <!-- Planet (generic) -->
+    <symbol id="icon-planet" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="8" />
+        <ellipse cx="12" cy="12" rx="12" ry="4" transform="rotate(30, 12, 12)" />
+    </symbol>
+
+    <!-- Archetype (star) -->
+    <symbol id="icon-star" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2l1.5 5.5L19 4l-3.5 5.5L22 12l-6.5 2.5L19 20l-5.5-3.5L12 22l-1.5-5.5L5 20l3.5-5.5L2 12l6.5-2.5L5 4l5.5 2.5L12 2z" />
+    </symbol>
+
+    <!-- Element: Fire -->
+    <symbol id="icon-fire" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2c0 4-4 6-4 10 0 4 4 6 4 10 0-4 4-6 4-10 0-4-4-6-4-10z" />
+    </symbol>
+
+    <!-- Element: Water -->
+    <symbol id="icon-water" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2c-4 6-8 10-8 14 0 4 3.5 6 8 6s8-2 8-6c0-4-4-8-8-14z" />
+    </symbol>
+
+    <!-- Element: Earth -->
+    <symbol id="icon-earth" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="4" y="4" width="16" height="16" rx="2" />
+        <circle cx="12" cy="12" r="2" />
+        <path d="M8 8l3 3M16 16l-3-3" />
+    </symbol>
+
+    <!-- Element: Air -->
+    <symbol id="icon-air" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 8c1.5-2 4-2 5.5 0s4 2 5.5 0s4-2 5.5 0" />
+        <path d="M4 16c1.5-2 4-2 5.5 0s4 2 5.5 0s4-2 5.5 0" />
+    </symbol>
+
+    <!-- Festival / Celebration -->
+    <symbol id="icon-festival" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10" />
+        <path d="M12 6v6l4 2" />
+    </symbol>
+
+    <!-- Season: Emergence (Sprout) -->
+    <symbol id="icon-sprout" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22v-8c0-3-3-5-6-5s-2 2 0 4c2 2 6 4 6 9z" />
+        <path d="M12 14c0-3 3-5 6-5s2 2 0 4c-2 2-6 4-6 9z" />
+    </symbol>
+
+    <!-- Season: Radiance (Sun) -->
+    <symbol id="icon-radiance" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="5" />
+        <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+    </symbol>
+
+    <!-- Season: Release (Leaf) -->
+    <symbol id="icon-leaf" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2c-5 0-8 4-8 9 0 5 3 9 8 9s8-4 8-9c0-5-3-9-8-9z" />
+        <path d="M12 2c-2 3-3 7-3 11 0 4 1 8 3 9" />
+    </symbol>
+
+    <!-- Season: Stillness (Snowflake) -->
+    <symbol id="icon-snowflake" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2v20M4.22 4.22l15.56 15.56M19.78 4.22L4.22 19.78" />
+        <path d="M6 6l3 3M18 18l3 3M6 18l3-3M18 6l3-3" />
+    </symbol>
+
+    <!-- Capture (Camera) -->
+    <symbol id="icon-camera" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+        <circle cx="12" cy="13" r="4" />
+    </symbol>
+
+    <!-- Share -->
+    <symbol id="icon-share" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="18" cy="5" r="3" />
+        <circle cx="6" cy="12" r="3" />
+        <circle cx="18" cy="19" r="3" />
+        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+    </symbol>
+
+    <!-- Chevron Down (expand) -->
+    <symbol id="icon-chevron-down" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="6 9 12 15 18 9" />
+    </symbol>
+
+    <!-- Chevron Up (collapse) -->
+    <symbol id="icon-chevron-up" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="18 15 12 9 6 15" />
+    </symbol>
+</svg>

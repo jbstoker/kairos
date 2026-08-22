@@ -17,7 +17,7 @@
 
 ### 4. Observe the Season
 - Look outside.
-- Press the season that feels right: 🌸 Spring · ☀️ Summer · 🍂 Autumn · ❄️ Winter
+- Press the season that feels right: Spring · Summer · Autumn · Winter
 
 ### 5. Explore
 - Click on any food, herb, or festival to see more.

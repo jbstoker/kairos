@@ -275,7 +275,8 @@ centre (alt 90°); below the horizon the bead moves beyond its ring
   lights up. The 2026-08-12 Wergea partial eclipse is pinned by a regression
   test.
 - The SVG matrix carries a **sky-dome grid + circular degree wheel**: four
-  altitude rings (r 60/120/180/240), subtle compass lines, and 0–360° tick
+  altitude rings (r 222/158/95/32 = 20/40/60/80° altitude, sharing the bead
+  scale so beads land on their rings), subtle compass lines, and 0–360° tick
   marks every 30° on the corrected axis — `180°` top, `90°` left, `0°`
   bottom, `270°` right (the white crosshairs are gone).
 - `web/static/css/mobile.css` + `web/static/js/mobile.js` — the mobile
@@ -293,11 +294,11 @@ centre (alt 90°); below the horizon the bead moves beyond its ring
   clock-based). `getSolarDegrees()` / `degreesToKairosTime(deg)` remain as
   the no-SunCalc fallback.
 - `web/static/js/unified_display.js` — the FINAL UNIFIED HEADER layer: the
-  tradition-aware primary line — `window.updateDisplay(kairosString, tradition)`
+  calendar-lens-aware primary line — `window.updateDisplay(kairosString, tradition)`
   merges with app.js's own `updateDisplay()` (both call styles preserved) and
-  rebuilds `#kstDisplayLine` with the selected tradition's real calendar date
-  (Gregorian stays only in the matrix centre clock; the tradition itself is
-  set in the Configure tab's `#traditionSelect`).
+  rebuilds `#kstDisplayLine` with the selected calendar lens's real calendar date
+  (Gregorian stays only in the matrix centre clock; the calendar lens is set in
+  the Configure tab via `#calendar-lens`, managed by `web/static/js/lens_manager.js`).
 - `web/templates/concentric_view.html` — the canonical SVG fragment;
   the identical markup is injected into `web/index.html` inside the panel.
 - Fully client-side: no backend required, so it runs on GitHub Pages and

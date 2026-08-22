@@ -18,12 +18,18 @@
               d="M115,400 A285,270 0 1 1 685,400 A285,270 0 1 1 115,400
                  M235,400 A165,162 0 1 1 565,400 A165,162 0 1 1 235,400" />
 
-        <!-- Sky-dome grid: altitude rings + compass lines (subtle) -->
+        <!-- Sky-dome grid: altitude rings + compass lines (subtle).
+             The altitude rings share the bead scale (alt 0° = horizon
+             ring at r285, 90° = zenith at the centre), so a bead at
+             20/40/60/80° altitude lands exactly on its ring
+             (r 222/158/95/32). -->
         <g id="sky-dome" opacity="0.3">
-            <circle cx="400" cy="400" r="60" fill="none" stroke="#444" stroke-width="1" />
-            <circle cx="400" cy="400" r="120" fill="none" stroke="#444" stroke-width="1" />
-            <circle cx="400" cy="400" r="180" fill="none" stroke="#444" stroke-width="1" />
-            <circle cx="400" cy="400" r="240" fill="none" stroke="#444" stroke-width="1" />
+            <g id="altitude-rings">
+                <circle cx="400" cy="400" r="222" fill="none" stroke="#444" stroke-width="1" />  <!-- 20° -->
+                <circle cx="400" cy="400" r="158" fill="none" stroke="#444" stroke-width="1" />  <!-- 40° -->
+                <circle cx="400" cy="400" r="95" fill="none" stroke="#444" stroke-width="1" />   <!-- 60° -->
+                <circle cx="400" cy="400" r="32" fill="none" stroke="#444" stroke-width="1" />   <!-- 80° -->
+            </g>
             <line x1="400" y1="120" x2="400" y2="680" stroke="#2a2a2a" stroke-width="1" />
             <line x1="120" y1="400" x2="680" y2="400" stroke="#2a2a2a" stroke-width="1" />
             <line x1="230" y1="230" x2="570" y2="570" stroke="#333" stroke-width="0.5" />

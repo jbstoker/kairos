@@ -157,7 +157,6 @@
     // ---- Rendering ----------------------------------------------------------
     function renderCard(item) {
         return `<button class="seasonal-item" title="${t('seasonal.tap_details')}">` +
-            `<span class="item-icon">${item.image || '🌿'}</span>` +
             `<span class="item-name">${item.name}</span></button>`;
     }
 
@@ -225,7 +224,7 @@
         const body = document.getElementById('seasonalModalBody');
         const modal = document.getElementById('seasonalModal');
         if (!body || !modal) return;
-        if (title) title.textContent = `${item.image || '🌿'} ${item.name}`;
+        if (title) title.textContent = item.name;
         let html = '';
         if (item.kind === 'festival') {
             html += field(t('seasonal.field.season'), item.season);

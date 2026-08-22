@@ -2,12 +2,13 @@ const STORAGE_KEY = 'kairos_observations';
 const TRADITION_KEY = 'kairos_tradition';
 
 const TRADITION_EMOJI = {
-    rhythm: "🌗", tartarian: "🌌", celtic: "🌿", chinese: "🐉",
+    kairos: "🌌", rhythm: "🌗", tartarian: "🌿", celtic: "🕊️", chinese: "🐉",
     vedic: "🕉️", mesopotamian: "🏛️", mystical: "🔮"
 };
 const TRADITION_LABEL = {
-    rhythm: "Rhythm", tartarian: "Tartarian", celtic: "Celtic", chinese: "Chinese",
-    vedic: "Vedic", mesopotamian: "Mesopotamian", mystical: "Mystical"
+    kairos: "Kairos", rhythm: "Rhythm", tartarian: "Tartarian", celtic: "Celtic",
+    chinese: "Chinese", vedic: "Vedic", mesopotamian: "Mesopotamian",
+    mystical: "Mystical"
 };
 
 // i18n helpers — web/i18n.js is loaded before this script. The fallbacks
@@ -22,6 +23,11 @@ const trName = I18n ? I18n.trName.bind(I18n) : (prefix, name) => name;
 const applyI18n = I18n ? I18n.apply.bind(I18n) : () => {};
 
 const TRADITIONS = {
+    kairos: {
+        months: 13,
+        names: ["Root Moon", "Sap Moon", "Green Moon", "Bloom Moon", "Grain Moon", "Light Moon", "Thirst Moon", "Fruit Moon", "Harvest Moon", "Wine Moon", "Leaf Moon", "Frost Moon", "Star Moon"],
+        yearDay: "Deep Day"
+    },
     rhythm: {
         months: 13,
         names: ["Root Moon", "Sap Moon", "Green Moon", "Bloom Moon", "Grain Moon", "Light Moon", "Thirst Moon", "Fruit Moon", "Harvest Moon", "Wine Moon", "Leaf Moon", "Frost Moon", "Star Moon"],
@@ -90,12 +96,18 @@ function phaseName(idx) {
 }
 
 function getTradition() {
-    return localStorage.getItem(TRADITION_KEY) || 'tartarian';
+    // The old single tradition became the Calendar Lens (lens_manager.js).
+    if (typeof window.getCalendarLens === 'function') return window.getCalendarLens();
+    return localStorage.getItem(TRADITION_KEY) || 'kairos';
 }
 
 function setTradition(trad) {
-    localStorage.setItem(TRADITION_KEY, trad);
-    updateDisplay();
+    if (typeof window.setCalendarLens === 'function') {
+        window.setCalendarLens(trad);
+    } else {
+        try { localStorage.setItem(TRADITION_KEY, trad); } catch (e) { /* ignore */ }
+        updateDisplay();
+    }
 }
 
 function dayOfYear(date) {
@@ -498,10 +510,24 @@ if (enterNoonBtn) enterNoonBtn.addEventListener('click', enterSolarNoon);
     });
 });
 
-document.getElementById('traditionSelect').addEventListener('change', (e) => {
-    setTradition(e.target.value);
-    document.getElementById('status').textContent = t('obs.tradition_switched', { tradition: e.target.value });
-});
+// --- Lenses: calendar + energy ----------------------------------------------
+// lens_manager.js owns persistence + refresh (attachLensListeners); these
+// extra listeners only surface a status line for the user.
+if (window.attachLensListeners) window.attachLensListeners();
+const calendarLensSel = document.getElementById('calendar-lens');
+if (calendarLensSel) {
+    calendarLensSel.addEventListener('change', (e) => {
+        document.getElementById('status').textContent =
+            t('obs.tradition_switched', { tradition: e.target.value });
+    });
+}
+const energyLensSel = document.getElementById('energy-lens');
+if (energyLensSel) {
+    energyLensSel.addEventListener('change', (e) => {
+        document.getElementById('status').textContent =
+            t('obs.energy_switched', { lens: e.target.value });
+    });
+}
 
 // --- Observer location: pin the sky to where you are (kairos_location) ------
 function getStoredLocation() {
@@ -567,11 +593,14 @@ function saveLocation(lat, lon) {
     const toggle = document.getElementById('seasonalToggle');
     const container = document.getElementById('seasonalContainer');
     if (!toggle || !container) return;
-    const icon = toggle.querySelector('.seasonal-toggle-icon');
+    const icon = toggle.querySelector('.seasonal-toggle-icon use');
     const update = (open) => {
         container.hidden = !open;
         toggle.setAttribute('aria-expanded', String(open));
-        if (icon) icon.textContent = open ? '▾' : '▸';
+        if (icon) {
+            icon.setAttribute('href',
+                open ? 'static/icons.svg#icon-chevron-up' : 'static/icons.svg#icon-chevron-down');
+        }
     };
     // Collapsed by default so the card saves room. The toggle is a real
     // <button>, so Enter/Space are handled natively (click only).
@@ -607,8 +636,8 @@ document.addEventListener('keydown', e => {
     });
 });
 
-// Load saved tradition
-document.getElementById('traditionSelect').value = getTradition();
+// Load saved lenses (calendar + energy) — lens_manager.js persists them.
+if (window.syncLensSelectors) window.syncLensSelectors();
 
 setInterval(updateDisplay, 10000);
 updateDisplay();

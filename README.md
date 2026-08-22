@@ -56,7 +56,7 @@ The system calculates your local solar noon from these observations.
 - Tap the emoji that matches what you see: 🌑 🌒 🌓 🌔 🌕 🌖 🌗 🌘
 
 ### 3. Observe the Season
-- Press the season that feels right: 🌸 Spring · ☀️ Summer · 🍂 Autumn · ❄️ Winter
+- Press the season that feels right: Spring · Summer · Autumn · Winter
 
 ### 4. Explore
 - Click on any food, herb, or festival to see more.
