@@ -106,6 +106,40 @@ function updatePlanetaryCanvas(sunAltitudeDeg, sunAzimuthDeg, moonAltitudeDeg, m
         }
     }
 
+    // --- Twilight glow: a soft ring at the horizon whose intensity fades with
+    //     the sun's depth below it (civil -6..0°, nautical -12..-6°). ---
+    const twilightGlow = document.getElementById('twilight-glow');
+    if (twilightGlow) {
+        let intensity = 0;
+        let color = 'rgba(255, 200, 100, 0)';
+        if (sunAltitudeDeg < 0 && sunAltitudeDeg >= -6) {
+            intensity = 1 + (sunAltitudeDeg / 6);            // 1 at 0°, 0 at -6°
+            color = 'rgba(255, 200, 100, ' + (intensity * 0.25).toFixed(3) + ')';
+        } else if (sunAltitudeDeg < -6 && sunAltitudeDeg >= -12) {
+            intensity = 1 - ((sunAltitudeDeg + 6) / 6);      // 1 at -6°, 0 at -12°
+            color = 'rgba(255, 180, 80, ' + (intensity * 0.15).toFixed(3) + ')';
+        }
+        twilightGlow.setAttribute('stroke', color);
+        twilightGlow.setAttribute('opacity', intensity > 0 ? '1' : '0');
+    }
+
+    // --- Sunrise countdown: while the sun is below the horizon, estimate the
+    //     minutes until it reaches 0° (~0.25° of altitude per minute). ---
+    const countdownElement = document.getElementById('sunrise-countdown');
+    if (countdownElement) {
+        if (sunAltitudeDeg < 0) {
+            const minutesUntilSunrise = Math.round((-sunAltitudeDeg) / 0.25);
+            if (minutesUntilSunrise > 0) {
+                countdownElement.textContent = '☀️ Sunrise in ' + minutesUntilSunrise + ' min';
+                countdownElement.style.display = 'block';
+            } else {
+                countdownElement.style.display = 'none';
+            }
+        } else {
+            countdownElement.style.display = 'none';
+        }
+    }
+
     // --- Update central clock ---
     const centralClock = document.getElementById('gregorian-center-clock');
     if (centralClock) {

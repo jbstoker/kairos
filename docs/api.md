@@ -272,7 +272,11 @@ dial (altitude 0, azimuth = local day fraction × 360).
   natural eclipse detection with tolerances covering partial eclipses too
   (≤ ~1.7° azimuth, ~5° altitude, ~19° from a lunar node); on an eclipse the
   beads glow (sun `#ff6b35`, moon `#8b0000`) and the `#eclipse-status` line
-  lights up. The 2026-08-12 Wergea partial eclipse is pinned by a regression
+  lights up. Below the horizon beads clamp to the wheel edge as dimmed ghost
+  beads, a **twilight glow** (`#twilight-glow`, civil −6…0° / nautical
+  −12…−6°) fades in around the horizon, and a **sunrise countdown**
+  (`#sunrise-countdown`, ≈0.25°/min) shows while the sun is below the
+  horizon. The 2026-08-12 Wergea partial eclipse is pinned by a regression
   test.
 - The SVG matrix carries a **sky-dome grid + circular degree wheel**: four
   altitude rings (r 218/156/93/31 = 20/40/60/80° altitude, sharing the bead

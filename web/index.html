@@ -54,6 +54,13 @@
                      270° RIGHT (matches the sun/moon bead positions). -->
                 <circle cx="400" cy="400" r="280" fill="none" stroke="#444" stroke-width="2" />
 
+                <!-- Twilight glow — soft ring at the horizon driven by
+                     canvas_renderer.updatePlanetaryCanvas from the sun's
+                     altitude (civil -6..0°, nautical -12..-6°). -->
+                <circle id="twilight-glow" cx="400" cy="400" r="280" fill="none"
+                        stroke="rgba(255, 200, 100, 0)" stroke-width="40" opacity="0"
+                        style="transition: all 1s ease;" />
+
                 <!-- Altitude rings (sky dome): 20/40/60/80° on the bead scale
                      (alt 0° = the degree wheel edge r280, 90° = the zenith at
                      the centre), drawn after the degree wheel so they are
@@ -128,6 +135,12 @@
 
             <!-- Eclipse status line (lit by canvas_renderer.updatePlanetaryCanvas) -->
             <div id="eclipse-status" style="text-align: center; font-size: 1.2rem; font-weight: bold; margin-top: 10px; min-height: 30px; color: transparent; transition: all 0.3s ease;"></div>
+
+            <!-- Sunrise countdown (shown by canvas_renderer while the sun is below
+                 the horizon; approximated at ~0.25° of altitude per minute) -->
+            <div id="sunrise-countdown" style="text-align: center; font-size: 1rem; color: #f0c27f; margin-top: 8px; display: none;">
+                ☀️ Sunrise in -- min
+            </div>
         </div>
 
         <!-- Consolidated Environmental & Planet Metrics Metadata Footer -->

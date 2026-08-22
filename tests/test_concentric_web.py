@@ -49,7 +49,8 @@ function makeEl(id) {
     };
 }
 ['sun-orbit-line', 'moon-orbit-line', 'sun-bead', 'moon-bead',
- 'gregorian-center-clock', 'eclipse-status']
+ 'gregorian-center-clock', 'eclipse-status',
+ 'twilight-glow', 'sunrise-countdown']
     .forEach(id => elements[id] = makeEl(id));
 global.document = { getElementById: (id) => elements[id] || null };
 global.window = global;
@@ -143,6 +144,30 @@ out.ghostSun = {
     sunStroke: elements['sun-bead']._attrs.stroke,
     moonOpacity: elements['moon-bead']._attrs.opacity,
     moonStroke: elements['moon-bead']._attrs.stroke
+};
+
+// Twilight + countdown: sun alt -3° → civil twilight glow + "Sunrise in 12 min".
+renderer.updatePlanetaryCanvas(-3, 180, 30, 90, 0.5, 'x');
+out.twilight = {
+    stroke: elements['twilight-glow']._attrs.stroke,
+    opacity: elements['twilight-glow']._attrs.opacity,
+    countdownText: elements['sunrise-countdown'].textContent,
+    countdownDisplay: elements['sunrise-countdown'].style.display
+};
+
+// Night: sun alt -15° → no glow, but the sunrise countdown still shows.
+renderer.updatePlanetaryCanvas(-15, 180, 30, 90, 0.5, 'x');
+out.night = {
+    opacity: elements['twilight-glow']._attrs.opacity,
+    countdownText: elements['sunrise-countdown'].textContent,
+    countdownDisplay: elements['sunrise-countdown'].style.display
+};
+
+// Day: sun alt 10° → no glow, no countdown.
+renderer.updatePlanetaryCanvas(10, 180, 30, 90, 0.5, 'x');
+out.day = {
+    opacity: elements['twilight-glow']._attrs.opacity,
+    countdownDisplay: elements['sunrise-countdown'].style.display
 };
 
 // Real eclipse: the 2026-08-12 partial solar eclipse (89%) at Wergea,
@@ -243,6 +268,25 @@ class TestSkyDomeWeb(unittest.TestCase):
         self.assertEqual(s["sunStroke"], "#555")
         self.assertEqual(s["moonOpacity"], "0.9")
         self.assertEqual(s["moonStroke"], "#fff")
+
+    def test_twilight_glow_and_sunrise_countdown(self):
+        """Civil twilight lights the horizon glow and shows the sunrise
+        countdown; night and day show neither."""
+        out = self._run()
+        tw = out["twilight"]
+        # Sun alt -3°: intensity = 1 + (-3/6) = 0.5 → alpha 0.125, ring lit.
+        self.assertEqual(tw["opacity"], "1")
+        self.assertEqual(tw["stroke"], "rgba(255, 200, 100, 0.125)")
+        # 3° at ~0.25°/min → 12 minutes.
+        self.assertEqual(tw["countdownText"], "☀️ Sunrise in 12 min")
+        self.assertEqual(tw["countdownDisplay"], "block")
+        # Night (sun < -12°): no glow, but the sunrise countdown still shows.
+        self.assertEqual(out["night"]["opacity"], "0")
+        self.assertEqual(out["night"]["countdownText"], "☀️ Sunrise in 60 min")   # 15 / 0.25
+        self.assertEqual(out["night"]["countdownDisplay"], "block")
+        # Day (sun > 0°): no glow, countdown hidden.
+        self.assertEqual(out["day"]["opacity"], "0")
+        self.assertEqual(out["day"]["countdownDisplay"], "none")
 
     def test_no_eclipse_when_not_aligned(self):
         out = self._run()
