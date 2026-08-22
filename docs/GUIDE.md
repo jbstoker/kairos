@@ -51,6 +51,9 @@ The centre of the app is a living sky map, not just a clock:
   distance from the wheel edge (0°) to the zenith at the centre (90°).
   Facing south: `180°` is top (noon), `90°` left (sunrise), `0°` bottom,
   `270°` right (sunset).
+- Inside the wheel, a decorative **13-point natural ring** marks the
+  13-fold division (360/13 = 27.69°), echoing the 13 · 28 · 7 sequence — a
+  separate scale that never replaces the azimuth labels.
 - At dusk and dawn a soft **twilight glow** fades in around the horizon —
   civil twilight (sun between −6° and 0°) glows brightest, nautical
   twilight (−12° to −6°) glows fainter, and full night shows no glow. While

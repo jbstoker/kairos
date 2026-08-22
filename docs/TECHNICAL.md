@@ -289,6 +289,33 @@ petals, and seeds in plants follows mathematical patterns known as
 - **The number 13 is part of this fundamental pattern of life.** It is not an
   invention; it is an observation of how life itself grows.
 
+### The 13-Point Degree Wheel — The Mathematics of the Sky
+
+If we divide the full circle (360°) into 13 equal parts, we get:
+
+**360° / 13 = 27.6923076923…°**
+
+This is a **repeating decimal** — the sequence **692307** repeats forever.
+
+Why does this matter? It is the **mathematical fingerprint of the number 13**.
+The inherited "established" order of the sky is built on base-60 and the 360°
+circle; 13 refuses to divide evenly into either. The repeating decimal is not
+a flaw — it is a **signature**, proof that the system is working with a number
+that does not conform to the old order.
+
+In geometry, the regular 13-sided polygon is the **tridecagon**, written
+**{13}** in Schläfli notation. The same 13-fold pattern echoes in
+sacred-geometry constructions such as the interlaced circles of the **Flower
+of Life** — symbols of transformation, completion, and the fundamental
+patterns of creation.
+
+In Kairos, the 13-point division is the **natural scale** — the 13 hours of
+light and 13 of dark in the 26-hour day, the 13 months of the year. The web
+app draws it as a clearly-separated decorative ring inside the sky-dome
+(`web/static/js/degree_wheel.js`, 13 dots at 360/13 = 27.692307°), while the
+outer wheel keeps reading the Sun's real azimuth in degrees — so the header
+number and the sky-dome bead always agree.
+
 ### The Year — The Deep Anchor
 
 The year in Kairos is not the year of kings or religions.
@@ -583,6 +610,10 @@ worker). Open it two ways:
   astronomy_engine.js`) on a circular **degree wheel** (0–360° every 30°,
   on the corrected axis — facing south, east is left).
   Altitude rings (20/40/60/80°) mark the bead scale (0° = the wheel edge,
+  zenith at the centre). A decorative **13-point natural ring**
+  (`web/static/js/degree_wheel.js`, 360/13 = 27.692307°) is drawn as a
+  separate inner ring — it never replaces the azimuth readout, so the header
+  number and the beads keep agreeing.
   90° = the zenith at the centre); bodies below the horizon clamp to the
   wheel edge as dimmed ghost beads. A **twilight glow** (`#twilight-glow`)
   fades around the horizon while the sun is between −12° and 0° altitude —

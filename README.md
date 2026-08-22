@@ -36,6 +36,9 @@ The heart of the app is a living sky map: the **Sun and Moon are placed by
 their real altitude and azimuth** on a circular **degree wheel** (0–360°
 every 30°) with visible **altitude rings** (20/40/60/80°) — a bead at 60°
 altitude floats near the zenith, and at 0° it sits exactly on the wheel edge.
+A decorative **13-point natural ring** (360/13 = 27.69°) inside the wheel
+echoes the 13 · 28 · 7 sequence — a separate scale, never a substitute for
+the azimuth readout.
 Bodies below the horizon clamp to the wheel edge as dimmed **ghost beads**,
 and at dusk/dawn a soft **twilight glow** fades in around the horizon
 (civil −6…0°, nautical −12…−6°) with a **sunrise countdown** under the wheel

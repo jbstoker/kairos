@@ -45,6 +45,11 @@
             <circle cx="400" cy="400" r="93" fill="none" stroke="#7a8ea5" stroke-width="1" />   <!-- 60° -->
             <circle cx="400" cy="400" r="31" fill="none" stroke="#7a8ea5" stroke-width="1" />   <!-- 80° -->
         </g>
+        <!-- Decorative 13-point natural ring (360/13 = 27.692307°), rendered
+             into this placeholder by web/static/js/degree_wheel.js. Clearly
+             separate from the physical azimuth wheel — it never moves the
+             beads or the header degree. -->
+        <g id="natural-13-ring"></g>
         <!-- 0° (bottom) -->
         <line x1="400" y1="680" x2="400" y2="666" class="degree-tick-major" />
         <text x="400" y="720" class="degree-label">0°</text>

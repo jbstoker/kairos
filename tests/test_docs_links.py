@@ -99,6 +99,16 @@ class TestWikiDocs(unittest.TestCase):
         self.assertIn("## The Rhythm of Kairos", tech)
         self.assertIn("- [The Rhythm of Kairos](#the-rhythm-of-kairos)", tech)
 
+    def test_rhythm_section_pins_the_13_point_wheel(self):
+        """The 13-point degree wheel section must stay on the page with its
+        maths: 360/13 = 27.6923076923…° repeating, the tridecagon {13}."""
+        with open(os.path.join(DOCS, "TECHNICAL.md"), encoding="utf-8") as f:
+            tech = f.read()
+        for fragment in ("### The 13-Point Degree Wheel",
+                         "360° / 13 = 27.6923076923…°",
+                         "tridecagon", "{13}"):
+            self.assertIn(fragment, tech, f"missing '{fragment}'")
+
     def test_rhythm_heading_levels_stay_under_h2(self):
         """sync_wiki.py splits sections on '^## ', so every subsection of The
         Rhythm of Kairos must be ###/#### — a raw ## would be dropped from the

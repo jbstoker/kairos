@@ -327,6 +327,16 @@ dial (altitude 0, azimuth = local day fraction × 360).
   rebuilds `#kstDisplayLine` with the selected calendar lens's real calendar date
   (Gregorian stays only in the matrix centre clock; the calendar lens is set in
   the Configure tab via `#calendar-lens`, managed by `web/static/js/lens_manager.js`).
+- `web/static/js/degree_wheel.js` — the **13-point degree wheel** helper
+  (360/13 = 27.692307…° repeating): `DEGREE_POINTS` = 13, `DEGREE_STEP` =
+  27.6923076923…, `getDegreeLabel(pointIndex)` → `"166.15°"`,
+  `getDegreePoints()` → 13 `{ angle, label }` points (0° … 332.31°), and
+  `renderNaturalThirteenRing()`, which draws a **decorative** 13-dot ring
+  (r = 250, teal) into the `<g id="natural-13-ring">` placeholder in
+  `web/index.html` / `web/templates/concentric_view.html` (idempotent). It
+  is a separate natural scale — the physical azimuth wheel (0–360° every
+  30°) stays untouched, so the header number and the sky-dome beads keep
+  agreeing.
 - `web/templates/concentric_view.html` — the canonical SVG fragment;
   the identical markup is injected into `web/index.html` inside the panel.
 - Fully client-side: no backend required, so it runs on GitHub Pages and
