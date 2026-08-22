@@ -34,11 +34,15 @@ This is not a timestamp. It is a **moment** — your moment.
 
 The heart of the app is a living sky map: the **Sun and Moon are placed by
 their real altitude and azimuth** on a circular **degree wheel** (0–360°
-every 30°, with subtle altitude rings). When the Sun
-and Moon align — during a real eclipse — the beads overlap and the app
-lights up `🌑 ECLIPSE IN PROGRESS`. No GPS required: Kairos reads your
-location from the browser, or you can set it by hand in **⚙️ Configure →
-📍 Your location**.
+every 30°) with visible **altitude rings** (20/40/60/80°) — a bead at 60°
+altitude floats near the zenith, and at 0° it sits exactly on the wheel edge.
+Bodies below the horizon clamp to the wheel edge as dimmed **ghost beads**,
+and at dusk/dawn a soft **twilight glow** fades in around the horizon
+(civil −6…0°, nautical −12…−6°) with a **sunrise countdown** under the wheel
+while the sun is below it. When the Sun and Moon align — during a real
+eclipse — the beads overlap and the app lights up `🌑 ECLIPSE IN PROGRESS`.
+No GPS required: Kairos reads your location from the browser, or you can set
+it by hand in **⚙️ Configure → 📍 Your location**.
 
 ---
 
@@ -62,6 +66,14 @@ The system calculates your local solar noon from these observations.
 - Click on any food, herb, or festival to see more.
 - Add your own plants, traditions, and celebrations.
 - Share your moment — with a photo, a date, and a place.
+
+### 5. Choose your lens
+- In **⚙️ Configure** pick a **📅 Calendar Lens** — which calendar the
+  header shows: Kairos, Tartarian, Celtic, Chinese, Vedic or Mystical.
+- Pick a **🌿 Energy Lens** — which tradition reinterprets the day's energy
+  (archetype, moon mood, element, festival, in-season food): Curanderismo,
+  Taoist, Vedic, Pagan/Wiccan, Mesopotamian, Egyptian, Mayan — or **None**
+  for pure Kairos. Your choices are remembered on the device.
 
 ### 🌐 Languages
 Kairos speaks seven languages — English (default), Dutch, Frisian, German,

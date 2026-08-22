@@ -440,14 +440,22 @@ worker). Open it two ways:
 - **Unified spatial panel** — one `#kstDisplay` dashboard: the primary
   Kairos line, the sky-dome observation matrix with the Gregorian clock in
   its centre, and the metric footer (solar longitude, lunar age, planets,
-  celestial season). Gregorian is only the centre clock; the tradition is
-  an optional layer set in Configure.
+  celestial season). Gregorian is only the centre clock; the calendar and
+  energy lenses are optional layers set in Configure.
 - **Sky-dome observation matrix** — the Sun and Moon are placed by their
   real **altitude + azimuth** (vendored SunCalc, `web/static/js/
   astronomy_engine.js`) on a circular **degree wheel** (0–360° every 30°,
   on the corrected axis — facing south, east is left).
-  Subtle altitude rings (20/40/60/80°) show the sky position at a glance;
-  bodies below the horizon clamp to the wheel edge as dimmed ghost beads.
+  Altitude rings (20/40/60/80°) mark the bead scale (0° = the wheel edge,
+  90° = the zenith at the centre); bodies below the horizon clamp to the
+  wheel edge as dimmed ghost beads. A **twilight glow** (`#twilight-glow`)
+  fades around the horizon while the sun is between −12° and 0° altitude —
+  civil (−6…0°) up to 0.25 alpha, nautical (−12…−6°) up to 0.15 alpha,
+  both linear in altitude — and a **sunrise countdown**
+  (`#sunrise-countdown`) shows the real minutes until the next sunrise
+  (SunCalc `getTimes` at the observer's location, with a ~0.25°/min
+  vertical-rate fallback — that rate is exact only at the equator, so the
+  fallback undercounts minutes at higher latitudes).
 - **Eclipse detection** — when the beads share azimuth (≤ ~1.7°), altitude
   (≤ 5°) and the Moon is near a lunar node (≤ ~19°), the beads glow and the
   `#eclipse-status` line lights up — tolerances cover partial eclipses
@@ -456,8 +464,17 @@ worker). Open it two ways:
   (`web/static/js/solar_time.js`): **true solar time** — 12:00 = solar
   noon, via SunCalc — with the Sun's real azimuth as the degree, so the
   number and the bead always agree.
-- **Tradition-aware line** — `web/static/js/unified_display.js` rebuilds
-  the primary line with the selected tradition's real calendar date.
+- **Lens selectors (calendar + energy)** — the old single tradition dropdown
+  is replaced by two lenses (`web/static/js/lens_manager.js` +
+  `energy_data.js`): a **📅 Calendar Lens** (`#calendar-lens`, persisted as
+  `kairos_calendar_lens`) rebuilds the primary line's date
+  (`web/static/js/unified_display.js`) for Kairos, Tartarian, Celtic,
+  Chinese, Vedic or Mystical, and a **🌿 Energy Lens** (`#energy-lens`,
+  persisted as `kairos_energy_lens`) reinterprets the energy card (archetype,
+  moon mood, element, festival, in-season food) through one of seven
+  traditions — Curanderismo, Taoist, Vedic, Pagan/Wiccan, Mesopotamian,
+  Egyptian, Mayan — or **None** for pure Kairos. All labels are i18n keys in
+  the 7-language catalog.
 - **Manual observer location** — ⚙️ Configure → 📍 Your location: lat/lon
   fields + "Use my GPS". Saved to `kairos_location`; the dial reads it
   live (no GPS required).

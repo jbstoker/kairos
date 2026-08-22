@@ -170,6 +170,20 @@ out.day = {
     countdownDisplay: elements['sunrise-countdown'].style.display
 };
 
+// Nautical twilight: sun alt -9° → intensity = (-9+12)/6 = 0.5 → alpha 0.075.
+renderer.updatePlanetaryCanvas(-9, 180, 30, 90, 0.5, 'x');
+out.nautical = {
+    stroke: elements['twilight-glow']._attrs.stroke,
+    opacity: elements['twilight-glow']._attrs.opacity
+};
+
+// Nautical floor: sun alt -12° → intensity 0 → glow off.
+renderer.updatePlanetaryCanvas(-12, 180, 30, 90, 0.5, 'x');
+out.nauticalEdge = {
+    stroke: elements['twilight-glow']._attrs.stroke,
+    opacity: elements['twilight-glow']._attrs.opacity
+};
+
 // Real eclipse: the 2026-08-12 partial solar eclipse (89%) at Wergea,
 // Friesland (53.1503N, 5.8389E) — maximum 20:09 CEST. The beads must overlap
 // and the eclipse status must light up. (Loaded into `global` directly — no
@@ -287,6 +301,12 @@ class TestSkyDomeWeb(unittest.TestCase):
         # Day (sun > 0°): no glow, countdown hidden.
         self.assertEqual(out["day"]["opacity"], "0")
         self.assertEqual(out["day"]["countdownDisplay"], "none")
+        # Nautical twilight (alt -9°): intensity 0.5 → darker amber, alpha 0.075.
+        self.assertEqual(out["nautical"]["opacity"], "1")
+        self.assertEqual(out["nautical"]["stroke"], "rgba(255, 180, 80, 0.075)")
+        # Nautical floor (alt -12°): intensity 0 → glow off.
+        self.assertEqual(out["nauticalEdge"]["opacity"], "0")
+        self.assertEqual(out["nauticalEdge"]["stroke"], "rgba(255, 180, 80, 0.000)")
 
     def test_no_eclipse_when_not_aligned(self):
         out = self._run()

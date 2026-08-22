@@ -44,15 +44,39 @@ The centre of the app is a living sky map, not just a clock:
 
 - The **Sun and Moon beads** are placed by their **real altitude and
   azimuth** — how high, and in which direction, right now where you are.
-- A circular **degree wheel** (0–360° every 30°) with subtle altitude rings
-  lets you read the sky position at a glance. Facing south: `180°` is top
-  (noon), `90°` left (sunrise), `0°` bottom, `270°` right (sunset).
+  Below the horizon a bead clamps to the wheel edge and turns into a dimmed
+  **ghost bead**.
+- A circular **degree wheel** (0–360° every 30°) with **altitude rings** at
+  20/40/60/80° lets you read the sky position at a glance: altitude is the
+  distance from the wheel edge (0°) to the zenith at the centre (90°).
+  Facing south: `180°` is top (noon), `90°` left (sunrise), `0°` bottom,
+  `270°` right (sunset).
+- At dusk and dawn a soft **twilight glow** fades in around the horizon —
+  civil twilight (sun between −6° and 0°) glows brightest, nautical
+  twilight (−12° to −6°) glows fainter, and full night shows no glow. While
+  the sun is below the horizon, a **sunrise countdown** under the wheel
+  shows the real minutes until the next sunrise.
 - When the Sun and Moon share a sky position — during a **solar eclipse** —
   the beads overlap and the line below lights up `🌑 ECLIPSE IN PROGRESS`.
 - **No GPS needed.** Kairos uses the browser's location when available, and
   you can always set your coordinates by hand in **⚙️ Configure → 📍 Your
   location** (e.g. `53.1503 / 5.8389` for Wergea, Friesland) — saved on
   your device.
+
+## Choosing a Lens
+
+In **⚙️ Configure** the old single "Your tradition" dropdown is replaced by
+two independent lenses:
+
+- **📅 Calendar Lens** — which calendar the header date shows: Kairos,
+  Tartarian, Celtic, Chinese, Vedic or Mystical.
+- **🌿 Energy Lens** — which tradition reinterprets the day's energy. Each of
+  the seven traditions (Curanderismo, Taoist, Vedic, Pagan/Wiccan,
+  Mesopotamian, Egyptian, Mayan) maps the archetype, moon mood, element,
+  festival and in-season food into its own terms; **None (pure Kairos)**
+  keeps the original readings.
+
+Both choices persist on the device, and the energy card adapts instantly.
 
 ## Understanding the Format
 

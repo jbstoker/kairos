@@ -13,6 +13,27 @@
  * line lights up.
  */
 
+// Minutes until the next sunrise from the real solar model (SunCalc) at the
+// observer's location; returns null when the model or location is unavailable
+// so the caller can fall back to the ~0.25°/min altitude approximation.
+function minutesUntilNextSunrise() {
+    try {
+        if (typeof SunCalc === 'undefined' || !SunCalc.getTimes) return null;
+        const loc = (typeof getObserverLocation === 'function')
+            ? getObserverLocation() : { lat: 52, lon: 5 };
+        const now = new Date();
+        const today = SunCalc.getTimes(now, loc.lat, loc.lon).sunrise;
+        if (!(today instanceof Date) || isNaN(today.getTime())) return null;
+        const target = (today.getTime() > now.getTime())
+            ? today
+            : SunCalc.getTimes(new Date(now.getTime() + 86400000), loc.lat, loc.lon).sunrise;
+        if (!(target instanceof Date) || isNaN(target.getTime())) return null;
+        return Math.max(1, Math.round((target.getTime() - now.getTime()) / 60000));
+    } catch (e) {
+        return null;
+    }
+}
+
 function updatePlanetaryCanvas(sunAltitudeDeg, sunAzimuthDeg, moonAltitudeDeg, moonAzimuthDeg, moonNodeAngle, targetGregorianTime) {
     const cx = 400;
     const cy = 400;
@@ -116,21 +137,26 @@ function updatePlanetaryCanvas(sunAltitudeDeg, sunAzimuthDeg, moonAltitudeDeg, m
             intensity = 1 + (sunAltitudeDeg / 6);            // 1 at 0°, 0 at -6°
             color = 'rgba(255, 200, 100, ' + (intensity * 0.25).toFixed(3) + ')';
         } else if (sunAltitudeDeg < -6 && sunAltitudeDeg >= -12) {
-            intensity = 1 - ((sunAltitudeDeg + 6) / 6);      // 1 at -6°, 0 at -12°
+            intensity = (sunAltitudeDeg + 12) / 6;           // 1 at -6°, 0 at -12°
             color = 'rgba(255, 180, 80, ' + (intensity * 0.15).toFixed(3) + ')';
         }
         twilightGlow.setAttribute('stroke', color);
         twilightGlow.setAttribute('opacity', intensity > 0 ? '1' : '0');
     }
 
-    // --- Sunrise countdown: while the sun is below the horizon, estimate the
-    //     minutes until it reaches 0° (~0.25° of altitude per minute). ---
+    // --- Sunrise countdown: while the sun is below the horizon, show the real
+    //     minutes until the next sunrise (SunCalc at the observer's location);
+    //     fall back to the ~0.25°/min vertical-rate approximation when the
+    //     solar model is unavailable (that rate is exact only at the equator). ---
     const countdownElement = document.getElementById('sunrise-countdown');
     if (countdownElement) {
         if (sunAltitudeDeg < 0) {
-            const minutesUntilSunrise = Math.round((-sunAltitudeDeg) / 0.25);
-            if (minutesUntilSunrise > 0) {
-                countdownElement.textContent = '☀️ Sunrise in ' + minutesUntilSunrise + ' min';
+            let minutes = minutesUntilNextSunrise();
+            if (minutes == null) {
+                minutes = Math.round((-sunAltitudeDeg) / 0.25);
+            }
+            if (minutes > 0) {
+                countdownElement.textContent = '☀️ Sunrise in ' + minutes + ' min';
                 countdownElement.style.display = 'block';
             } else {
                 countdownElement.style.display = 'none';

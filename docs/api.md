@@ -275,8 +275,10 @@ dial (altitude 0, azimuth = local day fraction × 360).
   lights up. Below the horizon beads clamp to the wheel edge as dimmed ghost
   beads, a **twilight glow** (`#twilight-glow`, civil −6…0° / nautical
   −12…−6°) fades in around the horizon, and a **sunrise countdown**
-  (`#sunrise-countdown`, ≈0.25°/min) shows while the sun is below the
-  horizon. The 2026-08-12 Wergea partial eclipse is pinned by a regression
+  (`#sunrise-countdown`) shows the real minutes until the next sunrise while
+  the sun is below the horizon (SunCalc `getTimes` at the observer's
+  location; ~0.25°/min vertical-rate fallback — exact only at the equator).
+  The 2026-08-12 Wergea partial eclipse is pinned by a regression
   test.
 - The SVG matrix carries a **sky-dome grid + circular degree wheel**: four
   altitude rings (r 218/156/93/31 = 20/40/60/80° altitude, sharing the bead
