@@ -161,29 +161,17 @@
                 <ellipse id="sun-orbit-line" cx="400" cy="400" rx="165" ry="162" class="orbit-track" transform="rotate(102, 400, 400)" />
                 <ellipse id="moon-orbit-line" cx="400" cy="400" rx="285" ry="270" class="orbit-track" />
 
-                <!-- Virtual Earth + light beam (Sun-originating terminator +
-                     glow; optional, off by default — toggled in ⚙️ Configure
-                     via #light-beam-toggle). The terminator line and the
-                     daylight glow come from the Sun's direction; the night
-                     side is clipped to the half of the globe away from the
-                     Sun. Driven by web/static/js/canvas_renderer.js.
-                     Decorative: it never moves the beads or the azimuth
-                     wheel. -->
+                <!-- Virtual Earth globe + Sun-originating light beam (optional,
+                     off by default — toggled in ⚙️ Configure via
+                     #light-beam-toggle). A gradient beam connects the Sun bead
+                     on the wheel to the Earth at the centre; its opacity shows
+                     the light percentage (0% night … 100% day) and it turns
+                     red during an eclipse. Driven by
+                     web/static/js/canvas_renderer.js. Decorative: it never
+                     moves the beads or the azimuth wheel. -->
                 <g id="virtual-earth" display="none">
                     <!-- Earth background -->
                     <circle cx="400" cy="400" r="65" fill="#0b1a2a" stroke="#2a3442" stroke-width="1.5" />
-
-                    <!-- Night overlay (dark side) — clipped by the terminator -->
-                    <clipPath id="nightClip">
-                        <path id="night-side" d="M400,400 L400,335 A65,65 0 0,1 400,465 Z" />
-                    </clipPath>
-                    <circle cx="400" cy="400" r="65" fill="#0a0a10" clip-path="url(#nightClip)" opacity="0.8" id="night-overlay" />
-
-                    <!-- Terminator line (day/night boundary) -->
-                    <line id="terminator-line" x1="400" y1="400" x2="400" y2="400" stroke="rgba(255,200,100,0.3)" stroke-width="1.5" />
-
-                    <!-- Soft glow on the daylight side -->
-                    <path id="daylight-glow" d="M400,400 L400,335 A65,65 0 0,1 400,465 Z" fill="url(#daylightGlow)" opacity="0" />
 
                     <!-- User position (you) -->
                     <circle cx="400" cy="335" r="4" fill="#f0c27f" stroke="#fff" stroke-width="1.5" />
@@ -191,6 +179,30 @@
 
                     <!-- Gregorian reference inside globe -->
                     <text x="400" y="405" id="gregorian-center-clock" text-anchor="middle" fill="#5a6a7c" font-family="monospace" font-size="12px" font-weight="300">--:--</text>
+                </g>
+
+                <!-- Light beam from Sun to Earth -->
+                <g id="sun-beam-group" display="none">
+                    <!-- Gradient definition -->
+                    <defs>
+                        <linearGradient id="sun-beam-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="rgba(255, 200, 100, 0.8)" />
+                            <stop offset="50%" stop-color="rgba(255, 180, 80, 0.4)" />
+                            <stop offset="100%" stop-color="rgba(255, 200, 100, 0)" />
+                        </linearGradient>
+                        <!-- Eclipse gradient (red/dark) -->
+                        <linearGradient id="eclipse-beam-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="rgba(180, 60, 30, 0.8)" />
+                            <stop offset="50%" stop-color="rgba(120, 40, 20, 0.4)" />
+                            <stop offset="100%" stop-color="rgba(100, 30, 15, 0)" />
+                        </linearGradient>
+                    </defs>
+
+                    <!-- The beam itself -->
+                    <line id="sun-beam" x1="400" y1="120" x2="400" y2="400" stroke="url(#sun-beam-grad)" stroke-width="4" opacity="0.6" />
+
+                    <!-- Beam glow (soft, wide) -->
+                    <line id="sun-beam-glow" x1="400" y1="120" x2="400" y2="400" stroke="url(#sun-beam-grad)" stroke-width="16" opacity="0.15" />
                 </g>
 
                 <!-- Shifting Observation Nodes (Always locked to the edge of the ellipses) -->

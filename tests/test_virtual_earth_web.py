@@ -1,15 +1,15 @@
-"""Web test: the virtual Earth + Sun-originating light beam (terminator line
-+ glow, optional, off by default).
+"""Web test: the virtual Earth + Sun-originating light beam (gradient beam,
+eclipse ready; optional, off by default).
 
-A small globe (r=65) sits at the sky-dome's centre. A terminator line and a
-soft daylight glow come from the Sun's direction; the night side is clipped
-to the half of the globe away from the Sun (the #night-side clip-path tracks
-the Sun's azimuth). The redundant sun-position marker is gone — the main Sun
-bead is the only sun marker. Driven by canvas_renderer.updatePlanetaryCanvas,
-enabled via ⚙️ Configure → 🌍 Show Light Beam (#light-beam-toggle,
-kairos_light_beam, off by default). The globe and the Gregorian clock live in
-the #virtual-earth group (hidden when the beam is off). Decorative — it never
-moves the beads or the azimuth wheel.
+A gradient beam connects the Sun bead on the wheel to the Earth at the
+centre. Its opacity encodes the light percentage (0% night … 100% day,
+fading through twilight), and during an eclipse (the EXISTING detection —
+azimuth + altitude aligned + node) it turns red/dark. The beam and the
+central globe are shown together when 🌍 Show Light Beam is enabled
+(#light-beam-toggle, kairos_light_beam, off by default). The redundant
+sun-position marker and the terminator/glow/night-clip design are gone.
+Driven by canvas_renderer.updatePlanetaryCanvas. Decorative — it never moves
+the beads or the azimuth wheel.
 """
 
 import json
@@ -31,30 +31,29 @@ class TestVirtualEarthServed(unittest.TestCase):
         app.config["TESTING"] = True
         self.client = app.test_client()
 
-    def test_root_has_virtual_earth_markup(self):
+    def test_root_has_sun_beam_markup(self):
         html = self.client.get("/").get_data(as_text=True)
-        self.assertIn('<g id="virtual-earth" display="none">', html)
-        for el in ("night-overlay", "night-side", "nightClip",
-                   "terminator-line", "daylight-glow", "gregorian-center-clock"):
-            self.assertIn(f'id="{el}"', html)
-        # The beam gradients live in the SVG <defs>.
-        for el in ("daylightGlow", "twilightGlow", "nauticalGlow",
-                   "eclipseGlow", "dotPattern"):
+        self.assertIn('<g id="sun-beam-group" display="none">', html)
+        for el in ("sun-beam", "sun-beam-glow", "sun-beam-grad",
+                   "eclipse-beam-grad", "virtual-earth", "gregorian-center-clock"):
             self.assertIn(f'id="{el}"', html)
         # The user marker is part of the globe.
         self.assertIn("YOU", html)
-        # The redundant sun marker is gone (only the main bead marks the Sun).
-        self.assertNotIn('id="sun-position"', html)
+        # The replaced visual (terminator / night clip / glow) and the
+        # redundant sun-position marker are gone.
+        for stale in ("terminator-line", "night-side", "nightClip",
+                      "daylight-glow", "sun-position", "umbra-shadow"):
+            self.assertNotIn(f'id="{stale}"', html, f"stale {stale}")
 
     def test_concentric_template_has_the_same_markup(self):
         with open(os.path.join(REPO_ROOT, "web", "templates",
                                "concentric_view.html"), encoding="utf-8") as f:
             frag = f.read()
-        self.assertIn('<g id="virtual-earth" display="none">', frag)
-        self.assertIn('id="terminator-line"', frag)
-        self.assertIn('id="daylight-glow"', frag)
-        self.assertIn('id="night-side"', frag)
+        self.assertIn('<g id="sun-beam-group" display="none">', frag)
+        self.assertIn('id="sun-beam"', frag)
+        self.assertIn('id="eclipse-beam-grad"', frag)
         self.assertNotIn('id="sun-position"', frag)
+        self.assertNotIn('id="terminator-line"', frag)
 
     def test_configure_panel_has_the_toggle(self):
         html = self.client.get("/").get_data(as_text=True)
@@ -95,14 +94,10 @@ function makeEl(id) {
 [
     'sun-orbit-line', 'moon-orbit-line', 'sun-bead', 'moon-bead',
     'gregorian-center-clock', 'eclipse-status', 'twilight-glow',
-    'sunrise-countdown', 'virtual-earth', 'night-overlay', 'night-side',
-    'terminator-line', 'daylight-glow', 'user-dot'
+    'sunrise-countdown', 'virtual-earth', 'sun-beam-group',
+    'sun-beam', 'sun-beam-glow'
 ].forEach(id => elements[id] = makeEl(id));
-global.document = {
-    getElementById: (id) => elements[id] || null,
-    querySelector: (sel) => (sel === '#virtual-earth circle:last-of-type'
-        ? elements['user-dot'] : null)
-};
+global.document = { getElementById: (id) => elements[id] || null };
 // The renderer's optional distance debug log must not pollute stdout JSON.
 global.console.debug = () => {};
 const renderer = require('./web/static/js/canvas_renderer.js');
@@ -115,14 +110,14 @@ const renderer = require('./web/static/js/canvas_renderer.js');
             "renderer.updatePlanetaryCanvas(" + str(sunAlt) + ", " + str(sunAz)
             + ", " + str(moonAlt) + ", " + str(moonAz) + ", " + str(node)
             + ", '14:30');\n"
-            "const g = (id) => elements[id]._attrs;\n"
+            "const b = (id) => elements[id]._attrs;\n"
             "process.stdout.write(JSON.stringify({\n"
-            "  display: elements['virtual-earth']._attrs['display'] || null,\n"
-            "  tX1: g('terminator-line').x1, tY1: g('terminator-line').y1,\n"
-            "  tX2: g('terminator-line').x2, tY2: g('terminator-line').y2,\n"
-            "  glowPath: g('daylight-glow').d, glowOp: g('daylight-glow').opacity,\n"
-            "  nightPath: g('night-side').d, nightOp: g('night-overlay').opacity,\n"
-            "  userFill: g('user-dot').fill, userStroke: g('user-dot').stroke,\n"
+            "  beamDisplay: elements['sun-beam-group']._attrs['display'] || null,\n"
+            "  globeDisplay: elements['virtual-earth']._attrs['display'] || null,\n"
+            "  x1: b('sun-beam').x1, y1: b('sun-beam').y1,\n"
+            "  x2: b('sun-beam').x2, y2: b('sun-beam').y2,\n"
+            "  stroke: b('sun-beam').stroke, opacity: b('sun-beam').opacity,\n"
+            "  glowStroke: b('sun-beam-glow').stroke, glowOp: b('sun-beam-glow').opacity,\n"
             "  clock: elements['gregorian-center-clock'].textContent\n"
             "}));\n"
         )
@@ -131,57 +126,51 @@ const renderer = require('./web/static/js/canvas_renderer.js');
         self.assertEqual(proc.returncode, 0, proc.stderr)
         return json.loads(proc.stdout)
 
-    def test_day_glow_and_terminator_track_the_sun(self):
-        # Sun at az 90 (east/LEFT), altitude 10 (daylight).
+    def test_day_beam_from_sun_to_earth_is_bright(self):
+        # Sun alt 10, az 90 (east/LEFT) → bead far left, beam to the centre.
         out = self._render(10, 90, 30, 180, 0.5)
-        self.assertEqual(out["display"], "block")
-        # Terminator: sun on the left → boundary line vertical at the right.
-        self.assertAlmostEqual(float(out["tX1"]), 465, places=4)
-        self.assertAlmostEqual(float(out["tX2"]), 465, places=4)
-        self.assertAlmostEqual(float(out["tY1"]), 309, places=4)
-        self.assertAlmostEqual(float(out["tY2"]), 491, places=4)
-        # Daylight glow is lit (0.25 during the day).
-        self.assertEqual(out["glowOp"], "0.25")
-        # Night side = the half away from the Sun (right half for a left Sun).
-        self.assertEqual(out["nightPath"],
-                         "M400,400 L400,335 A65,65 0 0,1 400,465 Z")
-        self.assertEqual(out["nightOp"], "0.5")
-        # The user dot is lit.
-        self.assertEqual(out["userFill"], "#f0c27f")
-        self.assertEqual(out["userStroke"], "#fff")
-        # The Gregorian clock lives inside the globe.
+        self.assertEqual(out["beamDisplay"], "block")
+        self.assertEqual(out["globeDisplay"], "block")
+        # Sun bead at alt 10 az 90: dist = 280·(1−10/90), x = 400−dist.
+        dist = 280 * (1 - 10 / 90)
+        self.assertAlmostEqual(float(out["x1"]), 400 - dist, places=4)
+        self.assertAlmostEqual(float(out["y1"]), 400, places=4)
+        self.assertAlmostEqual(float(out["x2"]), 400, places=4)
+        self.assertAlmostEqual(float(out["y2"]), 400, places=4)
+        # Light percentage 100% → beam opacity 0.9, glow 0.3.
+        self.assertEqual(out["stroke"], "url(#sun-beam-grad)")
+        self.assertAlmostEqual(float(out["opacity"]), 0.9, places=6)
+        self.assertAlmostEqual(float(out["glowOp"]), 0.3, places=6)
         self.assertEqual(out["clock"], "14:30")
 
-    def test_terminator_rotates_with_azimuth(self):
-        east = self._render(10, 90, 30, 180, 0.5)
-        south = self._render(10, 180, 30, 180, 0.5)
-        # East sun → vertical terminator; south sun → horizontal terminator.
-        self.assertAlmostEqual(float(east["tX1"]), float(east["tX2"]), places=4)
-        self.assertAlmostEqual(float(south["tY1"]), float(south["tY2"]), places=4)
-        self.assertAlmostEqual(float(south["tY1"]), 335, places=4)
-        # Night side flips: south sun → night is the bottom half.
-        self.assertEqual(south["nightPath"],
-                         "M400,400 L465,400 A65,65 0 0,1 335,400 Z")
-
-    def test_twilight_and_night_glow(self):
-        # Civil twilight (−3°): soft glow, user dot still lit.
-        tw = self._render(-3, 180, 30, 180, 0.5)
-        self.assertAlmostEqual(float(tw["glowOp"]), 0.075, places=6)
-        self.assertEqual(tw["userFill"], "#f0c27f")
-        self.assertEqual(tw["nightOp"], "0.75")
-        # Deep night (−15°): no glow, dark globe, user dot unlit.
+    def test_twilight_fades_the_beam(self):
+        # Civil twilight (−3°): light percent = 50·(1−0.5) = 25.
+        out = self._render(-3, 180, 30, 180, 0.5)
+        self.assertAlmostEqual(float(out["opacity"]), 0.4 + 0.25 * 0.5, places=6)
+        self.assertAlmostEqual(float(out["glowOp"]), 0.1 + 0.25 * 0.2, places=6)
+        # Nautical twilight (−9°): light percent = 10·(1−0.5) = 5.
+        nau = self._render(-9, 180, 30, 180, 0.5)
+        self.assertAlmostEqual(float(nau["opacity"]), 0.4 + 0.05 * 0.5, places=6)
+        # Deep night (−15°): 0% light, beam still visible but dimmest.
         night = self._render(-15, 180, 30, 180, 0.5)
-        self.assertEqual(night["glowOp"], "0")
-        self.assertEqual(night["nightOp"], "0.95")
-        self.assertEqual(night["userFill"], "#5a6a7c")
-        self.assertEqual(night["userStroke"], "#3a4a5c")
+        self.assertAlmostEqual(float(night["opacity"]), 0.4, places=6)
+        self.assertAlmostEqual(float(night["glowOp"]), 0.1, places=6)
 
-    def test_disabled_beam_hides_the_globe(self):
+    def test_eclipse_turns_the_beam_red(self):
+        # Sun and Moon share az 180 + altitude 0 + at a node → eclipse
+        # (existing detection). The beam switches to the red gradient.
+        out = self._render(0, 180, 0, 180, 0.05)
+        self.assertEqual(out["stroke"], "url(#eclipse-beam-grad)")
+        self.assertEqual(out["glowStroke"], "url(#eclipse-beam-grad)")
+        self.assertEqual(out["opacity"], "0.8")
+        self.assertEqual(out["glowOp"], "0.3")
+
+    def test_disabled_beam_hides_both_groups(self):
         out = self._render(10, 90, 30, 180, 0.5, enabled=False)
-        self.assertEqual(out["display"], "none")
-        # The glow/terminator are untouched (no attributes set in the stub).
-        self.assertIsNone(out.get("glowPath"))
-        self.assertIsNone(out.get("tX1"))
+        self.assertEqual(out["beamDisplay"], "none")
+        self.assertEqual(out["globeDisplay"], "none")
+        # The beam is untouched (no x1 set in the stub → key omitted).
+        self.assertIsNone(out.get("x1"))
 
 
 if __name__ == "__main__":

@@ -55,11 +55,11 @@ The centre of the app is a living sky map, not just a clock:
   13-fold division (360/13 = 27.69°), echoing the 13 · 28 · 7 sequence — a
   separate scale that never replaces the azimuth labels.
 - An optional **virtual Earth** with a **Sun-originating light beam**: toggle
-  **🌍 Show Light Beam** in ⚙️ Configure. A small globe in the centre shows
-  a terminator line and a soft glow from the Sun's direction — the day/night
-  boundary and the night side rotate with the Sun's azimuth, the glow fades
-  through twilight, and the *YOU* marker lights up in daylight. Off by
-  default, remembered on the device.
+  **🌍 Show Light Beam** in ⚙️ Configure. A gradient beam connects the Sun
+  bead to the Earth at the centre — bright golden by day, fading through
+  dusk/dawn, dimmest at night, and red during an eclipse. The *YOU* marker
+  and the Gregorian clock sit in the central globe. Off by default,
+  remembered on the device.
 - At dusk and dawn a soft **twilight glow** fades in around the horizon —
   civil twilight (sun between −6° and 0°) glows brightest, nautical
   twilight (−12° to −6°) glows fainter, and full night shows no glow. While

@@ -144,96 +144,78 @@ function updatePlanetaryCanvas(sunAltitudeDeg, sunAzimuthDeg, moonAltitudeDeg, m
         twilightGlow.setAttribute('opacity', intensity > 0 ? '1' : '0');
     }
 
-    // --- Virtual Earth & Light Beam (Sun-originating terminator + glow;
-    //     optional, off by default). The terminator line and the daylight
-    //     glow come from the Sun's direction; the night side is clipped to
-    //     the half of the globe away from the Sun. Enabled via ⚙️ Configure →
-    //     🌍 Show Light Beam (kairos_light_beam).
+    // --- Sun-originating light beam (from the Sun bead to the Earth) ---
+    // A gradient beam connects the Sun bead on the wheel to the Earth at the
+    // centre; its opacity shows the light percentage (0% night … 100% day,
+    // fading through twilight) and during an eclipse it turns red/dark.
+    // Enabled via ⚙️ Configure → 🌍 Show Light Beam (kairos_light_beam).
     let isBeamEnabled = false;
     try { isBeamEnabled = localStorage.getItem('kairos_light_beam') === 'true'; }
     catch (e) { /* no localStorage (e.g. node tests) — beam stays off */ }
 
+    const beamGroup = document.getElementById('sun-beam-group');
+    const beamLine = document.getElementById('sun-beam');
+    const beamGlow = document.getElementById('sun-beam-glow');
     const virtualEarth = document.getElementById('virtual-earth');
-    const terminatorLine = document.getElementById('terminator-line');
-    const daylightGlow = document.getElementById('daylight-glow');
-    const nightOverlay = document.getElementById('night-overlay');
-    const nightSide = document.getElementById('night-side');
-    const userDot = (typeof document.querySelector === 'function')
-        ? document.querySelector('#virtual-earth circle:last-of-type') : null;
 
-    if (virtualEarth && isBeamEnabled) {
-        virtualEarth.setAttribute('display', 'block');
+    if (beamGroup && isBeamEnabled) {
+        beamGroup.setAttribute('display', 'block');
+        if (virtualEarth) virtualEarth.setAttribute('display', 'block');
 
-        const radius = 65;
-        // Sun's azimuth: 0° = North (bottom), 90° = East (left),
-        // 180° = South (top), 270° = West (right).
-        const azRad = (sunAzimuthDeg - 180) * Math.PI / 180;   // rotate so 180° = top
-
-        // --- Terminator line (the day/night boundary) ---
-        const terminatorAngle = azRad + Math.PI / 2;
-        const terminatorX = cx + radius * Math.cos(terminatorAngle);
-        const terminatorY = cy - radius * Math.sin(terminatorAngle);
-        const lineLength = radius * 1.4;
-        const x1 = terminatorX - lineLength * Math.sin(terminatorAngle);
-        const y1 = terminatorY - lineLength * Math.cos(terminatorAngle);
-        const x2 = terminatorX + lineLength * Math.sin(terminatorAngle);
-        const y2 = terminatorY + lineLength * Math.cos(terminatorAngle);
-        if (terminatorLine) {
-            terminatorLine.setAttribute('x1', x1);
-            terminatorLine.setAttribute('y1', y1);
-            terminatorLine.setAttribute('x2', x2);
-            terminatorLine.setAttribute('y2', y2);
-        }
-
-        // --- Night side: the half of the globe away from the Sun (the
-        //     addendum's clip "will be clipped by the terminator" — so it
-        //     tracks the Sun's azimuth like the terminator line itself). ---
-        const nightPath = `M${cx},${cy} L${cx + radius * Math.cos(azRad)},${cy + radius * Math.sin(azRad)} A${radius},${radius} 0 0,1 ${cx - radius * Math.cos(azRad)},${cy - radius * Math.sin(azRad)} Z`;
-        if (nightSide) nightSide.setAttribute('d', nightPath);
-
-        // --- Daylight glow (soft, from the Sun's direction) ---
-        const sunX = cx + radius * Math.sin(azRad);
-        const sunY = cy - radius * Math.cos(azRad);
-        const leftEdge = azRad - Math.PI / 3;
-        const rightEdge = azRad + Math.PI / 3;
-        const x1w = cx + radius * Math.sin(leftEdge);
-        const y1w = cy - radius * Math.cos(leftEdge);
-        const x2w = cx + radius * Math.sin(rightEdge);
-        const y2w = cy - radius * Math.cos(rightEdge);
-        const glowPath = `M${sunX},${sunY} L${x1w},${y1w} A${radius},${radius} 0 0,1 ${x2w},${y2w} Z`;
-        if (daylightGlow) {
-            daylightGlow.setAttribute('d', glowPath);
-            let glowOpacity = 0;
-            if (sunAltitudeDeg > 0) {
-                glowOpacity = 0.25;
-            } else if (sunAltitudeDeg > -6) {
-                glowOpacity = 0.15 * (1 - (sunAltitudeDeg + 6) / 6);
-            } else {
-                glowOpacity = 0;
+        // Sun bead position → beam from the Sun to the Earth (centre).
+        const sunBead = document.getElementById('sun-bead');
+        if (sunBead) {
+            const sunX = parseFloat(sunBead.getAttribute('cx'));
+            const sunY = parseFloat(sunBead.getAttribute('cy'));
+            if (beamLine) {
+                beamLine.setAttribute('x1', sunX);
+                beamLine.setAttribute('y1', sunY);
+                beamLine.setAttribute('x2', cx);
+                beamLine.setAttribute('y2', cy);
             }
-            daylightGlow.setAttribute('opacity', glowOpacity);
+            if (beamGlow) {
+                beamGlow.setAttribute('x1', sunX);
+                beamGlow.setAttribute('y1', sunY);
+                beamGlow.setAttribute('x2', cx);
+                beamGlow.setAttribute('y2', cy);
+            }
         }
 
-        // --- Night overlay dimming ---
-        let nightOpacity = 0.8;
-        if (sunAltitudeDeg < -12) nightOpacity = 0.95;
-        else if (sunAltitudeDeg < -6) nightOpacity = 0.85;
-        else if (sunAltitudeDeg < 0) nightOpacity = 0.75;
-        else nightOpacity = 0.5;
-        if (nightOverlay) nightOverlay.setAttribute('opacity', nightOpacity);
-
-        // --- Highlight the user dot if it is in daylight ---
-        if (userDot) {
-            const isUserLit = sunAltitudeDeg > -6;
-            userDot.setAttribute('fill', isUserLit ? '#f0c27f' : '#5a6a7c');
-            userDot.setAttribute('stroke', isUserLit ? '#fff' : '#3a4a5c');
+        // --- Light percentage based on sun altitude ---
+        // 0% = night, 50% = twilight, 100% = full day.
+        let lightPercent = 0;
+        if (sunAltitudeDeg > 0) {
+            lightPercent = 100;
+        } else if (sunAltitudeDeg > -6) {
+            lightPercent = 50 * (1 - (sunAltitudeDeg + 6) / 6);
+        } else if (sunAltitudeDeg > -12) {
+            lightPercent = 10 * (1 - (sunAltitudeDeg + 12) / 6);
+        } else {
+            lightPercent = 0;
         }
 
-        // --- Gregorian clock update (inside the globe) ---
-        const clock = document.getElementById('gregorian-center-clock');
-        if (clock) clock.textContent = targetGregorianTime || '--:--';
-    } else if (virtualEarth) {
-        virtualEarth.setAttribute('display', 'none');
+        // --- Beam opacity from the light percentage ---
+        if (beamLine) beamLine.setAttribute('opacity', 0.4 + (lightPercent / 100) * 0.5);
+        if (beamGlow) beamGlow.setAttribute('opacity', 0.1 + (lightPercent / 100) * 0.2);
+
+        // --- Eclipse (existing detection — azimuth + altitude aligned + node):
+        //     the beam turns red/dark. ---
+        if (isEclipse) {
+            if (beamLine) {
+                beamLine.setAttribute('stroke', 'url(#eclipse-beam-grad)');
+                beamLine.setAttribute('opacity', '0.8');
+            }
+            if (beamGlow) {
+                beamGlow.setAttribute('stroke', 'url(#eclipse-beam-grad)');
+                beamGlow.setAttribute('opacity', '0.3');
+            }
+        } else {
+            if (beamLine) beamLine.setAttribute('stroke', 'url(#sun-beam-grad)');
+            if (beamGlow) beamGlow.setAttribute('stroke', 'url(#sun-beam-grad)');
+        }
+    } else if (beamGroup) {
+        beamGroup.setAttribute('display', 'none');
+        if (virtualEarth) virtualEarth.setAttribute('display', 'none');
     }
 
     // --- Sunrise countdown: while the sun is below the horizon, show the real
