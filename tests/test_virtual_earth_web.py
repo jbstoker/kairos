@@ -34,25 +34,28 @@ class TestVirtualEarthServed(unittest.TestCase):
     def test_root_has_sun_beam_markup(self):
         html = self.client.get("/").get_data(as_text=True)
         self.assertIn('<g id="sun-beam-group" display="none">', html)
-        for el in ("sun-beam", "sun-beam-glow", "sun-beam-grad",
-                   "eclipse-beam-grad", "virtual-earth", "gregorian-center-clock"):
+        for el in ("sun-beam-core", "sun-beam-glow", "sun-beam-halo",
+                   "sun-beam-grad", "eclipse-beam-grad", "virtual-earth",
+                   "gregorian-center-clock"):
             self.assertIn(f'id="{el}"', html)
         # The user marker is part of the globe.
         self.assertIn("YOU", html)
-        # The replaced visual (terminator / night clip / glow) and the
-        # redundant sun-position marker are gone.
-        for stale in ("terminator-line", "night-side", "nightClip",
-                      "daylight-glow", "sun-position", "umbra-shadow"):
-            self.assertNotIn(f'id="{stale}"', html, f"stale {stale}")
+        # The replaced visual (old laser beam id, terminator / night clip /
+        # glow) and the redundant sun-position marker are gone.
+        for stale in ("sun-beam\"", "terminator-line", "night-side",
+                      "nightClip", "daylight-glow", "sun-position",
+                      "umbra-shadow"):
+            self.assertNotIn(f'id="{stale}', html, f"stale {stale}")
 
     def test_concentric_template_has_the_same_markup(self):
         with open(os.path.join(REPO_ROOT, "web", "templates",
                                "concentric_view.html"), encoding="utf-8") as f:
             frag = f.read()
         self.assertIn('<g id="sun-beam-group" display="none">', frag)
-        self.assertIn('id="sun-beam"', frag)
+        self.assertIn('id="sun-beam-core"', frag)
+        self.assertIn('id="sun-beam-halo"', frag)
         self.assertIn('id="eclipse-beam-grad"', frag)
-        self.assertNotIn('id="sun-position"', frag)
+        self.assertNotIn('id="sun-beam"', frag)
         self.assertNotIn('id="terminator-line"', frag)
 
     def test_configure_panel_has_the_toggle(self):
@@ -95,7 +98,7 @@ function makeEl(id) {
     'sun-orbit-line', 'moon-orbit-line', 'sun-bead', 'moon-bead',
     'gregorian-center-clock', 'eclipse-status', 'twilight-glow',
     'sunrise-countdown', 'virtual-earth', 'sun-beam-group',
-    'sun-beam', 'sun-beam-glow'
+    'sun-beam-core', 'sun-beam-glow', 'sun-beam-halo'
 ].forEach(id => elements[id] = makeEl(id));
 global.document = { getElementById: (id) => elements[id] || null };
 // The renderer's optional distance debug log must not pollute stdout JSON.
@@ -114,10 +117,11 @@ const renderer = require('./web/static/js/canvas_renderer.js');
             "process.stdout.write(JSON.stringify({\n"
             "  beamDisplay: elements['sun-beam-group']._attrs['display'] || null,\n"
             "  globeDisplay: elements['virtual-earth']._attrs['display'] || null,\n"
-            "  x1: b('sun-beam').x1, y1: b('sun-beam').y1,\n"
-            "  x2: b('sun-beam').x2, y2: b('sun-beam').y2,\n"
-            "  stroke: b('sun-beam').stroke, opacity: b('sun-beam').opacity,\n"
+            "  x1: b('sun-beam-core').x1, y1: b('sun-beam-core').y1,\n"
+            "  x2: b('sun-beam-core').x2, y2: b('sun-beam-core').y2,\n"
+            "  stroke: b('sun-beam-core').stroke, opacity: b('sun-beam-core').opacity,\n"
             "  glowStroke: b('sun-beam-glow').stroke, glowOp: b('sun-beam-glow').opacity,\n"
+            "  haloStroke: b('sun-beam-halo').stroke, haloOp: b('sun-beam-halo').opacity,\n"
             "  clock: elements['gregorian-center-clock'].textContent\n"
             "}));\n"
         )
@@ -137,10 +141,11 @@ const renderer = require('./web/static/js/canvas_renderer.js');
         self.assertAlmostEqual(float(out["y1"]), 400, places=4)
         self.assertAlmostEqual(float(out["x2"]), 400, places=4)
         self.assertAlmostEqual(float(out["y2"]), 400, places=4)
-        # Light percentage 100% → beam opacity 0.9, glow 0.3.
+        # Light percentage 100% → core 0.9, glow 0.3, halo 0.08.
         self.assertEqual(out["stroke"], "url(#sun-beam-grad)")
         self.assertAlmostEqual(float(out["opacity"]), 0.9, places=6)
         self.assertAlmostEqual(float(out["glowOp"]), 0.3, places=6)
+        self.assertAlmostEqual(float(out["haloOp"]), 0.08, places=6)
         self.assertEqual(out["clock"], "14:30")
 
     def test_twilight_fades_the_beam(self):
@@ -148,6 +153,7 @@ const renderer = require('./web/static/js/canvas_renderer.js');
         out = self._render(-3, 180, 30, 180, 0.5)
         self.assertAlmostEqual(float(out["opacity"]), 0.4 + 0.25 * 0.5, places=6)
         self.assertAlmostEqual(float(out["glowOp"]), 0.1 + 0.25 * 0.2, places=6)
+        self.assertAlmostEqual(float(out["haloOp"]), 0.04 + 0.25 * 0.04, places=6)
         # Nautical twilight (−9°): light percent = 10·(1−0.5) = 5.
         nau = self._render(-9, 180, 30, 180, 0.5)
         self.assertAlmostEqual(float(nau["opacity"]), 0.4 + 0.05 * 0.5, places=6)
@@ -155,15 +161,19 @@ const renderer = require('./web/static/js/canvas_renderer.js');
         night = self._render(-15, 180, 30, 180, 0.5)
         self.assertAlmostEqual(float(night["opacity"]), 0.4, places=6)
         self.assertAlmostEqual(float(night["glowOp"]), 0.1, places=6)
+        self.assertAlmostEqual(float(night["haloOp"]), 0.04, places=6)
 
     def test_eclipse_turns_the_beam_red(self):
         # Sun and Moon share az 180 + altitude 0 + at a node → eclipse
-        # (existing detection). The beam switches to the red gradient.
+        # (existing detection). All three beam layers switch to the red
+        # gradient (core 0.8, glow 0.3, halo 0.1).
         out = self._render(0, 180, 0, 180, 0.05)
         self.assertEqual(out["stroke"], "url(#eclipse-beam-grad)")
         self.assertEqual(out["glowStroke"], "url(#eclipse-beam-grad)")
+        self.assertEqual(out["haloStroke"], "url(#eclipse-beam-grad)")
         self.assertEqual(out["opacity"], "0.8")
         self.assertEqual(out["glowOp"], "0.3")
+        self.assertEqual(out["haloOp"], "0.1")
 
     def test_disabled_beam_hides_both_groups(self):
         out = self._render(10, 90, 30, 180, 0.5, enabled=False)

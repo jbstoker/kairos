@@ -154,8 +154,9 @@ function updatePlanetaryCanvas(sunAltitudeDeg, sunAzimuthDeg, moonAltitudeDeg, m
     catch (e) { /* no localStorage (e.g. node tests) — beam stays off */ }
 
     const beamGroup = document.getElementById('sun-beam-group');
-    const beamLine = document.getElementById('sun-beam');
+    const beamLine = document.getElementById('sun-beam-core');
     const beamGlow = document.getElementById('sun-beam-glow');
+    const beamHalo = document.getElementById('sun-beam-halo');
     const virtualEarth = document.getElementById('virtual-earth');
 
     if (beamGroup && isBeamEnabled) {
@@ -179,6 +180,12 @@ function updatePlanetaryCanvas(sunAltitudeDeg, sunAzimuthDeg, moonAltitudeDeg, m
                 beamGlow.setAttribute('x2', cx);
                 beamGlow.setAttribute('y2', cy);
             }
+            if (beamHalo) {
+                beamHalo.setAttribute('x1', sunX);
+                beamHalo.setAttribute('y1', sunY);
+                beamHalo.setAttribute('x2', cx);
+                beamHalo.setAttribute('y2', cy);
+            }
         }
 
         // --- Light percentage based on sun altitude ---
@@ -197,6 +204,7 @@ function updatePlanetaryCanvas(sunAltitudeDeg, sunAzimuthDeg, moonAltitudeDeg, m
         // --- Beam opacity from the light percentage ---
         if (beamLine) beamLine.setAttribute('opacity', 0.4 + (lightPercent / 100) * 0.5);
         if (beamGlow) beamGlow.setAttribute('opacity', 0.1 + (lightPercent / 100) * 0.2);
+        if (beamHalo) beamHalo.setAttribute('opacity', 0.04 + (lightPercent / 100) * 0.04);
 
         // --- Eclipse (existing detection — azimuth + altitude aligned + node):
         //     the beam turns red/dark. ---
@@ -209,9 +217,14 @@ function updatePlanetaryCanvas(sunAltitudeDeg, sunAzimuthDeg, moonAltitudeDeg, m
                 beamGlow.setAttribute('stroke', 'url(#eclipse-beam-grad)');
                 beamGlow.setAttribute('opacity', '0.3');
             }
+            if (beamHalo) {
+                beamHalo.setAttribute('stroke', 'url(#eclipse-beam-grad)');
+                beamHalo.setAttribute('opacity', '0.1');
+            }
         } else {
             if (beamLine) beamLine.setAttribute('stroke', 'url(#sun-beam-grad)');
             if (beamGlow) beamGlow.setAttribute('stroke', 'url(#sun-beam-grad)');
+            if (beamHalo) beamHalo.setAttribute('stroke', 'url(#sun-beam-grad)');
         }
     } else if (beamGroup) {
         beamGroup.setAttribute('display', 'none');

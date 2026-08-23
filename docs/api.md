@@ -344,16 +344,18 @@ dial (altitude 0, azimuth = local day fraction × 360).
   `solarBeamFactors(declinationDeg)` → `{ widthFactor: 0.7…1.3,
   intensityFactor: 0.4…1.0 }`.
 - The **virtual Earth + Sun-originating light beam** (`#virtual-earth` +
-  `#sun-beam-group` in the sky-dome SVG, off by default): a gradient beam
-  (`#sun-beam` + `#sun-beam-glow`, `url(#sun-beam-grad)`) connects the Sun
-  bead to the Earth at the centre; its opacity encodes the light percentage
-  (bright golden by day, fading through dusk/dawn — 50% civil, 10% nautical
-  — dimmest at night) and during an eclipse it switches to
-  `url(#eclipse-beam-grad)` (red/dark). The *YOU* marker and the Gregorian
-  clock (`#gregorian-center-clock`) sit in the central globe. Toggled via ⚙️
-  Configure → 🌍 Show Light Beam (`#light-beam-toggle`, `kairos_light_beam`,
-  wired in `web/app.js`); rendered by `canvas_renderer.updatePlanetaryCanvas`.
-  Decorative — the beads and the azimuth wheel are untouched.
+  `#sun-beam-group` in the sky-dome SVG, off by default): a soft, spreading
+  gradient beam — a narrow bright core (`#sun-beam-core`), a wider glow
+  (`#sun-beam-glow`) and a very wide dim halo (`#sun-beam-halo`), all
+  `url(#sun-beam-grad)` — connects the Sun bead to the Earth at the centre;
+  its opacity encodes the light percentage (bright golden by day, fading
+  through dusk/dawn — 50% civil, 10% nautical — dimmest at night) and during
+  an eclipse it switches to `url(#eclipse-beam-grad)` (red/dark). The *YOU*
+  marker and the Gregorian clock (`#gregorian-center-clock`) sit in the
+  central globe. Toggled via ⚙️ Configure → 🌍 Show Light Beam
+  (`#light-beam-toggle`, `kairos_light_beam`, wired in `web/app.js`);
+  rendered by `canvas_renderer.updatePlanetaryCanvas`. Decorative — the
+  beads and the azimuth wheel are untouched.
 - `web/templates/concentric_view.html` — the canonical SVG fragment;
   the identical markup is injected into `web/index.html` inside the panel.
 - Fully client-side: no backend required, so it runs on GitHub Pages and
