@@ -56,10 +56,11 @@ The centre of the app is a living sky map, not just a clock:
   separate scale that never replaces the azimuth labels.
 - An optional **virtual Earth** with a **seasonal light beam**: toggle
   **🌍 Show Light Beam** in ⚙️ Configure. A small globe in the centre is
-  lit by a wedge whose width and intensity follow the solar declination
-  (summer wide + bright, winter narrow + dim, equinox balanced); it glows
-  gold in daylight, orange in civil twilight and blue in nautical
-  twilight. Off by default, remembered on the device.
+  lit by a dotted, luminous beam whose width and intensity follow the solar
+  declination (summer wide + bright, winter narrow + dim, equinox
+  balanced); it glows gold in daylight, orange in civil twilight and blue
+  in nautical twilight, and during an eclipse it turns red with the Earth's
+  umbra at the Moon. Off by default, remembered on the device.
 - At dusk and dawn a soft **twilight glow** fades in around the horizon —
   civil twilight (sun between −6° and 0°) glows brightest, nautical
   twilight (−12° to −6°) glows fainter, and full night shows no glow. While

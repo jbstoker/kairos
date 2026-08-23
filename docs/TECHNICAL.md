@@ -618,9 +618,11 @@ worker). Open it two ways:
   beam: `web/static/js/solar_geometry.js` computes the solar declination
   (Meeus ch. 25, matching `core.meeus_algorithms.apparent_declination`), and
   `canvas_renderer.js` sets the beam's width (90° ± 30%) and intensity
-  (×0.4–1.0) — gold daylight / orange civil / blue nautical wedges — plus a
-  night-side dimming of the globe. Toggle: ⚙️ Configure → 🌍 Show Light Beam
-  (`kairos_light_beam`).
+  (×0.4–1.0), rendered as gradient + dotted-overlay wedges (gold daylight /
+  orange civil / blue nautical) with a night-side dimming of the globe;
+  during an eclipse the beams turn red (`eclipseGlow`) and the Earth's umbra
+  appears at the Moon. Toggle: ⚙️ Configure → 🌍 Show Light Beam
+  (`kairos_light_beam`). The Gregorian clock lives inside the globe.
   90° = the zenith at the centre); bodies below the horizon clamp to the
   wheel edge as dimmed ghost beads. A **twilight glow** (`#twilight-glow`)
   fades around the horizon while the sun is between −12° and 0° altitude —

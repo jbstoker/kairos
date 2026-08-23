@@ -12,6 +12,39 @@
             .rosetta-text { fill: #ffffff; font-family: monospace; font-size: 28px; font-weight: bold; }
         </style>
 
+        <defs>
+            <!-- Dotted pattern for the light beam -->
+            <pattern id="dotPattern" x="0" y="0" width="10" height="10" patternUnits="userSpaceOnUse">
+                <circle cx="5" cy="5" r="1.5" fill="rgba(255, 255, 255, 0.25)" />
+            </pattern>
+
+            <!-- Soft glow gradients for each beam layer -->
+            <radialGradient id="daylightGlow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="rgba(255, 220, 150, 0.5)" />
+                <stop offset="60%" stop-color="rgba(255, 200, 100, 0.2)" />
+                <stop offset="100%" stop-color="rgba(255, 200, 100, 0)" />
+            </radialGradient>
+
+            <radialGradient id="twilightGlow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="rgba(255, 180, 100, 0.25)" />
+                <stop offset="70%" stop-color="rgba(255, 150, 80, 0.1)" />
+                <stop offset="100%" stop-color="rgba(255, 150, 80, 0)" />
+            </radialGradient>
+
+            <radialGradient id="nauticalGlow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="rgba(120, 180, 220, 0.15)" />
+                <stop offset="80%" stop-color="rgba(100, 150, 200, 0.05)" />
+                <stop offset="100%" stop-color="rgba(100, 150, 200, 0)" />
+            </radialGradient>
+
+            <!-- Eclipse glow (deep red) -->
+            <radialGradient id="eclipseGlow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="rgba(180, 60, 30, 0.5)" />
+                <stop offset="60%" stop-color="rgba(140, 40, 20, 0.25)" />
+                <stop offset="100%" stop-color="rgba(100, 30, 15, 0)" />
+            </radialGradient>
+        </defs>
+
         <!-- Sky-dome grid: compass lines (subtle). The altitude rings
              are drawn separately, after the degree wheel, so they stay
              clearly visible. -->
@@ -101,25 +134,43 @@
         <ellipse id="moon-orbit-line" cx="400" cy="400" rx="285" ry="270" class="orbit-track" />
 
         <!-- Virtual Earth + seasonal light beam (off by default; the beam
-             width/intensity follow the solar declination — see
-             web/static/js/canvas_renderer.js). -->
+             width/intensity follow the solar declination — during an eclipse
+             the beams turn red and the Earth's umbra appears at the Moon;
+             see web/static/js/canvas_renderer.js). -->
         <g id="virtual-earth" display="none">
-            <circle id="night-overlay" cx="400" cy="400" r="95" fill="#0b1220" stroke="#2a3a4a" stroke-width="1.5" opacity="0.6" />
-            <path id="nautical-beam" d="M400,400 L333,333 A95,95 0 0,1 467,333 Z" fill="#4a7ab0" opacity="0" />
-            <path id="twilight-beam" d="M400,400 L333,333 A95,95 0 0,1 467,333 Z" fill="#f0a24a" opacity="0" />
-            <path id="daylight-beam" d="M400,400 L333,333 A95,95 0 0,1 467,333 Z" fill="#f0c27f" opacity="0" />
-            <circle id="sun-position" cx="400" cy="400" r="3.5" fill="#fff8e1" opacity="0" />
+            <!-- Earth background -->
+            <circle cx="400" cy="400" r="65" fill="#0b1a2a" stroke="#2a3442" stroke-width="1.5" />
+
+            <!-- Night overlay (dark side) -->
+            <circle cx="400" cy="400" r="65" fill="#0a0a10" opacity="0.6" id="night-overlay" />
+
+            <!-- Beam layers (gradients + dotted overlay) -->
+            <path id="daylight-beam" d="M400,400 L354.04,354.04 A65,65 0 0,1 445.96,354.04 Z" fill="url(#daylightGlow)" opacity="0" />
+            <path id="daylight-dots" d="M400,400 L354.04,354.04 A65,65 0 0,1 445.96,354.04 Z" fill="url(#dotPattern)" opacity="0" />
+
+            <path id="twilight-beam" d="M400,400 L354.04,354.04 A65,65 0 0,1 445.96,354.04 Z" fill="url(#twilightGlow)" opacity="0" />
+            <path id="twilight-dots" d="M400,400 L354.04,354.04 A65,65 0 0,1 445.96,354.04 Z" fill="url(#dotPattern)" opacity="0" />
+
+            <path id="nautical-beam" d="M400,400 L354.04,354.04 A65,65 0 0,1 445.96,354.04 Z" fill="url(#nauticalGlow)" opacity="0" />
+            <path id="nautical-dots" d="M400,400 L354.04,354.04 A65,65 0 0,1 445.96,354.04 Z" fill="url(#dotPattern)" opacity="0" />
+
+            <!-- Sun position on the horizon -->
+            <circle id="sun-position" cx="400" cy="335" r="5" fill="#f39c12" opacity="0" />
+
+            <!-- Earth's umbra shadow (visible during eclipse) -->
+            <circle id="umbra-shadow" cx="400" cy="400" r="18" fill="rgba(0,0,0,0.7)" display="none" />
+
+            <!-- User position (you) -->
+            <circle cx="400" cy="335" r="4" fill="#f0c27f" stroke="#fff" stroke-width="1.5" />
+            <text x="400" y="320" text-anchor="middle" fill="#f0c27f" font-size="10" font-weight="bold">YOU</text>
+
+            <!-- Gregorian reference inside globe -->
+            <text x="400" y="405" id="gregorian-center-clock" text-anchor="middle" fill="#5a6a7c" font-family="monospace" font-size="12px" font-weight="300">--:--</text>
         </g>
 
         <!-- Shifting Observation Nodes (Always locked to the edge of the ellipses) -->
         <circle id="sun-bead" cx="400" cy="235" r="16" fill="#f39c12" style="filter: drop-shadow(0px 0px 8px rgba(243,156,18,0.6));" />
         <circle id="moon-bead" cx="400" cy="115" r="11" fill="#ecf0f1" style="filter: drop-shadow(0px 0px 6px rgba(236,240,241,0.5));" />
-
-        <!-- Central Rosetta Hub (Gregorian Reference Window) -->
-        <g class="gregorian-translation-hub">
-            <circle cx="400" cy="400" r="65" fill="#050505" stroke="#252525" stroke-width="2" />
-            <text x="400" y="407" id="gregorian-center-clock" text-anchor="middle" class="rosetta-text">--:--</text>
-        </g>
     </svg>
 
         <!-- Eclipse status line (lit by canvas_renderer.updatePlanetaryCanvas) -->

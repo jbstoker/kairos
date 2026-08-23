@@ -344,15 +344,17 @@ dial (altitude 0, azimuth = local day fraction × 360).
   `solarBeamFactors(declinationDeg)` → `{ widthFactor: 0.7…1.3,
   intensityFactor: 0.4…1.0 }`.
 - The **virtual Earth** (`#virtual-earth` in the sky-dome SVG, off by
-  default) is a small central globe lit by three wedges — daylight (gold,
-  sun ≥ 0°), civil twilight (orange, 0…−6°) and nautical twilight (blue,
-  −6…−12°) — whose width (90° ± 30%) and intensity (×0.4–1.0) follow the
-  solar declination (summer wide+bright, winter narrow+dim, equinox
-  balanced), with a night-side dimming of the globe. Toggled via ⚙️
+  default) is a small globe (r = 65) lit by gradient + dotted-overlay wedges
+  — daylight (gold, sun > 0°), civil twilight (orange, −6°…0°) and nautical
+  twilight (blue, −12°…−6°) — whose width (90° ± 30%) and intensity
+  (×0.4–1.0) follow the solar declination (summer wide+bright, winter
+  narrow+dim, equinox balanced), with a night-side dimming of the globe.
+  During an eclipse the beams turn red (`#eclipseGlow`) and dim, and the
+  Earth's umbra (`#umbra-shadow`) appears at the Moon. The Gregorian clock
+  (`#gregorian-center-clock`) lives inside the globe. Toggled via ⚙️
   Configure → 🌍 Show Light Beam (`#light-beam-toggle`, `kairos_light_beam`,
-  wired in `web/app.js`); rendered by `canvas_renderer.updatePlanetaryCanvas`
-  using the sky-dome's own angle convention. Decorative — the beads and the
-  azimuth wheel are untouched.
+  wired in `web/app.js`); rendered by `canvas_renderer.updatePlanetaryCanvas`.
+  Decorative — the beads and the azimuth wheel are untouched.
 - `web/templates/concentric_view.html` — the canonical SVG fragment;
   the identical markup is injected into `web/index.html` inside the panel.
 - Fully client-side: no backend required, so it runs on GitHub Pages and
