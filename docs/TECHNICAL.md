@@ -617,11 +617,10 @@ worker). Open it two ways:
   (`#virtual-earth`, off by default) adds a central globe lit by a seasonal
   beam: `web/static/js/solar_geometry.js` computes the solar declination
   (Meeus ch. 25, matching `core.meeus_algorithms.apparent_declination`), and
-  `canvas_renderer.js` sets the beam's width (90° ± 30%) and intensity
-  (×0.4–1.0), rendered as gradient + dotted-overlay wedges (gold daylight /
-  orange civil / blue nautical) with a night-side dimming of the globe;
-  during an eclipse the beams turn red (`eclipseGlow`) and the Earth's umbra
-  appears at the Moon. Toggle: ⚙️ Configure → 🌍 Show Light Beam
+  `canvas_renderer.js` draws a **Sun-originating terminator line + soft
+  glow**: the day/night boundary and the clipped night side rotate with the
+  Sun's azimuth, the glow fades through twilight, and the *YOU* marker is
+  highlighted in daylight. Toggle: ⚙️ Configure → 🌍 Show Light Beam
   (`kairos_light_beam`). The Gregorian clock lives inside the globe.
   90° = the zenith at the centre); bodies below the horizon clamp to the
   wheel edge as dimmed ghost beads. A **twilight glow** (`#twilight-glow`)

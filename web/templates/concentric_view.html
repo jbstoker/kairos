@@ -133,32 +133,25 @@
         <ellipse id="sun-orbit-line" cx="400" cy="400" rx="165" ry="162" class="orbit-track" transform="rotate(102, 400, 400)" />
         <ellipse id="moon-orbit-line" cx="400" cy="400" rx="285" ry="270" class="orbit-track" />
 
-        <!-- Virtual Earth + seasonal light beam (off by default; the beam
-             width/intensity follow the solar declination — during an eclipse
-             the beams turn red and the Earth's umbra appears at the Moon;
+        <!-- Virtual Earth + light beam (Sun-originating terminator + glow; off
+             by default — the terminator line and the daylight glow come from
+             the Sun's direction, the night side is clipped away from the Sun;
              see web/static/js/canvas_renderer.js). -->
         <g id="virtual-earth" display="none">
             <!-- Earth background -->
             <circle cx="400" cy="400" r="65" fill="#0b1a2a" stroke="#2a3442" stroke-width="1.5" />
 
-            <!-- Night overlay (dark side) -->
-            <circle cx="400" cy="400" r="65" fill="#0a0a10" opacity="0.6" id="night-overlay" />
+            <!-- Night overlay (dark side) — clipped by the terminator -->
+            <clipPath id="nightClip">
+                <path id="night-side" d="M400,400 L400,335 A65,65 0 0,1 400,465 Z" />
+            </clipPath>
+            <circle cx="400" cy="400" r="65" fill="#0a0a10" clip-path="url(#nightClip)" opacity="0.8" id="night-overlay" />
 
-            <!-- Beam layers (gradients + dotted overlay) -->
-            <path id="daylight-beam" d="M400,400 L354.04,354.04 A65,65 0 0,1 445.96,354.04 Z" fill="url(#daylightGlow)" opacity="0" />
-            <path id="daylight-dots" d="M400,400 L354.04,354.04 A65,65 0 0,1 445.96,354.04 Z" fill="url(#dotPattern)" opacity="0" />
+            <!-- Terminator line (day/night boundary) -->
+            <line id="terminator-line" x1="400" y1="400" x2="400" y2="400" stroke="rgba(255,200,100,0.3)" stroke-width="1.5" />
 
-            <path id="twilight-beam" d="M400,400 L354.04,354.04 A65,65 0 0,1 445.96,354.04 Z" fill="url(#twilightGlow)" opacity="0" />
-            <path id="twilight-dots" d="M400,400 L354.04,354.04 A65,65 0 0,1 445.96,354.04 Z" fill="url(#dotPattern)" opacity="0" />
-
-            <path id="nautical-beam" d="M400,400 L354.04,354.04 A65,65 0 0,1 445.96,354.04 Z" fill="url(#nauticalGlow)" opacity="0" />
-            <path id="nautical-dots" d="M400,400 L354.04,354.04 A65,65 0 0,1 445.96,354.04 Z" fill="url(#dotPattern)" opacity="0" />
-
-            <!-- Sun position on the horizon -->
-            <circle id="sun-position" cx="400" cy="335" r="5" fill="#f39c12" opacity="0" />
-
-            <!-- Earth's umbra shadow (visible during eclipse) -->
-            <circle id="umbra-shadow" cx="400" cy="400" r="18" fill="rgba(0,0,0,0.7)" display="none" />
+            <!-- Soft glow on the daylight side -->
+            <path id="daylight-glow" d="M400,400 L400,335 A65,65 0 0,1 400,465 Z" fill="url(#daylightGlow)" opacity="0" />
 
             <!-- User position (you) -->
             <circle cx="400" cy="335" r="4" fill="#f0c27f" stroke="#fff" stroke-width="1.5" />

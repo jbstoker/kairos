@@ -144,110 +144,90 @@ function updatePlanetaryCanvas(sunAltitudeDeg, sunAzimuthDeg, moonAltitudeDeg, m
         twilightGlow.setAttribute('opacity', intensity > 0 ? '1' : '0');
     }
 
-    // --- Virtual Earth & Light Beam (optional, dotted + luminous; off by
-    //     default). The beam wedges are gradient fills + a dotted overlay
-    //     whose width (90° ± 30%) and intensity follow the solar declination;
-    //     during an eclipse the beams turn red and the Earth's umbra appears
-    //     at the Moon. Enabled via ⚙️ Configure → 🌍 Show Light Beam.
+    // --- Virtual Earth & Light Beam (Sun-originating terminator + glow;
+    //     optional, off by default). The terminator line and the daylight
+    //     glow come from the Sun's direction; the night side is clipped to
+    //     the half of the globe away from the Sun. Enabled via ⚙️ Configure →
+    //     🌍 Show Light Beam (kairos_light_beam).
     let isBeamEnabled = false;
     try { isBeamEnabled = localStorage.getItem('kairos_light_beam') === 'true'; }
     catch (e) { /* no localStorage (e.g. node tests) — beam stays off */ }
 
     const virtualEarth = document.getElementById('virtual-earth');
-    const daylightBeam = document.getElementById('daylight-beam');
-    const daylightDots = document.getElementById('daylight-dots');
-    const twilightBeam = document.getElementById('twilight-beam');
-    const twilightDots = document.getElementById('twilight-dots');
-    const nauticalBeam = document.getElementById('nautical-beam');
-    const nauticalDots = document.getElementById('nautical-dots');
-    const sunPosition = document.getElementById('sun-position');
+    const terminatorLine = document.getElementById('terminator-line');
+    const daylightGlow = document.getElementById('daylight-glow');
     const nightOverlay = document.getElementById('night-overlay');
-    const umbra = document.getElementById('umbra-shadow');
+    const nightSide = document.getElementById('night-side');
+    const userDot = (typeof document.querySelector === 'function')
+        ? document.querySelector('#virtual-earth circle:last-of-type') : null;
 
     if (virtualEarth && isBeamEnabled) {
         virtualEarth.setAttribute('display', 'block');
 
         const radius = 65;
-        const azRad = (sunAzimuthDeg - 180) * Math.PI / 180;
+        // Sun's azimuth: 0° = North (bottom), 90° = East (left),
+        // 180° = South (top), 270° = West (right).
+        const azRad = (sunAzimuthDeg - 180) * Math.PI / 180;   // rotate so 180° = top
 
-        // --- Beam shape: width follows the solar declination ---
-        const declination = (typeof getCurrentSolarDeclination === 'function')
-            ? getCurrentSolarDeclination() : 0;
-        const widthFactor = 1 + (declination / 23.44) * 0.3;   // 0.7…1.3
-        const beamAngle = (Math.PI / 2) * widthFactor;         // 63°…117°
-        const leftEdge = azRad - beamAngle / 2;
-        const rightEdge = azRad + beamAngle / 2;
-        const x1 = cx + radius * Math.sin(leftEdge);
-        const y1 = cy - radius * Math.cos(leftEdge);
-        const x2 = cx + radius * Math.sin(rightEdge);
-        const y2 = cy - radius * Math.cos(rightEdge);
-        const path = `M${cx},${cy} L${x1},${y1} A${radius},${radius} 0 0,1 ${x2},${y2} Z`;
-
-        // --- Opacities based on sun altitude ---
-        let dayOpacity = 0, twilightOpacity = 0, nauticalOpacity = 0;
-        if (sunAltitudeDeg > 0) {
-            dayOpacity = 0.8;
-        } else if (sunAltitudeDeg > -6) {
-            const frac = (sunAltitudeDeg + 6) / 6;
-            dayOpacity = 0.8 * frac;
-            twilightOpacity = 0.6 * (1 - frac);
-        } else if (sunAltitudeDeg > -12) {
-            const frac = (sunAltitudeDeg + 12) / 6;
-            twilightOpacity = 0.6 * frac;
-            nauticalOpacity = 0.4 * (1 - frac);
+        // --- Terminator line (the day/night boundary) ---
+        const terminatorAngle = azRad + Math.PI / 2;
+        const terminatorX = cx + radius * Math.cos(terminatorAngle);
+        const terminatorY = cy - radius * Math.sin(terminatorAngle);
+        const lineLength = radius * 1.4;
+        const x1 = terminatorX - lineLength * Math.sin(terminatorAngle);
+        const y1 = terminatorY - lineLength * Math.cos(terminatorAngle);
+        const x2 = terminatorX + lineLength * Math.sin(terminatorAngle);
+        const y2 = terminatorY + lineLength * Math.cos(terminatorAngle);
+        if (terminatorLine) {
+            terminatorLine.setAttribute('x1', x1);
+            terminatorLine.setAttribute('y1', y1);
+            terminatorLine.setAttribute('x2', x2);
+            terminatorLine.setAttribute('y2', y2);
         }
 
-        // --- Seasonal intensity ---
-        const intensityFactor = 0.7 + (declination / 23.44) * 0.3;
+        // --- Night side: the half of the globe away from the Sun (the
+        //     addendum's clip "will be clipped by the terminator" — so it
+        //     tracks the Sun's azimuth like the terminator line itself). ---
+        const nightPath = `M${cx},${cy} L${cx + radius * Math.cos(azRad)},${cy + radius * Math.sin(azRad)} A${radius},${radius} 0 0,1 ${cx - radius * Math.cos(azRad)},${cy - radius * Math.sin(azRad)} Z`;
+        if (nightSide) nightSide.setAttribute('d', nightPath);
 
-        // --- Eclipse detection (existing: azimuth + altitude aligned + node) ---
-        const eclipse = isEclipse;
-
-        // --- Apply to beams (with eclipse override) ---
-        const beamSets = [
-            { beam: daylightBeam, dots: daylightDots, opacity: dayOpacity * intensityFactor, glow: 'url(#daylightGlow)' },
-            { beam: twilightBeam, dots: twilightDots, opacity: twilightOpacity * intensityFactor * 0.8, glow: 'url(#twilightGlow)' },
-            { beam: nauticalBeam, dots: nauticalDots, opacity: nauticalOpacity * intensityFactor * 0.6, glow: 'url(#nauticalGlow)' }
-        ];
-        beamSets.forEach(({ beam, dots, opacity, glow }) => {
-            if (!beam || !dots) return;
-            beam.setAttribute('d', path);
-            beam.setAttribute('opacity', eclipse ? opacity * 0.6 : opacity);   // dim during eclipse
-            beam.setAttribute('fill', eclipse ? 'url(#eclipseGlow)' : glow);
-            dots.setAttribute('d', path);
-            dots.setAttribute('opacity', eclipse ? opacity * 0.3 : opacity * 0.4);
-        });
-
-        // --- Umbra shadow (during eclipse, rides on the Moon) ---
-        if (umbra) {
-            if (eclipse) {
-                const moonBeadEl = document.getElementById('moon-bead');
-                const moonX = moonBeadEl ? parseFloat(moonBeadEl.getAttribute('cx')) || cx : cx;
-                const moonY = moonBeadEl ? parseFloat(moonBeadEl.getAttribute('cy')) || cy : cy;
-                umbra.setAttribute('cx', moonX);
-                umbra.setAttribute('cy', moonY);
-                umbra.setAttribute('display', 'block');
-            } else {
-                umbra.setAttribute('display', 'none');
-            }
-        }
-
-        // --- Sun position on the globe's edge ---
+        // --- Daylight glow (soft, from the Sun's direction) ---
         const sunX = cx + radius * Math.sin(azRad);
         const sunY = cy - radius * Math.cos(azRad);
-        if (sunPosition) {
-            sunPosition.setAttribute('cx', sunX);
-            sunPosition.setAttribute('cy', sunY);
-            sunPosition.setAttribute('opacity', dayOpacity + twilightOpacity > 0 ? 0.9 : 0);
+        const leftEdge = azRad - Math.PI / 3;
+        const rightEdge = azRad + Math.PI / 3;
+        const x1w = cx + radius * Math.sin(leftEdge);
+        const y1w = cy - radius * Math.cos(leftEdge);
+        const x2w = cx + radius * Math.sin(rightEdge);
+        const y2w = cy - radius * Math.cos(rightEdge);
+        const glowPath = `M${sunX},${sunY} L${x1w},${y1w} A${radius},${radius} 0 0,1 ${x2w},${y2w} Z`;
+        if (daylightGlow) {
+            daylightGlow.setAttribute('d', glowPath);
+            let glowOpacity = 0;
+            if (sunAltitudeDeg > 0) {
+                glowOpacity = 0.25;
+            } else if (sunAltitudeDeg > -6) {
+                glowOpacity = 0.15 * (1 - (sunAltitudeDeg + 6) / 6);
+            } else {
+                glowOpacity = 0;
+            }
+            daylightGlow.setAttribute('opacity', glowOpacity);
         }
 
         // --- Night overlay dimming ---
-        let nightOpacity = 0.6;
-        if (sunAltitudeDeg < -12) nightOpacity = 0.9;
-        else if (sunAltitudeDeg < -6) nightOpacity = 0.8;
-        else if (sunAltitudeDeg < 0) nightOpacity = 0.6;
-        else nightOpacity = 0.4;
+        let nightOpacity = 0.8;
+        if (sunAltitudeDeg < -12) nightOpacity = 0.95;
+        else if (sunAltitudeDeg < -6) nightOpacity = 0.85;
+        else if (sunAltitudeDeg < 0) nightOpacity = 0.75;
+        else nightOpacity = 0.5;
         if (nightOverlay) nightOverlay.setAttribute('opacity', nightOpacity);
+
+        // --- Highlight the user dot if it is in daylight ---
+        if (userDot) {
+            const isUserLit = sunAltitudeDeg > -6;
+            userDot.setAttribute('fill', isUserLit ? '#f0c27f' : '#5a6a7c');
+            userDot.setAttribute('stroke', isUserLit ? '#fff' : '#3a4a5c');
+        }
 
         // --- Gregorian clock update (inside the globe) ---
         const clock = document.getElementById('gregorian-center-clock');

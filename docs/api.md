@@ -344,17 +344,18 @@ dial (altitude 0, azimuth = local day fraction × 360).
   `solarBeamFactors(declinationDeg)` → `{ widthFactor: 0.7…1.3,
   intensityFactor: 0.4…1.0 }`.
 - The **virtual Earth** (`#virtual-earth` in the sky-dome SVG, off by
-  default) is a small globe (r = 65) lit by gradient + dotted-overlay wedges
-  — daylight (gold, sun > 0°), civil twilight (orange, −6°…0°) and nautical
-  twilight (blue, −12°…−6°) — whose width (90° ± 30%) and intensity
-  (×0.4–1.0) follow the solar declination (summer wide+bright, winter
-  narrow+dim, equinox balanced), with a night-side dimming of the globe.
-  During an eclipse the beams turn red (`#eclipseGlow`) and dim, and the
-  Earth's umbra (`#umbra-shadow`) appears at the Moon. The Gregorian clock
-  (`#gregorian-center-clock`) lives inside the globe. Toggled via ⚙️
-  Configure → 🌍 Show Light Beam (`#light-beam-toggle`, `kairos_light_beam`,
-  wired in `web/app.js`); rendered by `canvas_renderer.updatePlanetaryCanvas`.
-  Decorative — the beads and the azimuth wheel are untouched.
+  default) is a small globe (r = 65) lit by a **Sun-originating terminator
+  line + glow** (`#terminator-line`, `#daylight-glow`): the day/night
+  boundary and the clipped night side (`#night-side` / `#nightClip`, the
+  half of the globe away from the Sun) rotate with the Sun's azimuth; the
+  glow is brightest in daylight (0.25), fades through civil twilight and
+  disappears at night; the *YOU* marker is highlighted while the sun is
+  above −6°. The redundant sun-position marker is gone — the main Sun bead
+  is the only sun marker. The Gregorian clock (`#gregorian-center-clock`)
+  lives inside the globe. Toggled via ⚙️ Configure → 🌍 Show Light Beam
+  (`#light-beam-toggle`, `kairos_light_beam`, wired in `web/app.js`);
+  rendered by `canvas_renderer.updatePlanetaryCanvas`. Decorative — the
+  beads and the azimuth wheel are untouched.
 - `web/templates/concentric_view.html` — the canonical SVG fragment;
   the identical markup is injected into `web/index.html` inside the panel.
 - Fully client-side: no backend required, so it runs on GitHub Pages and
