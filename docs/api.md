@@ -343,19 +343,19 @@ dial (altitude 0, azimuth = local day fraction × 360).
   solstices/equinoxes), `getCurrentSolarDeclination()`, and
   `solarBeamFactors(declinationDeg)` → `{ widthFactor: 0.7…1.3,
   intensityFactor: 0.4…1.0 }`.
-- The **virtual Earth + Sun-originating light beam** (`#virtual-earth` +
-  `#sun-beam-group` in the sky-dome SVG, off by default): a soft, spreading
-  gradient beam — a narrow bright core (`#sun-beam-core`), a wider glow
-  (`#sun-beam-glow`) and a very wide dim halo (`#sun-beam-halo`), all
-  `url(#sun-beam-grad)` — connects the Sun bead to the Earth at the centre;
-  its opacity encodes the light percentage (bright golden by day, fading
-  through dusk/dawn — 50% civil, 10% nautical — dimmest at night) and during
-  an eclipse it switches to `url(#eclipse-beam-grad)` (red/dark). The *YOU*
-  marker and the Gregorian clock (`#gregorian-center-clock`) sit in the
-  central globe. Toggled via ⚙️ Configure → 🌍 Show Light Beam
-  (`#light-beam-toggle`, `kairos_light_beam`, wired in `web/app.js`);
-  rendered by `canvas_renderer.updatePlanetaryCanvas`. Decorative — the
-  beads and the azimuth wheel are untouched.
+- The **virtual Earth + Sun-originating light cone** (`#virtual-earth` +
+  `#light-cone` in the sky-dome SVG, off by default): two lines
+  (`#cone-edge-left`, `#cone-edge-right`) trace the edges of the light cone
+  from the Sun bead to the Earth's horizon (tangent to a r = 60 circle),
+  with a soft fill (`#cone-fill`) between them showing the lit side. Opacity
+  maps day / civil twilight / nautical twilight / night (cone opacity 0.8 /
+  0.5 / 0.2 / 0; edges ×0.6, fill ×0.15) and during an eclipse the cone
+  turns red/dark (existing `isEclipse` detection). The *YOU* marker and the
+  Gregorian clock (`#gregorian-center-clock`) sit in the central globe.
+  Toggled via ⚙️ Configure → 🌍 Show Light Cone (`#light-beam-toggle`,
+  `kairos_light_beam`, wired in `web/app.js`); rendered by
+  `canvas_renderer.updatePlanetaryCanvas`. Decorative — the beads and the
+  azimuth wheel are untouched.
 - `web/templates/concentric_view.html` — the canonical SVG fragment;
   the identical markup is injected into `web/index.html` inside the panel.
 - Fully client-side: no backend required, so it runs on GitHub Pages and

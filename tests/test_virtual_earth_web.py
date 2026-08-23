@@ -1,15 +1,15 @@
-"""Web test: the virtual Earth + Sun-originating light beam (gradient beam,
-eclipse ready; optional, off by default).
+"""Web test: the virtual Earth + light cone (two edges from the Sun bead to
+the Earth's horizon, optional, off by default).
 
-A gradient beam connects the Sun bead on the wheel to the Earth at the
-centre. Its opacity encodes the light percentage (0% night … 100% day,
-fading through twilight), and during an eclipse (the EXISTING detection —
-azimuth + altitude aligned + node) it turns red/dark. The beam and the
-central globe are shown together when 🌍 Show Light Beam is enabled
-(#light-beam-toggle, kairos_light_beam, off by default). The redundant
-sun-position marker and the terminator/glow/night-clip design are gone.
-Driven by canvas_renderer.updatePlanetaryCanvas. Decorative — it never moves
-the beads or the azimuth wheel.
+Two lines trace the edges of the light cone from the Sun bead to the Earth's
+horizon (tangent points on a radius-60 circle), with a soft fill between them
+showing the lit side. Opacity maps day / civil twilight / nautical twilight /
+night, and during an eclipse (the EXISTING detection — azimuth + altitude
+aligned + node) the cone turns red/dark. Shown together with the central
+globe when 🌍 Show Light Cone is enabled (#light-beam-toggle,
+kairos_light_beam, off by default). The earlier beam designs (soft gradient
+core/glow/halo) are replaced. Driven by canvas_renderer.updatePlanetaryCanvas.
+Decorative — it never moves the beads or the azimuth wheel.
 """
 
 import json
@@ -31,37 +31,35 @@ class TestVirtualEarthServed(unittest.TestCase):
         app.config["TESTING"] = True
         self.client = app.test_client()
 
-    def test_root_has_sun_beam_markup(self):
+    def test_root_has_light_cone_markup(self):
         html = self.client.get("/").get_data(as_text=True)
-        self.assertIn('<g id="sun-beam-group" display="none">', html)
-        for el in ("sun-beam-core", "sun-beam-glow", "sun-beam-halo",
-                   "sun-beam-grad", "eclipse-beam-grad", "virtual-earth",
-                   "gregorian-center-clock"):
+        self.assertIn('<g id="light-cone" display="none">', html)
+        for el in ("cone-edge-left", "cone-edge-right", "cone-fill",
+                   "virtual-earth", "gregorian-center-clock"):
             self.assertIn(f'id="{el}"', html)
         # The user marker is part of the globe.
         self.assertIn("YOU", html)
-        # The replaced visual (old laser beam id, terminator / night clip /
-        # glow) and the redundant sun-position marker are gone.
-        for stale in ("sun-beam\"", "terminator-line", "night-side",
-                      "nightClip", "daylight-glow", "sun-position",
-                      "umbra-shadow"):
-            self.assertNotIn(f'id="{stale}', html, f"stale {stale}")
+        # The replaced beam designs and the redundant markers are gone.
+        for stale in ("sun-beam-group", "sun-beam-core", "sun-beam-glow",
+                      "sun-beam-halo", "terminator-line", "night-side",
+                      "sun-position", "umbra-shadow"):
+            self.assertNotIn(f'id="{stale}"', html, f"stale {stale}")
 
     def test_concentric_template_has_the_same_markup(self):
         with open(os.path.join(REPO_ROOT, "web", "templates",
                                "concentric_view.html"), encoding="utf-8") as f:
             frag = f.read()
-        self.assertIn('<g id="sun-beam-group" display="none">', frag)
-        self.assertIn('id="sun-beam-core"', frag)
-        self.assertIn('id="sun-beam-halo"', frag)
-        self.assertIn('id="eclipse-beam-grad"', frag)
-        self.assertNotIn('id="sun-beam"', frag)
+        self.assertIn('<g id="light-cone" display="none">', frag)
+        self.assertIn('id="cone-edge-left"', frag)
+        self.assertIn('id="cone-fill"', frag)
+        self.assertNotIn('id="sun-beam-core"', frag)
         self.assertNotIn('id="terminator-line"', frag)
 
     def test_configure_panel_has_the_toggle(self):
         html = self.client.get("/").get_data(as_text=True)
         self.assertIn('id="light-beam-toggle"', html)
         self.assertIn('data-i18n="config.light_beam"', html)
+        self.assertIn("🌍 Show Light Cone", html)
 
     def test_toggle_logic_lives_in_app_js(self):
         """config.js does not exist — the toggle is wired in web/app.js."""
@@ -97,8 +95,8 @@ function makeEl(id) {
 [
     'sun-orbit-line', 'moon-orbit-line', 'sun-bead', 'moon-bead',
     'gregorian-center-clock', 'eclipse-status', 'twilight-glow',
-    'sunrise-countdown', 'virtual-earth', 'sun-beam-group',
-    'sun-beam-core', 'sun-beam-glow', 'sun-beam-halo'
+    'sunrise-countdown', 'virtual-earth', 'light-cone',
+    'cone-edge-left', 'cone-edge-right', 'cone-fill'
 ].forEach(id => elements[id] = makeEl(id));
 global.document = { getElementById: (id) => elements[id] || null };
 // The renderer's optional distance debug log must not pollute stdout JSON.
@@ -113,15 +111,16 @@ const renderer = require('./web/static/js/canvas_renderer.js');
             "renderer.updatePlanetaryCanvas(" + str(sunAlt) + ", " + str(sunAz)
             + ", " + str(moonAlt) + ", " + str(moonAz) + ", " + str(node)
             + ", '14:30');\n"
-            "const b = (id) => elements[id]._attrs;\n"
+            "const g = (id) => elements[id]._attrs;\n"
             "process.stdout.write(JSON.stringify({\n"
-            "  beamDisplay: elements['sun-beam-group']._attrs['display'] || null,\n"
+            "  coneDisplay: elements['light-cone']._attrs['display'] || null,\n"
             "  globeDisplay: elements['virtual-earth']._attrs['display'] || null,\n"
-            "  x1: b('sun-beam-core').x1, y1: b('sun-beam-core').y1,\n"
-            "  x2: b('sun-beam-core').x2, y2: b('sun-beam-core').y2,\n"
-            "  stroke: b('sun-beam-core').stroke, opacity: b('sun-beam-core').opacity,\n"
-            "  glowStroke: b('sun-beam-glow').stroke, glowOp: b('sun-beam-glow').opacity,\n"
-            "  haloStroke: b('sun-beam-halo').stroke, haloOp: b('sun-beam-halo').opacity,\n"
+            "  lX1: g('cone-edge-left').x1, lY1: g('cone-edge-left').y1,\n"
+            "  lX2: g('cone-edge-left').x2, lY2: g('cone-edge-left').y2,\n"
+            "  rX2: g('cone-edge-right').x2, rY2: g('cone-edge-right').y2,\n"
+            "  lStroke: g('cone-edge-left').stroke, lOp: g('cone-edge-left').opacity,\n"
+            "  fillPath: g('cone-fill').d, fillStroke: g('cone-fill').fill,\n"
+            "  fillOp: g('cone-fill').opacity,\n"
             "  clock: elements['gregorian-center-clock'].textContent\n"
             "}));\n"
         )
@@ -130,57 +129,54 @@ const renderer = require('./web/static/js/canvas_renderer.js');
         self.assertEqual(proc.returncode, 0, proc.stderr)
         return json.loads(proc.stdout)
 
-    def test_day_beam_from_sun_to_earth_is_bright(self):
-        # Sun alt 10, az 90 (east/LEFT) → bead far left, beam to the centre.
+    def test_day_cone_from_sun_to_earth_is_bright(self):
+        # Sun alt 10, az 90 (east/LEFT) → the cone edges go from the bead
+        # (far left) to the two tangent points on the r=60 horizon circle.
         out = self._render(10, 90, 30, 180, 0.5)
-        self.assertEqual(out["beamDisplay"], "block")
+        self.assertEqual(out["coneDisplay"], "block")
         self.assertEqual(out["globeDisplay"], "block")
-        # Sun bead at alt 10 az 90: dist = 280·(1−10/90), x = 400−dist.
-        dist = 280 * (1 - 10 / 90)
-        self.assertAlmostEqual(float(out["x1"]), 400 - dist, places=4)
-        self.assertAlmostEqual(float(out["y1"]), 400, places=4)
-        self.assertAlmostEqual(float(out["x2"]), 400, places=4)
-        self.assertAlmostEqual(float(out["y2"]), 400, places=4)
-        # Light percentage 100% → core 0.9, glow 0.3, halo 0.08.
-        self.assertEqual(out["stroke"], "url(#sun-beam-grad)")
-        self.assertAlmostEqual(float(out["opacity"]), 0.9, places=6)
-        self.assertAlmostEqual(float(out["glowOp"]), 0.3, places=6)
-        self.assertAlmostEqual(float(out["haloOp"]), 0.08, places=6)
+        dist = 280 * (1 - 10 / 90)          # sun bead distance from centre
+        self.assertAlmostEqual(float(out["lX1"]), 400 - dist, places=4)
+        self.assertAlmostEqual(float(out["lY1"]), 400, places=4)
+        # Tangent points are symmetric about the horizontal axis.
+        self.assertAlmostEqual(float(out["lX2"]), float(out["rX2"]), places=4)
+        self.assertAlmostEqual(float(out["lY2"]), 400 + 414.46 - 400, places=1)
+        self.assertAlmostEqual(float(out["rY2"]), 400 - (float(out["lY2"]) - 400), places=4)
+        # Day opacity: cone opacity 0.8 → edges ×0.6 = 0.48, fill ×0.15 = 0.12.
+        self.assertEqual(out["lStroke"], "rgba(255,200,100,0.4)")
+        self.assertAlmostEqual(float(out["lOp"]), 0.48, places=6)
+        self.assertAlmostEqual(float(out["fillOp"]), 0.12, places=6)
+        self.assertIn("A60,60", out["fillPath"])
         self.assertEqual(out["clock"], "14:30")
 
-    def test_twilight_fades_the_beam(self):
-        # Civil twilight (−3°): light percent = 50·(1−0.5) = 25.
-        out = self._render(-3, 180, 30, 180, 0.5)
-        self.assertAlmostEqual(float(out["opacity"]), 0.4 + 0.25 * 0.5, places=6)
-        self.assertAlmostEqual(float(out["glowOp"]), 0.1 + 0.25 * 0.2, places=6)
-        self.assertAlmostEqual(float(out["haloOp"]), 0.04 + 0.25 * 0.04, places=6)
-        # Nautical twilight (−9°): light percent = 10·(1−0.5) = 5.
+    def test_twilight_and_night_fade_the_cone(self):
+        # Civil twilight (−3°): cone opacity 0.5·(1−0.5) = 0.25.
+        tw = self._render(-3, 180, 30, 180, 0.5)
+        self.assertAlmostEqual(float(tw["lOp"]), 0.25 * 0.6, places=6)
+        self.assertAlmostEqual(float(tw["fillOp"]), 0.25 * 0.15, places=6)
+        # Nautical twilight (−9°): cone opacity 0.2·(1−0.5) = 0.1.
         nau = self._render(-9, 180, 30, 180, 0.5)
-        self.assertAlmostEqual(float(nau["opacity"]), 0.4 + 0.05 * 0.5, places=6)
-        # Deep night (−15°): 0% light, beam still visible but dimmest.
+        self.assertAlmostEqual(float(nau["lOp"]), 0.1 * 0.6, places=6)
+        # Deep night (−15°): the cone disappears.
         night = self._render(-15, 180, 30, 180, 0.5)
-        self.assertAlmostEqual(float(night["opacity"]), 0.4, places=6)
-        self.assertAlmostEqual(float(night["glowOp"]), 0.1, places=6)
-        self.assertAlmostEqual(float(night["haloOp"]), 0.04, places=6)
+        self.assertAlmostEqual(float(night["lOp"]), 0, places=6)
+        self.assertAlmostEqual(float(night["fillOp"]), 0, places=6)
 
-    def test_eclipse_turns_the_beam_red(self):
-        # Sun and Moon share az 180 + altitude 0 + at a node → eclipse
-        # (existing detection). All three beam layers switch to the red
-        # gradient (core 0.8, glow 0.3, halo 0.1).
-        out = self._render(0, 180, 0, 180, 0.05)
-        self.assertEqual(out["stroke"], "url(#eclipse-beam-grad)")
-        self.assertEqual(out["glowStroke"], "url(#eclipse-beam-grad)")
-        self.assertEqual(out["haloStroke"], "url(#eclipse-beam-grad)")
-        self.assertEqual(out["opacity"], "0.8")
-        self.assertEqual(out["glowOp"], "0.3")
-        self.assertEqual(out["haloOp"], "0.1")
+    def test_eclipse_turns_the_cone_red(self):
+        # Sun and Moon share az 180 + altitude 10 + at a node → eclipse
+        # (existing detection). The cone turns red/dark.
+        out = self._render(10, 180, 10, 180, 0.05)
+        self.assertEqual(out["lStroke"], "rgba(180,60,30,0.8)")
+        self.assertEqual(out["fillStroke"], "rgba(180,60,30,0.2)")
+        # Opacity still follows the day light-percentage.
+        self.assertAlmostEqual(float(out["lOp"]), 0.48, places=6)
 
-    def test_disabled_beam_hides_both_groups(self):
+    def test_disabled_cone_hides_both_groups(self):
         out = self._render(10, 90, 30, 180, 0.5, enabled=False)
-        self.assertEqual(out["beamDisplay"], "none")
+        self.assertEqual(out["coneDisplay"], "none")
         self.assertEqual(out["globeDisplay"], "none")
-        # The beam is untouched (no x1 set in the stub → key omitted).
-        self.assertIsNone(out.get("x1"))
+        # The cone is untouched (no x1 set in the stub → key omitted).
+        self.assertIsNone(out.get("lX1"))
 
 
 if __name__ == "__main__":

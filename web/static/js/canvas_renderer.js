@@ -144,90 +144,93 @@ function updatePlanetaryCanvas(sunAltitudeDeg, sunAzimuthDeg, moonAltitudeDeg, m
         twilightGlow.setAttribute('opacity', intensity > 0 ? '1' : '0');
     }
 
-    // --- Sun-originating light beam (from the Sun bead to the Earth) ---
-    // A gradient beam connects the Sun bead on the wheel to the Earth at the
-    // centre; its opacity shows the light percentage (0% night … 100% day,
-    // fading through twilight) and during an eclipse it turns red/dark.
-    // Enabled via ⚙️ Configure → 🌍 Show Light Beam (kairos_light_beam).
+    // --- Light cone edges (two lines from the Sun bead to the Earth's
+    //     horizon). The wedge between the edges shows the lit side; opacity
+    //     maps day / twilight / night and during an eclipse they turn red.
+    //     Enabled via ⚙️ Configure → 🌍 Show Light Cone (kairos_light_beam).
     let isBeamEnabled = false;
     try { isBeamEnabled = localStorage.getItem('kairos_light_beam') === 'true'; }
-    catch (e) { /* no localStorage (e.g. node tests) — beam stays off */ }
+    catch (e) { /* no localStorage (e.g. node tests) — cone stays off */ }
 
-    const beamGroup = document.getElementById('sun-beam-group');
-    const beamLine = document.getElementById('sun-beam-core');
-    const beamGlow = document.getElementById('sun-beam-glow');
-    const beamHalo = document.getElementById('sun-beam-halo');
+    const coneGroup = document.getElementById('light-cone');
+    const coneLeft = document.getElementById('cone-edge-left');
+    const coneRight = document.getElementById('cone-edge-right');
+    const coneFill = document.getElementById('cone-fill');
     const virtualEarth = document.getElementById('virtual-earth');
 
-    if (beamGroup && isBeamEnabled) {
-        beamGroup.setAttribute('display', 'block');
+    if (coneGroup && isBeamEnabled) {
+        coneGroup.setAttribute('display', 'block');
         if (virtualEarth) virtualEarth.setAttribute('display', 'block');
 
-        // Sun bead position → beam from the Sun to the Earth (centre).
+        // Sun bead position → the two tangent points on the Earth's horizon.
         const sunBead = document.getElementById('sun-bead');
         if (sunBead) {
             const sunX = parseFloat(sunBead.getAttribute('cx'));
             const sunY = parseFloat(sunBead.getAttribute('cy'));
-            if (beamLine) {
-                beamLine.setAttribute('x1', sunX);
-                beamLine.setAttribute('y1', sunY);
-                beamLine.setAttribute('x2', cx);
-                beamLine.setAttribute('y2', cy);
-            }
-            if (beamGlow) {
-                beamGlow.setAttribute('x1', sunX);
-                beamGlow.setAttribute('y1', sunY);
-                beamGlow.setAttribute('x2', cx);
-                beamGlow.setAttribute('y2', cy);
-            }
-            if (beamHalo) {
-                beamHalo.setAttribute('x1', sunX);
-                beamHalo.setAttribute('y1', sunY);
-                beamHalo.setAttribute('x2', cx);
-                beamHalo.setAttribute('y2', cy);
+            const radius = 60;   // Earth radius for the tangency
+
+            const dx = sunX - cx;
+            const dy = sunY - cy;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist > 0) {
+                // Angle from the Sun to the Earth's centre; half-angle of the
+                // cone tangent to the Earth (clamped so a bead very near the
+                // centre never produces a NaN arc).
+                const angle = Math.atan2(dy, dx);
+                const halfAngle = Math.asin(Math.min(1, radius / dist));
+                const leftAngle = angle - halfAngle;
+                const rightAngle = angle + halfAngle;
+                const leftX = cx + radius * Math.cos(leftAngle);
+                const leftY = cy + radius * Math.sin(leftAngle);
+                const rightX = cx + radius * Math.cos(rightAngle);
+                const rightY = cy + radius * Math.sin(rightAngle);
+
+                if (coneLeft) {
+                    coneLeft.setAttribute('x1', sunX);
+                    coneLeft.setAttribute('y1', sunY);
+                    coneLeft.setAttribute('x2', leftX);
+                    coneLeft.setAttribute('y2', leftY);
+                }
+                if (coneRight) {
+                    coneRight.setAttribute('x1', sunX);
+                    coneRight.setAttribute('y1', sunY);
+                    coneRight.setAttribute('x2', rightX);
+                    coneRight.setAttribute('y2', rightY);
+                }
+                if (coneFill) {
+                    coneFill.setAttribute('d', `M${sunX},${sunY} L${leftX},${leftY} A${radius},${radius} 0 0,1 ${rightX},${rightY} Z`);
+                }
             }
         }
 
-        // --- Light percentage based on sun altitude ---
+        // --- Opacity based on sun altitude (light percentage) ---
         // 0% = night, 50% = twilight, 100% = full day.
-        let lightPercent = 0;
+        let opacity = 0;
         if (sunAltitudeDeg > 0) {
-            lightPercent = 100;
+            opacity = 0.8;                                             // full day
         } else if (sunAltitudeDeg > -6) {
-            lightPercent = 50 * (1 - (sunAltitudeDeg + 6) / 6);
+            opacity = 0.5 * (1 - (sunAltitudeDeg + 6) / 6);            // civil twilight
         } else if (sunAltitudeDeg > -12) {
-            lightPercent = 10 * (1 - (sunAltitudeDeg + 12) / 6);
+            opacity = 0.2 * (1 - (sunAltitudeDeg + 12) / 6);           // nautical twilight
         } else {
-            lightPercent = 0;
+            opacity = 0;                                               // night
         }
+        if (coneLeft) coneLeft.setAttribute('opacity', opacity * 0.6);
+        if (coneRight) coneRight.setAttribute('opacity', opacity * 0.6);
+        if (coneFill) coneFill.setAttribute('opacity', opacity * 0.15);
 
-        // --- Beam opacity from the light percentage ---
-        if (beamLine) beamLine.setAttribute('opacity', 0.4 + (lightPercent / 100) * 0.5);
-        if (beamGlow) beamGlow.setAttribute('opacity', 0.1 + (lightPercent / 100) * 0.2);
-        if (beamHalo) beamHalo.setAttribute('opacity', 0.04 + (lightPercent / 100) * 0.04);
-
-        // --- Eclipse (existing detection — azimuth + altitude aligned + node):
-        //     the beam turns red/dark. ---
+        // --- Eclipse (existing detection): the cone turns red/dark. ---
         if (isEclipse) {
-            if (beamLine) {
-                beamLine.setAttribute('stroke', 'url(#eclipse-beam-grad)');
-                beamLine.setAttribute('opacity', '0.8');
-            }
-            if (beamGlow) {
-                beamGlow.setAttribute('stroke', 'url(#eclipse-beam-grad)');
-                beamGlow.setAttribute('opacity', '0.3');
-            }
-            if (beamHalo) {
-                beamHalo.setAttribute('stroke', 'url(#eclipse-beam-grad)');
-                beamHalo.setAttribute('opacity', '0.1');
-            }
+            if (coneLeft) coneLeft.setAttribute('stroke', 'rgba(180,60,30,0.8)');
+            if (coneRight) coneRight.setAttribute('stroke', 'rgba(180,60,30,0.8)');
+            if (coneFill) coneFill.setAttribute('fill', 'rgba(180,60,30,0.2)');
         } else {
-            if (beamLine) beamLine.setAttribute('stroke', 'url(#sun-beam-grad)');
-            if (beamGlow) beamGlow.setAttribute('stroke', 'url(#sun-beam-grad)');
-            if (beamHalo) beamHalo.setAttribute('stroke', 'url(#sun-beam-grad)');
+            if (coneLeft) coneLeft.setAttribute('stroke', 'rgba(255,200,100,0.4)');
+            if (coneRight) coneRight.setAttribute('stroke', 'rgba(255,200,100,0.4)');
+            if (coneFill) coneFill.setAttribute('fill', 'rgba(255,200,100,0.08)');
         }
-    } else if (beamGroup) {
-        beamGroup.setAttribute('display', 'none');
+    } else if (coneGroup) {
+        coneGroup.setAttribute('display', 'none');
         if (virtualEarth) virtualEarth.setAttribute('display', 'none');
     }
 

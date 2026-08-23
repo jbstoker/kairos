@@ -133,10 +133,10 @@
         <ellipse id="sun-orbit-line" cx="400" cy="400" rx="165" ry="162" class="orbit-track" transform="rotate(102, 400, 400)" />
         <ellipse id="moon-orbit-line" cx="400" cy="400" rx="285" ry="270" class="orbit-track" />
 
-        <!-- Virtual Earth globe + Sun-originating light beam (off by default;
-             a gradient beam connects the Sun bead to the Earth, opacity shows
-             the light percentage and it turns red during an eclipse; see
-             web/static/js/canvas_renderer.js). -->
+        <!-- Virtual Earth globe + Sun-originating light cone (off by default;
+             two lines trace the light cone from the Sun bead to the Earth's
+             horizon with a soft fill; opacity maps day/twilight/night and it
+             turns red during an eclipse; see web/static/js/canvas_renderer.js). -->
         <g id="virtual-earth" display="none">
             <!-- Earth background -->
             <circle cx="400" cy="400" r="65" fill="#0b1a2a" stroke="#2a3442" stroke-width="1.5" />
@@ -149,32 +149,14 @@
             <text x="400" y="405" id="gregorian-center-clock" text-anchor="middle" fill="#5a6a7c" font-family="monospace" font-size="12px" font-weight="300">--:--</text>
         </g>
 
-        <!-- Light beam from Sun to Earth (soft gradient — not a laser) -->
-        <g id="sun-beam-group" display="none">
-            <!-- Gradient definition -->
-            <defs>
-                <!-- Soft beam gradient (widens as it travels) -->
-                <linearGradient id="sun-beam-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="rgba(255, 220, 150, 0.8)" />
-                    <stop offset="40%" stop-color="rgba(255, 200, 100, 0.4)" />
-                    <stop offset="100%" stop-color="rgba(255, 180, 80, 0)" />
-                </linearGradient>
-                <!-- Eclipse beam (red/dark) -->
-                <linearGradient id="eclipse-beam-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="rgba(180, 60, 30, 0.8)" />
-                    <stop offset="40%" stop-color="rgba(120, 40, 20, 0.4)" />
-                    <stop offset="100%" stop-color="rgba(100, 30, 15, 0)" />
-                </linearGradient>
-            </defs>
-
-            <!-- Core beam (narrow, bright) -->
-            <line id="sun-beam-core" x1="400" y1="120" x2="400" y2="400" stroke="url(#sun-beam-grad)" stroke-width="4" opacity="0.7" />
-
-            <!-- Soft glow (wider, dimmer) -->
-            <line id="sun-beam-glow" x1="400" y1="120" x2="400" y2="400" stroke="url(#sun-beam-grad)" stroke-width="20" opacity="0.2" />
-
-            <!-- Outer halo (very wide, very dim) -->
-            <line id="sun-beam-halo" x1="400" y1="120" x2="400" y2="400" stroke="url(#sun-beam-grad)" stroke-width="50" opacity="0.08" />
+        <!-- Light cone edges (two lines from Sun to Earth's horizon) -->
+        <g id="light-cone" display="none">
+            <!-- Left edge of the light cone -->
+            <line id="cone-edge-left" x1="400" y1="120" x2="400" y2="340" stroke="rgba(255,200,100,0.3)" stroke-width="1.5" />
+            <!-- Right edge of the light cone -->
+            <line id="cone-edge-right" x1="400" y1="120" x2="400" y2="460" stroke="rgba(255,200,100,0.3)" stroke-width="1.5" />
+            <!-- Soft fill between the edges -->
+            <path id="cone-fill" d="M400,120 L400,340 A60,60 0 0,1 400,460 Z" fill="rgba(255,200,100,0.06)" />
         </g>
 
         <!-- Shifting Observation Nodes (Always locked to the edge of the ellipses) -->
