@@ -54,12 +54,13 @@ The centre of the app is a living sky map, not just a clock:
 - Inside the wheel, a decorative **13-point natural ring** marks the
   13-fold division (360/13 = 27.69°), echoing the 13 · 28 · 7 sequence — a
   separate scale that never replaces the azimuth labels.
-- An optional **virtual Earth** with a **Sun-originating light cone**: toggle
-  **🌍 Show Light Cone** in ⚙️ Configure. Two lines trace the edges of the
-  light cone from the Sun bead to the Earth's horizon, with a soft fill
-  between them — bright golden by day, fading through dusk/dawn, invisible
-  at night, and red during an eclipse. The *YOU* marker and the Gregorian
-  clock sit in the central globe. Off by default, remembered on the device.
+- An optional **virtual Earth** with the **Sun as a flood light**: toggle
+  **🌍 Show Sun Light** in ⚙️ Configure. The Sun becomes a glowing disc that
+  softly illuminates the space around it — a glow around the Sun bead, a
+  soft gradient flood to the Earth and the Earth's lit half. Bright golden
+  by day, fading through dusk/dawn, invisible at night, and red during an
+  eclipse. The *YOU* marker and the Gregorian clock sit in the central
+  globe. Off by default, remembered on the device.
 - At dusk and dawn a soft **twilight glow** fades in around the horizon —
   civil twilight (sun between −6° and 0°) glows brightest, nautical
   twilight (−12° to −6°) glows fainter, and full night shows no glow. While

@@ -677,8 +677,8 @@ function initTimeSystem() {
 }
 initTimeSystem();
 
-// --- Virtual Earth / seasonal light beam toggle -----------------------------
-// ⚙️ Configure → 🌍 Show Light Beam (off by default). The beam itself is
+// --- Virtual Earth / Sun light flood toggle --------------------------------
+// ⚙️ Configure → 🌍 Show Sun Light (off by default). The flood light itself is
 // driven by canvas_renderer.js; here we only persist + show/hide the group.
 function isLightBeamEnabled() {
     try { return localStorage.getItem('kairos_light_beam') === 'true'; }

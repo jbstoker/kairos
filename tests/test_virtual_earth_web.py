@@ -1,15 +1,18 @@
-"""Web test: the virtual Earth + light cone (two edges from the Sun bead to
-the Earth's horizon, optional, off by default).
+"""Web test: the virtual Earth + Sun light flood effect (lightbulb, not a
+laser — off by default).
 
-Two lines trace the edges of the light cone from the Sun bead to the Earth's
-horizon (tangent points on a radius-60 circle), with a soft fill between them
-showing the lit side. Opacity maps day / civil twilight / nautical twilight /
+The Sun is a glowing disc that floods the space around it: a soft glow around
+the Sun bead (#sun-glow, url(#sunGlowGrad)), a soft gradient wedge flooding
+from the Sun to the Earth (#light-flood, url(#lightFloodGrad)) and the
+Earth's lit half (#earth-lit, clipped to the globe by #dayClip,
+url(#earthGlowGrad)). Opacity maps day / civil twilight / nautical twilight /
 night, and during an eclipse (the EXISTING detection — azimuth + altitude
-aligned + node) the cone turns red/dark. Shown together with the central
-globe when 🌍 Show Light Cone is enabled (#light-beam-toggle,
-kairos_light_beam, off by default). The earlier beam designs (soft gradient
-core/glow/halo) are replaced. Driven by canvas_renderer.updatePlanetaryCanvas.
-Decorative — it never moves the beads or the azimuth wheel.
+aligned + node) the light turns red/dark. Shown together with the central
+globe when 🌍 Show Sun Light is enabled (#light-beam-toggle,
+kairos_light_beam, off by default). The earlier beam / light-cone designs
+(edges, gradients, wedge fills) are replaced. Driven by
+canvas_renderer.updatePlanetaryCanvas. Decorative — it never moves the beads
+or the azimuth wheel.
 """
 
 import json
@@ -31,27 +34,32 @@ class TestVirtualEarthServed(unittest.TestCase):
         app.config["TESTING"] = True
         self.client = app.test_client()
 
-    def test_root_has_light_cone_markup(self):
+    def test_root_has_sun_light_markup(self):
         html = self.client.get("/").get_data(as_text=True)
-        self.assertIn('<g id="light-cone" display="none">', html)
-        for el in ("cone-edge-left", "cone-edge-right", "cone-fill",
+        self.assertIn('<g id="sun-light" display="none">', html)
+        for el in ("sun-glow", "light-flood", "earth-lit", "day-clip-path",
+                   "dayClip", "sunGlowGrad", "lightFloodGrad", "earthGlowGrad",
                    "virtual-earth", "gregorian-center-clock"):
             self.assertIn(f'id="{el}"', html)
         # The user marker is part of the globe.
         self.assertIn("YOU", html)
-        # The replaced beam designs and the redundant markers are gone.
+        # The replaced beam / cone designs and the redundant markers are gone.
         for stale in ("sun-beam-group", "sun-beam-core", "sun-beam-glow",
-                      "sun-beam-halo", "terminator-line", "night-side",
-                      "sun-position", "umbra-shadow"):
+                      "sun-beam-halo", "light-cone", "cone-edge-left",
+                      "cone-edge-right", "cone-fill", "terminator-line",
+                      "night-side", "sun-position", "umbra-shadow"):
             self.assertNotIn(f'id="{stale}"', html, f"stale {stale}")
 
     def test_concentric_template_has_the_same_markup(self):
         with open(os.path.join(REPO_ROOT, "web", "templates",
                                "concentric_view.html"), encoding="utf-8") as f:
             frag = f.read()
-        self.assertIn('<g id="light-cone" display="none">', frag)
-        self.assertIn('id="cone-edge-left"', frag)
-        self.assertIn('id="cone-fill"', frag)
+        self.assertIn('<g id="sun-light" display="none">', frag)
+        self.assertIn('id="sun-glow"', frag)
+        self.assertIn('id="light-flood"', frag)
+        self.assertIn('id="earth-lit"', frag)
+        self.assertIn('id="day-clip-path"', frag)
+        self.assertNotIn('id="light-cone"', frag)
         self.assertNotIn('id="sun-beam-core"', frag)
         self.assertNotIn('id="terminator-line"', frag)
 
@@ -59,7 +67,7 @@ class TestVirtualEarthServed(unittest.TestCase):
         html = self.client.get("/").get_data(as_text=True)
         self.assertIn('id="light-beam-toggle"', html)
         self.assertIn('data-i18n="config.light_beam"', html)
-        self.assertIn("🌍 Show Light Cone", html)
+        self.assertIn("🌍 Show Sun Light", html)
 
     def test_toggle_logic_lives_in_app_js(self):
         """config.js does not exist — the toggle is wired in web/app.js."""
@@ -72,7 +80,6 @@ class TestVirtualEarthServed(unittest.TestCase):
     def test_watch_face_does_not_load_solar_geometry(self):
         html = self.client.get("/watch.html").get_data(as_text=True)
         self.assertNotIn('src="static/js/solar_geometry.js"', html)
-
 
 @requires_node
 class TestVirtualEarthRenderer(unittest.TestCase):
@@ -95,8 +102,8 @@ function makeEl(id) {
 [
     'sun-orbit-line', 'moon-orbit-line', 'sun-bead', 'moon-bead',
     'gregorian-center-clock', 'eclipse-status', 'twilight-glow',
-    'sunrise-countdown', 'virtual-earth', 'light-cone',
-    'cone-edge-left', 'cone-edge-right', 'cone-fill'
+    'sunrise-countdown', 'virtual-earth', 'sun-light', 'sun-glow',
+    'light-flood', 'earth-lit', 'day-clip-path', 'lightFloodGrad'
 ].forEach(id => elements[id] = makeEl(id));
 global.document = { getElementById: (id) => elements[id] || null };
 // The renderer's optional distance debug log must not pollute stdout JSON.
@@ -113,14 +120,16 @@ const renderer = require('./web/static/js/canvas_renderer.js');
             + ", '14:30');\n"
             "const g = (id) => elements[id]._attrs;\n"
             "process.stdout.write(JSON.stringify({\n"
-            "  coneDisplay: elements['light-cone']._attrs['display'] || null,\n"
+            "  groupDisplay: elements['sun-light']._attrs['display'] || null,\n"
             "  globeDisplay: elements['virtual-earth']._attrs['display'] || null,\n"
-            "  lX1: g('cone-edge-left').x1, lY1: g('cone-edge-left').y1,\n"
-            "  lX2: g('cone-edge-left').x2, lY2: g('cone-edge-left').y2,\n"
-            "  rX2: g('cone-edge-right').x2, rY2: g('cone-edge-right').y2,\n"
-            "  lStroke: g('cone-edge-left').stroke, lOp: g('cone-edge-left').opacity,\n"
-            "  fillPath: g('cone-fill').d, fillStroke: g('cone-fill').fill,\n"
-            "  fillOp: g('cone-fill').opacity,\n"
+            "  glowX: g('sun-glow').cx, glowY: g('sun-glow').cy,\n"
+            "  glowOp: g('sun-glow').opacity, glowFill: g('sun-glow').fill,\n"
+            "  floodPath: g('light-flood').d, floodOp: g('light-flood').opacity,\n"
+            "  floodFill: g('light-flood').fill,\n"
+            "  floodGrad: [g('lightFloodGrad').x1, g('lightFloodGrad').y1,\n"
+            "              g('lightFloodGrad').x2, g('lightFloodGrad').y2],\n"
+            "  litOp: g('earth-lit').opacity, litFill: g('earth-lit').fill,\n"
+            "  clipPath: g('day-clip-path').d,\n"
             "  clock: elements['gregorian-center-clock'].textContent\n"
             "}));\n"
         )
@@ -129,55 +138,73 @@ const renderer = require('./web/static/js/canvas_renderer.js');
         self.assertEqual(proc.returncode, 0, proc.stderr)
         return json.loads(proc.stdout)
 
-    def test_day_cone_from_sun_to_earth_is_bright(self):
-        # Sun alt 10, az 90 (east/LEFT) → the cone edges go from the bead
-        # (far left) to the two tangent points on the r=60 horizon circle.
+
+    def test_day_sun_floods_the_earth(self):
+        # Sun alt 10, az 90 (east/LEFT) → the glow centres on the bead (far
+        # left), the flood wedge runs Sun → Earth and the lit half faces the Sun.
         out = self._render(10, 90, 30, 180, 0.5)
-        self.assertEqual(out["coneDisplay"], "block")
+        self.assertEqual(out["groupDisplay"], "block")
         self.assertEqual(out["globeDisplay"], "block")
         dist = 280 * (1 - 10 / 90)          # sun bead distance from centre
-        self.assertAlmostEqual(float(out["lX1"]), 400 - dist, places=4)
-        self.assertAlmostEqual(float(out["lY1"]), 400, places=4)
-        # Tangent points are symmetric about the horizontal axis.
-        self.assertAlmostEqual(float(out["lX2"]), float(out["rX2"]), places=4)
-        self.assertAlmostEqual(float(out["lY2"]), 400 + 414.46 - 400, places=1)
-        self.assertAlmostEqual(float(out["rY2"]), 400 - (float(out["lY2"]) - 400), places=4)
-        # Day opacity: cone opacity 0.8 → edges ×0.6 = 0.48, fill ×0.15 = 0.12.
-        self.assertEqual(out["lStroke"], "rgba(255,200,100,0.4)")
-        self.assertAlmostEqual(float(out["lOp"]), 0.48, places=6)
-        self.assertAlmostEqual(float(out["fillOp"]), 0.12, places=6)
-        self.assertIn("A60,60", out["fillPath"])
+        self.assertAlmostEqual(float(out["glowX"]), 400 - dist, places=4)
+        self.assertAlmostEqual(float(out["glowY"]), 400, places=4)
+        # Flood wedge starts at the Sun and passes through the Earth's centre.
+        self.assertTrue(out["floodPath"].startswith(f"M{out['glowX']},400"),
+                        out["floodPath"])
+        self.assertIn("400,400", out["floodPath"])
+        # The gradient follows the Sun → Earth line.
+        self.assertEqual(out["floodGrad"][0], out["glowX"])
+        self.assertEqual(out["floodGrad"][2], "400")
+        # Day opacity: cone opacity 0.8 → glow ×0.5 = 0.4, flood ×0.2 = 0.16,
+        # Earth lit half ×1 = 0.8.
+        self.assertEqual(out["glowOp"], "0.400")
+        self.assertEqual(out["floodOp"], "0.160")
+        self.assertEqual(out["litOp"], "0.800")
+        # Non-eclipse: soft gradient fills.
+        self.assertEqual(out["glowFill"], "url(#sunGlowGrad)")
+        self.assertEqual(out["floodFill"], "url(#lightFloodGrad)")
+        self.assertEqual(out["litFill"], "url(#earthGlowGrad)")
+        # The lit half-disc rotates to face the sun on the left (the clip is
+        # M centre → bottom → arc → top, i.e. the left half).
+        self.assertIn("A60,60 0 0,1 400,340", out["clipPath"])
         self.assertEqual(out["clock"], "14:30")
 
-    def test_twilight_and_night_fade_the_cone(self):
-        # Civil twilight (−3°): cone opacity 0.5·(1−0.5) = 0.25.
+    def test_twilight_and_night_fade_the_flood(self):
+        # Civil twilight (−3°): opacity 0.4·(1−0.5) = 0.2.
         tw = self._render(-3, 180, 30, 180, 0.5)
-        self.assertAlmostEqual(float(tw["lOp"]), 0.25 * 0.6, places=6)
-        self.assertAlmostEqual(float(tw["fillOp"]), 0.25 * 0.15, places=6)
-        # Nautical twilight (−9°): cone opacity 0.2·(1−0.5) = 0.1.
+        self.assertEqual(tw["glowOp"], "0.100")
+        self.assertEqual(tw["floodOp"], "0.040")
+        self.assertEqual(tw["litOp"], "0.200")
+        # Nautical twilight (−9°): opacity 0.15·(1−0.5) = 0.075 (0.075·0.5
+        # rounds to 0.037 in JS toFixed(3)).
         nau = self._render(-9, 180, 30, 180, 0.5)
-        self.assertAlmostEqual(float(nau["lOp"]), 0.1 * 0.6, places=6)
-        # Deep night (−15°): the cone disappears.
+        self.assertEqual(nau["glowOp"], "0.037")
+        self.assertEqual(nau["litOp"], "0.075")
+        # Deep night (−15°): the flood is gone.
         night = self._render(-15, 180, 30, 180, 0.5)
-        self.assertAlmostEqual(float(night["lOp"]), 0, places=6)
-        self.assertAlmostEqual(float(night["fillOp"]), 0, places=6)
+        self.assertEqual(night["glowOp"], "0.000")
+        self.assertEqual(night["floodOp"], "0.000")
+        self.assertEqual(night["litOp"], "0.000")
 
-    def test_eclipse_turns_the_cone_red(self):
+    def test_eclipse_turns_the_flood_red(self):
         # Sun and Moon share az 180 + altitude 10 + at a node → eclipse
-        # (existing detection). The cone turns red/dark.
+        # (existing detection). The flood light turns red/dark.
         out = self._render(10, 180, 10, 180, 0.05)
-        self.assertEqual(out["lStroke"], "rgba(180,60,30,0.8)")
-        self.assertEqual(out["fillStroke"], "rgba(180,60,30,0.2)")
+        self.assertEqual(out["glowFill"], "rgba(180,60,30,0.4)")
+        self.assertEqual(out["floodFill"], "rgba(180,60,30,0.1)")
+        self.assertEqual(out["litFill"], "rgba(180,60,30,0.2)")
         # Opacity still follows the day light-percentage.
-        self.assertAlmostEqual(float(out["lOp"]), 0.48, places=6)
+        self.assertEqual(out["glowOp"], "0.400")
+        self.assertEqual(out["litOp"], "0.800")
 
-    def test_disabled_cone_hides_both_groups(self):
+    def test_disabled_flood_hides_both_groups(self):
         out = self._render(10, 90, 30, 180, 0.5, enabled=False)
-        self.assertEqual(out["coneDisplay"], "none")
+        self.assertEqual(out["groupDisplay"], "none")
         self.assertEqual(out["globeDisplay"], "none")
-        # The cone is untouched (no x1 set in the stub → key omitted).
-        self.assertIsNone(out.get("lX1"))
+        # The flood elements are untouched (no cx set in the stub → key omitted).
+        self.assertIsNone(out.get("glowX"))
 
 
 if __name__ == "__main__":
     unittest.main()
+

@@ -71,6 +71,34 @@
                         <stop offset="60%" stop-color="rgba(140, 40, 20, 0.25)" />
                         <stop offset="100%" stop-color="rgba(100, 30, 15, 0)" />
                     </radialGradient>
+
+                    <!-- Sun light flood effect (lightbulb): glow disc, Sun→Earth
+                         flood and the Earth's lit half — soft gradients, not a
+                         laser beam. -->
+                    <radialGradient id="sunGlowGrad" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" stop-color="rgba(255, 220, 150, 0.6)" />
+                        <stop offset="40%" stop-color="rgba(255, 200, 100, 0.3)" />
+                        <stop offset="100%" stop-color="rgba(255, 200, 100, 0)" />
+                    </radialGradient>
+
+                    <linearGradient id="lightFloodGrad" gradientUnits="userSpaceOnUse"
+                                    x1="400" y1="120" x2="400" y2="400">
+                        <stop offset="0%" stop-color="rgba(255, 220, 150, 0.15)" />
+                        <stop offset="50%" stop-color="rgba(255, 200, 100, 0.08)" />
+                        <stop offset="100%" stop-color="rgba(255, 200, 100, 0)" />
+                    </linearGradient>
+
+                    <radialGradient id="earthGlowGrad" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" stop-color="rgba(255, 220, 150, 0.3)" />
+                        <stop offset="60%" stop-color="rgba(255, 200, 100, 0.15)" />
+                        <stop offset="100%" stop-color="rgba(255, 200, 100, 0)" />
+                    </radialGradient>
+
+                    <!-- Earth's lit half: half-disc clip that rotates toward the
+                         Sun bead (driven by canvas_renderer.js). -->
+                    <clipPath id="dayClip">
+                        <path id="day-clip-path" d="M400,400 L400,460 A60,60 0 0,1 400,340 Z" />
+                    </clipPath>
                 </defs>
 
                 <!-- Sky-dome grid: compass lines (subtle). The altitude rings
@@ -161,14 +189,15 @@
                 <ellipse id="sun-orbit-line" cx="400" cy="400" rx="165" ry="162" class="orbit-track" transform="rotate(102, 400, 400)" />
                 <ellipse id="moon-orbit-line" cx="400" cy="400" rx="285" ry="270" class="orbit-track" />
 
-                <!-- Virtual Earth globe + Sun-originating light cone (optional,
+                <!-- Virtual Earth globe + Sun light flood effect (optional,
                      off by default — toggled in ⚙️ Configure via
-                     #light-beam-toggle). Two lines trace the edges of the light
-                     cone from the Sun bead to the Earth's horizon, with a soft
-                     fill between them; opacity maps day/twilight/night and
-                     during an eclipse they turn red. Driven by
-                     web/static/js/canvas_renderer.js. Decorative: it never
-                     moves the beads or the azimuth wheel. -->
+                     #light-beam-toggle). The Sun is a glowing disc that floods
+                     the space around it (lightbulb, not a laser): a soft glow
+                     around the Sun bead, a soft gradient wedge from the Sun to
+                     the Earth and the Earth's lit half; opacity maps
+                     day/twilight/night and during an eclipse it turns red.
+                     Driven by web/static/js/canvas_renderer.js. Decorative: it
+                     never moves the beads or the azimuth wheel. -->
                 <g id="virtual-earth" display="none">
                     <!-- Earth background -->
                     <circle cx="400" cy="400" r="65" fill="#0b1a2a" stroke="#2a3442" stroke-width="1.5" />
@@ -181,14 +210,17 @@
                     <text x="400" y="405" id="gregorian-center-clock" text-anchor="middle" fill="#5a6a7c" font-family="monospace" font-size="12px" font-weight="300">--:--</text>
                 </g>
 
-                <!-- Light cone edges (two lines from Sun to Earth's horizon) -->
-                <g id="light-cone" display="none">
-                    <!-- Left edge of the light cone -->
-                    <line id="cone-edge-left" x1="400" y1="120" x2="400" y2="340" stroke="rgba(255,200,100,0.3)" stroke-width="1.5" />
-                    <!-- Right edge of the light cone -->
-                    <line id="cone-edge-right" x1="400" y1="120" x2="400" y2="460" stroke="rgba(255,200,100,0.3)" stroke-width="1.5" />
-                    <!-- Soft fill between the edges -->
-                    <path id="cone-fill" d="M400,120 L400,340 A60,60 0 0,1 400,460 Z" fill="rgba(255,200,100,0.06)" />
+                <!-- Sun light flood (lightbulb effect): glow disc + flood wedge
+                     + Earth's lit half (off by default). -->
+                <g id="sun-light" display="none">
+                    <!-- Soft glow disc around the Sun bead -->
+                    <circle id="sun-glow" cx="400" cy="120" r="40" fill="url(#sunGlowGrad)" opacity="0" />
+
+                    <!-- Soft flood wedge between the Sun and the Earth -->
+                    <path id="light-flood" d="" fill="url(#lightFloodGrad)" opacity="0" />
+
+                    <!-- Earth's lit half (soft gradient, clipped to the globe) -->
+                    <circle id="earth-lit" cx="400" cy="400" r="60" fill="url(#earthGlowGrad)" opacity="0" clip-path="url(#dayClip)" />
                 </g>
 
                 <!-- Shifting Observation Nodes (Always locked to the edge of the ellipses) -->
@@ -316,7 +348,7 @@
         <div class="config-section">
             <div style="display: flex; align-items: center; gap: 12px; margin: 8px 0;">
                 <input type="checkbox" id="light-beam-toggle" style="width: 20px; height: 20px; accent-color: #f0c27f; cursor: pointer;">
-                <label for="light-beam-toggle" style="color: #f5e6c4; font-size: 0.9rem; cursor: pointer;" data-i18n="config.light_beam">🌍 Show Light Cone</label>
+                <label for="light-beam-toggle" style="color: #f5e6c4; font-size: 0.9rem; cursor: pointer;" data-i18n="config.light_beam">🌍 Show Sun Light</label>
             </div>
         </div>
 

@@ -39,10 +39,10 @@ altitude floats near the zenith, and at 0° it sits exactly on the wheel edge.
 A decorative **13-point natural ring** (360/13 = 27.69°) inside the wheel
 echoes the 13 · 28 · 7 sequence — a separate scale, never a substitute for
 the azimuth readout. An optional **virtual Earth** in the centre (⚙️
-Configure → 🌍 Show Light Cone, off by default) shows a **Sun-originating
-light cone**: two lines trace its edges from the Sun bead to the Earth's
-horizon, with a soft fill between them; the opacity maps day / twilight /
-night and it turns red during an eclipse.
+Configure → 🌍 Show Sun Light, off by default) shows the **Sun as a glowing
+disc** that floods the space around it: a soft glow around the Sun bead, a
+soft gradient wedge flooding to the Earth and the Earth's lit half; the
+opacity maps day / twilight / night and it turns red during an eclipse.
 Bodies below the horizon clamp to the wheel edge as dimmed **ghost beads**,
 and at dusk/dawn a soft **twilight glow** fades in around the horizon
 (civil −6…0°, nautical −12…−6°) with a **sunrise countdown** under the wheel

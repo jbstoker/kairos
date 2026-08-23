@@ -617,13 +617,15 @@ worker). Open it two ways:
   (`#virtual-earth`, off by default) adds a central globe lit by a seasonal
   beam: `web/static/js/solar_geometry.js` computes the solar declination
   (Meeus ch. 25, matching `core.meeus_algorithms.apparent_declination`), and
-  `canvas_renderer.js` draws a **Sun-originating light cone**: two lines trace
-  its edges from the Sun bead to the Earth's horizon (tangent to a r = 60
-  circle) with a soft fill between them; the opacity maps day / civil /
-  nautical / night (edges ×0.6, fill ×0.15) and during an eclipse the cone
-  turns red (the existing detection — azimuth + altitude aligned + node).
-  Toggle: ⚙️ Configure → 🌍 Show Light Cone (`kairos_light_beam`). The
-  Gregorian clock lives inside the globe.
+  `canvas_renderer.js` draws the **Sun as a lightbulb (flood light)**: a soft
+  glow disc around the Sun bead (`#sun-glow`), a soft gradient wedge flooding
+  from the Sun to the Earth (`#light-flood`, gradient follows the Sun→Earth
+  line) and the Earth's lit half (`#earth-lit`, a half-disc clip rotated
+  toward the Sun). Opacity maps day / civil / nautical / night (×0.5 glow,
+  ×0.2 flood, ×1 lit half) and during an eclipse the light turns red (the
+  existing detection — azimuth + altitude aligned + node). Toggle: ⚙️
+  Configure → 🌍 Show Sun Light (`kairos_light_beam`). The Gregorian clock
+  lives inside the globe.
   90° = the zenith at the centre); bodies below the horizon clamp to the
   wheel edge as dimmed ghost beads. A **twilight glow** (`#twilight-glow`)
   fades around the horizon while the sun is between −12° and 0° altitude —

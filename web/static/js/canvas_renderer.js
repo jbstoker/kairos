@@ -144,93 +144,100 @@ function updatePlanetaryCanvas(sunAltitudeDeg, sunAzimuthDeg, moonAltitudeDeg, m
         twilightGlow.setAttribute('opacity', intensity > 0 ? '1' : '0');
     }
 
-    // --- Light cone edges (two lines from the Sun bead to the Earth's
-    //     horizon). The wedge between the edges shows the lit side; opacity
-    //     maps day / twilight / night and during an eclipse they turn red.
-    //     Enabled via ⚙️ Configure → 🌍 Show Light Cone (kairos_light_beam).
+    // --- Sun as a lightbulb (flood light, not a laser): a soft glow disc
+    //     around the Sun bead, a soft gradient wedge flooding from the Sun to
+    //     the Earth, and the Earth's lit half. Opacity maps day / civil /
+    //     nautical / night and during an eclipse the light turns red.
+    //     Enabled via ⚙️ Configure → 🌍 Show Sun Light (kairos_light_beam).
     let isBeamEnabled = false;
     try { isBeamEnabled = localStorage.getItem('kairos_light_beam') === 'true'; }
-    catch (e) { /* no localStorage (e.g. node tests) — cone stays off */ }
+    catch (e) { /* no localStorage (e.g. node tests) — flood light stays off */ }
 
-    const coneGroup = document.getElementById('light-cone');
-    const coneLeft = document.getElementById('cone-edge-left');
-    const coneRight = document.getElementById('cone-edge-right');
-    const coneFill = document.getElementById('cone-fill');
+    const sunLightGroup = document.getElementById('sun-light');
+    const sunGlow = document.getElementById('sun-glow');
+    const lightFlood = document.getElementById('light-flood');
+    const earthLit = document.getElementById('earth-lit');
     const virtualEarth = document.getElementById('virtual-earth');
 
-    if (coneGroup && isBeamEnabled) {
-        coneGroup.setAttribute('display', 'block');
+    if (sunLightGroup && isBeamEnabled) {
+        sunLightGroup.setAttribute('display', 'block');
         if (virtualEarth) virtualEarth.setAttribute('display', 'block');
 
-        // Sun bead position → the two tangent points on the Earth's horizon.
         const sunBead = document.getElementById('sun-bead');
         if (sunBead) {
             const sunX = parseFloat(sunBead.getAttribute('cx'));
             const sunY = parseFloat(sunBead.getAttribute('cy'));
-            const radius = 60;   // Earth radius for the tangency
 
-            const dx = sunX - cx;
-            const dy = sunY - cy;
+            // 1. Sun glow — a soft disc centred on the Sun bead.
+            if (sunGlow) {
+                sunGlow.setAttribute('cx', sunX);
+                sunGlow.setAttribute('cy', sunY);
+            }
+
+            // 2. Light flood — a soft wedge from the Sun to the Earth that
+            //    spreads wider as it travels; the gradient runs Sun → Earth.
+            const dx = cx - sunX;
+            const dy = cy - sunY;
             const dist = Math.sqrt(dx * dx + dy * dy);
             if (dist > 0) {
-                // Angle from the Sun to the Earth's centre; half-angle of the
-                // cone tangent to the Earth (clamped so a bead very near the
-                // centre never produces a NaN arc).
                 const angle = Math.atan2(dy, dx);
-                const halfAngle = Math.asin(Math.min(1, radius / dist));
-                const leftAngle = angle - halfAngle;
-                const rightAngle = angle + halfAngle;
-                const leftX = cx + radius * Math.cos(leftAngle);
-                const leftY = cy + radius * Math.sin(leftAngle);
-                const rightX = cx + radius * Math.cos(rightAngle);
-                const rightY = cy + radius * Math.sin(rightAngle);
-
-                if (coneLeft) {
-                    coneLeft.setAttribute('x1', sunX);
-                    coneLeft.setAttribute('y1', sunY);
-                    coneLeft.setAttribute('x2', leftX);
-                    coneLeft.setAttribute('y2', leftY);
+                const spread = 30 + dist / 2;                 // wider as it travels
+                const leftX = sunX + (dist + 100) * Math.cos(angle - Math.PI / 12);
+                const leftY = sunY + (dist + 100) * Math.sin(angle - Math.PI / 12);
+                const rightX = sunX + (dist + 100) * Math.cos(angle + Math.PI / 12);
+                const rightY = sunY + (dist + 100) * Math.sin(angle + Math.PI / 12);
+                if (lightFlood) {
+                    lightFlood.setAttribute('d', `M${sunX},${sunY} L${leftX},${leftY} ${cx},${cy} ${rightX},${rightY} Z`);
                 }
-                if (coneRight) {
-                    coneRight.setAttribute('x1', sunX);
-                    coneRight.setAttribute('y1', sunY);
-                    coneRight.setAttribute('x2', rightX);
-                    coneRight.setAttribute('y2', rightY);
-                }
-                if (coneFill) {
-                    coneFill.setAttribute('d', `M${sunX},${sunY} L${leftX},${leftY} A${radius},${radius} 0 0,1 ${rightX},${rightY} Z`);
+                const floodGrad = document.getElementById('lightFloodGrad');
+                if (floodGrad) {
+                    floodGrad.setAttribute('x1', sunX);
+                    floodGrad.setAttribute('y1', sunY);
+                    floodGrad.setAttribute('x2', cx);
+                    floodGrad.setAttribute('y2', cy);
                 }
             }
-        }
 
-        // --- Opacity based on sun altitude (light percentage) ---
-        // 0% = night, 50% = twilight, 100% = full day.
-        let opacity = 0;
-        if (sunAltitudeDeg > 0) {
-            opacity = 0.8;                                             // full day
-        } else if (sunAltitudeDeg > -6) {
-            opacity = 0.5 * (1 - (sunAltitudeDeg + 6) / 6);            // civil twilight
-        } else if (sunAltitudeDeg > -12) {
-            opacity = 0.2 * (1 - (sunAltitudeDeg + 12) / 6);           // nautical twilight
-        } else {
-            opacity = 0;                                               // night
-        }
-        if (coneLeft) coneLeft.setAttribute('opacity', opacity * 0.6);
-        if (coneRight) coneRight.setAttribute('opacity', opacity * 0.6);
-        if (coneFill) coneFill.setAttribute('opacity', opacity * 0.15);
+            // 3. Earth's lit half — the half of the globe facing the Sun
+            //    (a half-disc clip rotated toward the Sun bead).
+            const dayClipPath = document.getElementById('day-clip-path');
+            if (dayClipPath) {
+                const azRad = Math.atan2(sunY - cy, sunX - cx);
+                const p1x = cx + 60 * Math.cos(azRad - Math.PI / 2);
+                const p1y = cy + 60 * Math.sin(azRad - Math.PI / 2);
+                const p2x = cx + 60 * Math.cos(azRad + Math.PI / 2);
+                const p2y = cy + 60 * Math.sin(azRad + Math.PI / 2);
+                dayClipPath.setAttribute('d', `M${cx},${cy} L${p1x},${p1y} A60,60 0 0,1 ${p2x},${p2y} Z`);
+            }
 
-        // --- Eclipse (existing detection): the cone turns red/dark. ---
-        if (isEclipse) {
-            if (coneLeft) coneLeft.setAttribute('stroke', 'rgba(180,60,30,0.8)');
-            if (coneRight) coneRight.setAttribute('stroke', 'rgba(180,60,30,0.8)');
-            if (coneFill) coneFill.setAttribute('fill', 'rgba(180,60,30,0.2)');
-        } else {
-            if (coneLeft) coneLeft.setAttribute('stroke', 'rgba(255,200,100,0.4)');
-            if (coneRight) coneRight.setAttribute('stroke', 'rgba(255,200,100,0.4)');
-            if (coneFill) coneFill.setAttribute('fill', 'rgba(255,200,100,0.08)');
+            // 4. Opacity from the sun altitude (light percentage).
+            let opacity = 0;
+            if (sunAltitudeDeg > 0) {
+                opacity = 0.8;                                             // full day
+            } else if (sunAltitudeDeg > -6) {
+                opacity = 0.4 * (1 - (sunAltitudeDeg + 6) / 6);            // civil twilight
+            } else if (sunAltitudeDeg > -12) {
+                opacity = 0.15 * (1 - (sunAltitudeDeg + 12) / 6);          // nautical twilight
+            } else {
+                opacity = 0;                                               // night
+            }
+            if (sunGlow) sunGlow.setAttribute('opacity', (opacity * 0.5).toFixed(3));
+            if (lightFlood) lightFlood.setAttribute('opacity', (opacity * 0.2).toFixed(3));
+            if (earthLit) earthLit.setAttribute('opacity', opacity.toFixed(3));
+
+            // 5. Eclipse (existing detection): the light turns red/dark.
+            if (isEclipse) {
+                if (sunGlow) sunGlow.setAttribute('fill', 'rgba(180,60,30,0.4)');
+                if (lightFlood) lightFlood.setAttribute('fill', 'rgba(180,60,30,0.1)');
+                if (earthLit) earthLit.setAttribute('fill', 'rgba(180,60,30,0.2)');
+            } else {
+                if (sunGlow) sunGlow.setAttribute('fill', 'url(#sunGlowGrad)');
+                if (lightFlood) lightFlood.setAttribute('fill', 'url(#lightFloodGrad)');
+                if (earthLit) earthLit.setAttribute('fill', 'url(#earthGlowGrad)');
+            }
         }
-    } else if (coneGroup) {
-        coneGroup.setAttribute('display', 'none');
+    } else if (sunLightGroup) {
+        sunLightGroup.setAttribute('display', 'none');
         if (virtualEarth) virtualEarth.setAttribute('display', 'none');
     }
 

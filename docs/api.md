@@ -343,16 +343,19 @@ dial (altitude 0, azimuth = local day fraction × 360).
   solstices/equinoxes), `getCurrentSolarDeclination()`, and
   `solarBeamFactors(declinationDeg)` → `{ widthFactor: 0.7…1.3,
   intensityFactor: 0.4…1.0 }`.
-- The **virtual Earth + Sun-originating light cone** (`#virtual-earth` +
-  `#light-cone` in the sky-dome SVG, off by default): two lines
-  (`#cone-edge-left`, `#cone-edge-right`) trace the edges of the light cone
-  from the Sun bead to the Earth's horizon (tangent to a r = 60 circle),
-  with a soft fill (`#cone-fill`) between them showing the lit side. Opacity
-  maps day / civil twilight / nautical twilight / night (cone opacity 0.8 /
-  0.5 / 0.2 / 0; edges ×0.6, fill ×0.15) and during an eclipse the cone
+- The **virtual Earth + Sun light flood effect** (`#virtual-earth` +
+  `#sun-light` in the sky-dome SVG, off by default): the Sun is a glowing
+  disc that floods the space around it (lightbulb, not a laser). A soft glow
+  (`#sun-glow`, `url(#sunGlowGrad)`) centres on the Sun bead, a soft
+  gradient wedge (`#light-flood`, `url(#lightFloodGrad)` — the gradient runs
+  along the Sun→Earth line) spreads from the Sun to the Earth, and the
+  Earth's lit half (`#earth-lit`, `url(#earthGlowGrad)`) is a half-disc clip
+  (`#dayClip`/`#day-clip-path`) rotated toward the Sun. Opacity maps day /
+  civil twilight / nautical twilight / night (cone opacity 0.8 / 0.4 / 0.15 /
+  0; glow ×0.5, flood ×0.2, lit half ×1) and during an eclipse the light
   turns red/dark (existing `isEclipse` detection). The *YOU* marker and the
   Gregorian clock (`#gregorian-center-clock`) sit in the central globe.
-  Toggled via ⚙️ Configure → 🌍 Show Light Cone (`#light-beam-toggle`,
+  Toggled via ⚙️ Configure → 🌍 Show Sun Light (`#light-beam-toggle`,
   `kairos_light_beam`, wired in `web/app.js`); rendered by
   `canvas_renderer.updatePlanetaryCanvas`. Decorative — the beads and the
   azimuth wheel are untouched.
