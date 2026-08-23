@@ -677,6 +677,32 @@ function initTimeSystem() {
 }
 initTimeSystem();
 
+// --- Virtual Earth / seasonal light beam toggle -----------------------------
+// ⚙️ Configure → 🌍 Show Light Beam (off by default). The beam itself is
+// driven by canvas_renderer.js; here we only persist + show/hide the group.
+function isLightBeamEnabled() {
+    try { return localStorage.getItem('kairos_light_beam') === 'true'; }
+    catch (e) { return false; }
+}
+
+function applyVirtualEarthVisibility() {
+    const group = document.getElementById('virtual-earth');
+    if (group) group.setAttribute('display', isLightBeamEnabled() ? '' : 'none');
+}
+
+function initLightBeamToggle() {
+    const toggle = document.getElementById('light-beam-toggle');
+    applyVirtualEarthVisibility();
+    if (!toggle) return;
+    toggle.checked = isLightBeamEnabled();
+    toggle.addEventListener('change', () => {
+        try { localStorage.setItem('kairos_light_beam', String(toggle.checked)); } catch (e) { /* ignore */ }
+        applyVirtualEarthVisibility();
+        if (window.refreshKST) window.refreshKST();
+    });
+}
+initLightBeamToggle();
+
 // Load saved lenses (calendar + energy) — lens_manager.js persists them.
 if (window.syncLensSelectors) window.syncLensSelectors();
 

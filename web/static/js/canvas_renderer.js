@@ -144,6 +144,66 @@ function updatePlanetaryCanvas(sunAltitudeDeg, sunAzimuthDeg, moonAltitudeDeg, m
         twilightGlow.setAttribute('opacity', intensity > 0 ? '1' : '0');
     }
 
+    // --- Virtual Earth + seasonal light beam (optional, off by default) -----
+    // A small globe at the centre, lit by a wedge whose width and intensity
+    // follow the solar declination (summer wide+bright, winter narrow+dim,
+    // equinox balanced). The wedge uses the sky-dome's OWN angle convention
+    // (x = cx − r·sin, y = cy + r·cos, 0° bottom), so the lit side points the
+    // same way as the Sun bead. It is decorative and never moves the beads.
+    const virtualEarth = document.getElementById('virtual-earth');
+    if (virtualEarth && virtualEarth.getAttribute('display') !== 'none' &&
+        typeof getCurrentSolarDeclination === 'function') {
+        const declination = getCurrentSolarDeclination();
+        const factors = (typeof solarBeamFactors === 'function')
+            ? solarBeamFactors(declination)
+            : { widthFactor: 1 + (declination / 23.44) * 0.3,
+                intensityFactor: 0.7 + (declination / 23.44) * 0.3 };
+        const beamAngle = (Math.PI / 2) * factors.widthFactor;   // 63°…117°
+        const azRad = sunAzimuthDeg * Math.PI / 180;
+        const leftEdge = azRad - beamAngle / 2;
+        const rightEdge = azRad + beamAngle / 2;
+        const outerR = 95;   // the globe's edge
+        const innerR = 65;   // the hub disc behind the central clock
+        const pt = (r, ang) => ({ x: cx - r * Math.sin(ang), y: cy + r * Math.cos(ang) });
+        const o1 = pt(outerR, leftEdge), o2 = pt(outerR, rightEdge);
+        const i1 = pt(innerR, leftEdge), i2 = pt(innerR, rightEdge);
+        const path = `M${i1.x},${i1.y} L${o1.x},${o1.y} A${outerR},${outerR} 0 0,1 ${o2.x},${o2.y} L${i2.x},${i2.y} Z`;
+
+        // Altitude bands — the same civil/nautical bands as the twilight glow:
+        // daylight (gold) ≥ 0°, civil (orange) 0…−6°, nautical (blue) −6…−12°.
+        const dayOpacity = sunAltitudeDeg >= 0 ? 0.55 : 0;
+        const twilightOpacity = (sunAltitudeDeg < 0 && sunAltitudeDeg >= -6) ? 0.4 : 0;
+        const nauticalOpacity = (sunAltitudeDeg < -6 && sunAltitudeDeg >= -12) ? 0.3 : 0;
+
+        const setBeam = (id, opacity) => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.setAttribute('d', path);
+            el.setAttribute('opacity', opacity.toFixed(3));
+        };
+        setBeam('daylight-beam', dayOpacity * factors.intensityFactor);
+        setBeam('twilight-beam', twilightOpacity * factors.intensityFactor * 0.8);
+        setBeam('nautical-beam', nauticalOpacity * factors.intensityFactor * 0.6);
+
+        // The Sun's place on the globe's edge (same side as the Sun bead).
+        const sp = pt(outerR, azRad);
+        const sunPosition = document.getElementById('sun-position');
+        if (sunPosition) {
+            sunPosition.setAttribute('cx', sp.x);
+            sunPosition.setAttribute('cy', sp.y);
+            sunPosition.setAttribute('opacity', (dayOpacity + twilightOpacity > 0) ? '0.9' : '0');
+        }
+
+        // Night side of the globe: darker the deeper the sun is below.
+        let nightOpacity = 0.6;
+        if (sunAltitudeDeg < -12) nightOpacity = 0.9;
+        else if (sunAltitudeDeg < -6) nightOpacity = 0.8;
+        else if (sunAltitudeDeg < 0) nightOpacity = 0.6;
+        else nightOpacity = 0.4;
+        const nightOverlay = document.getElementById('night-overlay');
+        if (nightOverlay) nightOverlay.setAttribute('opacity', nightOpacity);
+    }
+
     // --- Sunrise countdown: while the sun is below the horizon, show the real
     //     minutes until the next sunrise (SunCalc at the observer's location);
     //     fall back to the ~0.25°/min vertical-rate approximation when the

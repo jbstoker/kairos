@@ -128,6 +128,27 @@
                 <ellipse id="sun-orbit-line" cx="400" cy="400" rx="165" ry="162" class="orbit-track" transform="rotate(102, 400, 400)" />
                 <ellipse id="moon-orbit-line" cx="400" cy="400" rx="285" ry="270" class="orbit-track" />
 
+                <!-- Virtual Earth + seasonal light beam (optional, off by
+                     default — toggled in ⚙️ Configure via #light-beam-toggle).
+                     The beam's width and intensity follow the solar
+                     declination (summer wide+bright, winter narrow+dim,
+                     equinox balanced), driven by web/static/js/solar_geometry.js
+                     + web/static/js/canvas_renderer.js. Decorative: it never
+                     moves the beads or the azimuth wheel. -->
+                <g id="virtual-earth" display="none">
+                    <!-- Night side of the globe: darker the deeper the sun is
+                         below the horizon (opacity set by the renderer). -->
+                    <circle id="night-overlay" cx="400" cy="400" r="95" fill="#0b1220" stroke="#2a3a4a" stroke-width="1.5" opacity="0.6" />
+                    <!-- Nautical twilight (cool blue, −12°…−6°) -->
+                    <path id="nautical-beam" d="M400,400 L333,333 A95,95 0 0,1 467,333 Z" fill="#4a7ab0" opacity="0" />
+                    <!-- Civil twilight (soft orange, −6°…0°) -->
+                    <path id="twilight-beam" d="M400,400 L333,333 A95,95 0 0,1 467,333 Z" fill="#f0a24a" opacity="0" />
+                    <!-- Daylight (warm gold, sun above the horizon) -->
+                    <path id="daylight-beam" d="M400,400 L333,333 A95,95 0 0,1 467,333 Z" fill="#f0c27f" opacity="0" />
+                    <!-- The Sun's place on the globe's edge -->
+                    <circle id="sun-position" cx="400" cy="400" r="3.5" fill="#fff8e1" opacity="0" />
+                </g>
+
                 <!-- Shifting Observation Nodes (Always locked to the edge of the ellipses) -->
                 <circle id="sun-bead" cx="400" cy="235" r="16" fill="#f39c12" style="filter: drop-shadow(0px 0px 8px rgba(243,156,18,0.6));" />
                 <circle id="moon-bead" cx="400" cy="115" r="11" fill="#ecf0f1" style="filter: drop-shadow(0px 0px 6px rgba(236,240,241,0.5));" />
@@ -254,6 +275,13 @@
                 <option value="natural" data-i18n="config.time_system_natural">🌿 Natural Time (13h / 28 / 13)</option>
                 <option value="kairos_natural" data-i18n="config.time_system_kairos_natural">🌿 Kairos Natural (26h / 28m / 7s)</option>
             </select>
+        </div>
+
+        <div class="config-section">
+            <div style="display: flex; align-items: center; gap: 12px; margin: 8px 0;">
+                <input type="checkbox" id="light-beam-toggle" style="width: 20px; height: 20px; accent-color: #f0c27f; cursor: pointer;">
+                <label for="light-beam-toggle" style="color: #f5e6c4; font-size: 0.9rem; cursor: pointer;" data-i18n="config.light_beam">🌍 Show Light Beam</label>
+            </div>
         </div>
 
         <div class="config-section">
@@ -510,6 +538,7 @@
 <script src="static/js/natural_time.js"></script>
 <script src="static/js/kairos_natural_time.js"></script>
 <script src="static/js/degree_wheel.js"></script>
+<script src="static/js/solar_geometry.js"></script>
 <script src="kst_display.js"></script>
 <script src="static/js/astronomy_engine.js"></script>
 <script src="static/js/canvas_renderer.js"></script>

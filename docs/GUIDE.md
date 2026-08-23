@@ -54,6 +54,12 @@ The centre of the app is a living sky map, not just a clock:
 - Inside the wheel, a decorative **13-point natural ring** marks the
   13-fold division (360/13 = 27.69°), echoing the 13 · 28 · 7 sequence — a
   separate scale that never replaces the azimuth labels.
+- An optional **virtual Earth** with a **seasonal light beam**: toggle
+  **🌍 Show Light Beam** in ⚙️ Configure. A small globe in the centre is
+  lit by a wedge whose width and intensity follow the solar declination
+  (summer wide + bright, winter narrow + dim, equinox balanced); it glows
+  gold in daylight, orange in civil twilight and blue in nautical
+  twilight. Off by default, remembered on the device.
 - At dusk and dawn a soft **twilight glow** fades in around the horizon —
   civil twilight (sun between −6° and 0°) glows brightest, nautical
   twilight (−12° to −6°) glows fainter, and full night shows no glow. While

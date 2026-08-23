@@ -337,6 +337,22 @@ dial (altitude 0, azimuth = local day fraction × 360).
   is a separate natural scale — the physical azimuth wheel (0–360° every
   30°) stays untouched, so the header number and the sky-dome beads keep
   agreeing.
+- `web/static/js/solar_geometry.js` — the solar-declination helper (Meeus
+  ch. 25, simplified): `getSolarDeclination(jd)` (degrees, ~0.01° accuracy,
+  agrees with `core.meeus_algorithms.apparent_declination` at the
+  solstices/equinoxes), `getCurrentSolarDeclination()`, and
+  `solarBeamFactors(declinationDeg)` → `{ widthFactor: 0.7…1.3,
+  intensityFactor: 0.4…1.0 }`.
+- The **virtual Earth** (`#virtual-earth` in the sky-dome SVG, off by
+  default) is a small central globe lit by three wedges — daylight (gold,
+  sun ≥ 0°), civil twilight (orange, 0…−6°) and nautical twilight (blue,
+  −6…−12°) — whose width (90° ± 30%) and intensity (×0.4–1.0) follow the
+  solar declination (summer wide+bright, winter narrow+dim, equinox
+  balanced), with a night-side dimming of the globe. Toggled via ⚙️
+  Configure → 🌍 Show Light Beam (`#light-beam-toggle`, `kairos_light_beam`,
+  wired in `web/app.js`); rendered by `canvas_renderer.updatePlanetaryCanvas`
+  using the sky-dome's own angle convention. Decorative — the beads and the
+  azimuth wheel are untouched.
 - `web/templates/concentric_view.html` — the canonical SVG fragment;
   the identical markup is injected into `web/index.html` inside the panel.
 - Fully client-side: no backend required, so it runs on GitHub Pages and

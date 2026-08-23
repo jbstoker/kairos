@@ -81,6 +81,7 @@
             'config.time_system_natural_badge': '🌿 Natural',
             'config.time_system_kairos_natural': '🌿 Kairos Natural (26h / 28m / 7s)',
             'config.time_system_kairos_natural_badge': '🌿 Kairos Natural',
+            'config.light_beam': '🌍 Show Light Beam',
             'config.seasonal_filters': '🌿 Seasonal filters & editing',
             'config.seasonal_filters_hint':
                 'Choose which items appear in "In season" on the Now tab.',
@@ -831,6 +832,7 @@
             'config.time_system_natural_badge': '🌿 Natuurlijk',
             'config.time_system_kairos_natural': '🌿 Kairos Natuurlijk (26u / 28m / 7s)',
             'config.time_system_kairos_natural_badge': '🌿 Kairos Natuurlijk',
+            'config.light_beam': '🌍 Toon lichtbundel',
             'config.seasonal_filters': '🌿 Seizoensfilters en bewerken',
             'config.seasonal_filters_hint':
                 'Kies welke items in "In het seizoen" op het tabblad Nu '
@@ -1581,6 +1583,7 @@
             'config.time_system_natural_badge': '🌿 Natuerlik',
             'config.time_system_kairos_natural': '🌿 Kairos Natuerlik (26o / 28m / 7s)',
             'config.time_system_kairos_natural_badge': '🌿 Kairos Natuerlik',
+            'config.light_beam': '🌍 Ljochtstraal sjen',
             'config.seasonal_filters': '🌿 Seizoenfilters en bewurkje',
             'config.seasonal_filters_hint':
                 'Kies hokker items yn "Yn it seizoen" op it ljepblêd No '
@@ -2335,6 +2338,7 @@
             'config.time_system_natural_badge': '🌿 Natürlich',
             'config.time_system_kairos_natural': '🌿 Kairos Natürlich (26h / 28m / 7s)',
             'config.time_system_kairos_natural_badge': '🌿 Kairos Natürlich',
+            'config.light_beam': '🌍 Lichtstrahl anzeigen',
             'config.seasonal_filters': '🌿 Saisonfilter und Bearbeiten',
             'config.seasonal_filters_hint':
                 'Wählen Sie, welche Einträge auf dem Tab "Jetzt" unter '
@@ -3097,6 +3101,7 @@
             'config.time_system_natural_badge': '🌿 Naturel',
             'config.time_system_kairos_natural': '🌿 Kairos Naturel (26 h / 28 m / 7 s)',
             'config.time_system_kairos_natural_badge': '🌿 Kairos Naturel',
+            'config.light_beam': '🌍 Afficher le faisceau de lumière',
             'config.seasonal_filters': '🌿 Filtres saisonniers et édition',
             'config.seasonal_filters_hint':
                 'Choisissez les éléments qui apparaissent dans « De saison » '
@@ -3871,6 +3876,7 @@
             'config.time_system_natural_badge': '🌿 Natural',
             'config.time_system_kairos_natural': '🌿 Kairos Natural (26h / 28m / 7s)',
             'config.time_system_kairos_natural_badge': '🌿 Kairos Natural',
+            'config.light_beam': '🌍 Mostrar haz de luz',
             'config.seasonal_filters': '🌿 Filtros de temporada y edición',
             'config.seasonal_filters_hint':
                 'Elige qué elementos aparecen en "De temporada" en la '
@@ -4628,6 +4634,7 @@
             'config.time_system_natural_badge': '🌿 自然时间',
             'config.time_system_kairos_natural': '🌿 凯洛斯自然时间（26小时 / 28分 / 7秒）',
             'config.time_system_kairos_natural_badge': '🌿 凯洛斯自然时间',
+            'config.light_beam': '🌍 显示光束',
             'config.seasonal_filters': '🌿 季节筛选与编辑',
             'config.seasonal_filters_hint':
                 '选择哪些条目会出现在“现在”选项卡的“当季”中。',

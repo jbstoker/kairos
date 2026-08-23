@@ -613,7 +613,14 @@ worker). Open it two ways:
   zenith at the centre). A decorative **13-point natural ring**
   (`web/static/js/degree_wheel.js`, 360/13 = 27.692307°) is drawn as a
   separate inner ring — it never replaces the azimuth readout, so the header
-  number and the beads keep agreeing.
+  number and the beads keep agreeing. An optional **virtual Earth**
+  (`#virtual-earth`, off by default) adds a central globe lit by a seasonal
+  beam: `web/static/js/solar_geometry.js` computes the solar declination
+  (Meeus ch. 25, matching `core.meeus_algorithms.apparent_declination`), and
+  `canvas_renderer.js` sets the beam's width (90° ± 30%) and intensity
+  (×0.4–1.0) — gold daylight / orange civil / blue nautical wedges — plus a
+  night-side dimming of the globe. Toggle: ⚙️ Configure → 🌍 Show Light Beam
+  (`kairos_light_beam`).
   90° = the zenith at the centre); bodies below the horizon clamp to the
   wheel edge as dimmed ghost beads. A **twilight glow** (`#twilight-glow`)
   fades around the horizon while the sun is between −12° and 0° altitude —

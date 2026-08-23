@@ -71,7 +71,7 @@ class TestI18nWeb(unittest.TestCase):
         self.assertTrue(all(out["parity"].values()), out["parity"])
         # Guard: the catalog must never silently lose entries. Update this
         # number intentionally when you add new UI strings.
-        self.assertEqual(out["enCount"], 819)
+        self.assertEqual(out["enCount"], 820)
 
     def test_interpolation(self):
         self.assertEqual(self._run()["interpolation"], "Living in X")

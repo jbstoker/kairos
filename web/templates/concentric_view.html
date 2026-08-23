@@ -100,6 +100,17 @@
         <ellipse id="sun-orbit-line" cx="400" cy="400" rx="165" ry="162" class="orbit-track" transform="rotate(102, 400, 400)" />
         <ellipse id="moon-orbit-line" cx="400" cy="400" rx="285" ry="270" class="orbit-track" />
 
+        <!-- Virtual Earth + seasonal light beam (off by default; the beam
+             width/intensity follow the solar declination — see
+             web/static/js/canvas_renderer.js). -->
+        <g id="virtual-earth" display="none">
+            <circle id="night-overlay" cx="400" cy="400" r="95" fill="#0b1220" stroke="#2a3a4a" stroke-width="1.5" opacity="0.6" />
+            <path id="nautical-beam" d="M400,400 L333,333 A95,95 0 0,1 467,333 Z" fill="#4a7ab0" opacity="0" />
+            <path id="twilight-beam" d="M400,400 L333,333 A95,95 0 0,1 467,333 Z" fill="#f0a24a" opacity="0" />
+            <path id="daylight-beam" d="M400,400 L333,333 A95,95 0 0,1 467,333 Z" fill="#f0c27f" opacity="0" />
+            <circle id="sun-position" cx="400" cy="400" r="3.5" fill="#fff8e1" opacity="0" />
+        </g>
+
         <!-- Shifting Observation Nodes (Always locked to the edge of the ellipses) -->
         <circle id="sun-bead" cx="400" cy="235" r="16" fill="#f39c12" style="filter: drop-shadow(0px 0px 8px rgba(243,156,18,0.6));" />
         <circle id="moon-bead" cx="400" cy="115" r="11" fill="#ecf0f1" style="filter: drop-shadow(0px 0px 6px rgba(236,240,241,0.5));" />
