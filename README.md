@@ -125,6 +125,12 @@ a mean day) and the **equation of time** in minutes. The whole pulse grid is
 anchored at apparent solar midnight — `01:01:01` — so the clock reads the
 same sky the dial shows.
 
+**Dual-Time** — the text and the dial are decoupled by design: the time you
+read is the **global orbital time** (a pure pulse count, identical for every
+observer), while the **Sun hand / sky-dome always points to the real Sun
+azimuth for your location** (shown as `Dial: SS:BB:PP` in the Kepler info
+panel). The hand obeys the sky you observe; the text keeps the shared epoch.
+
 ---
 
 ## Join the Community

@@ -358,6 +358,18 @@ dial (altitude 0, azimuth = local day fraction × 360).
   the full Earth Era date (`EE 4.540.002.026/01/15 14:01:01`), the short civil
   date (`26/01/15 14:01:01`) and the variable pulse length
   (`Pulse: 16.9504 s`).
+- `web/static/js/kairos_dual_time.js` — the **Dual-Time Logic**: separates the
+  global ORBITAL TEXT from the local VISUAL SKY. `getOrbitalTimestamp(currentPulses)`
+  → `"SS:BB:PP"` (a pure pulse-count string, same for every observer),
+  `getPhysicalSunAzimuth(lat, lon, date, currentPulses)` → the Sun's compass
+  bearing at the orbital moment (apparent-solar-midnight anchored, via the
+  vendored SunCalc SPA; ≈ the live azimuth with the equation-of-time pulse),
+  `getVisualDialTime(azimuth)` → `round(azimuth/360 × 5,096)` broken into the
+  26 × 28 × 7 grid (the dial position) and `getDualTime(date)` →
+  `{ orbitalText, sunAzimuth, visualPulses, visualTime, pulseLength,
+  dayOfYear }`. DISPLAY RULE: the sun hand points to `SUN_AZIMUTH`; the text
+  stays `ORBITAL_TEXT` (the Kepler info panel shows both, e.g.
+  `Dial: 14:01:01` next to the orbital text).
 - `web/static/js/unified_display.js` — the FINAL UNIFIED HEADER layer: the
   calendar-lens-aware primary line — `window.updateDisplay(kairosString, tradition)`
   merges with app.js's own `updateDisplay()` (both call styles preserved) and

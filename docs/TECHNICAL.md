@@ -740,9 +740,15 @@ worker). Open it two ways:
   `SS:BB:PP · Month Day · shortYear (azimuth°)` header (via
   `web/static/js/kairos_kepler_display.js`, which reuses the calendar-style
   month names / Earth Era year) and an info panel with the full Earth Era
-  date, the short civil date and the pulse length. All three layers fall back
-  to the wall clock only without the solar engine; the watch face stays a
-  pure solar clock.
+  date, the short civil date, the pulse length and the **VISUAL dial
+  position** (`Dial: SS:BB:PP`). The **Dual-Time logic**
+  (`web/static/js/kairos_dual_time.js`) formalises the separation: the text
+  is the global ORBITAL time (a pure pulse count via `getOrbitalTimestamp`),
+  while the dial/Sun hand always points to the real Sun azimuth for the
+  observer (`getPhysicalSunAzimuth` / live `getSolarAzimuth`); the azimuth is
+  mapped back onto the 26 × 28 × 7 grid with `getVisualDialTime`. All three
+  layers fall back to the wall clock only without the solar engine; the watch
+  face stays a pure solar clock.
 
 ## Data & file formats
 

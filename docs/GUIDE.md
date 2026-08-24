@@ -205,5 +205,11 @@ days**: instead of skipping a day, the pulse just lengthens or shortens.
   **16.955 seconds**, varying by a few milliseconds through the year.
 - The *🌿 Kairos Kepler* pill replaces the other pills while it's active.
 
+**Dual-Time** — the text and the dial are two different things by design: the
+time you read is the **global orbital time** (a pure pulse count, the same for
+every observer), while the **Sun hand/dial always points to the real Sun
+azimuth for your location** (the info panel shows this as `Dial: SS:BB:PP`).
+The hand obeys the sky; the text keeps the epoch.
+
 Switch back to **🌍 Current Time (24h / 60 / 60)** at any time — your choice
 is remembered on the device.

@@ -333,14 +333,16 @@
         return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
     }
 
-    // The Kairos Kepler info panel (web/static/js/kairos_kepler_display.js):
-    // the full Earth Era date, the short civil date and the variable pulse
-    // length — shown under the primary line only while Kepler mode is active.
+    // The Kairos Kepler info panel (web/static/js/kairos_kepler_display.js +
+    // web/static/js/kairos_dual_time.js): the full Earth Era date, the short
+    // civil date, the variable pulse length and the VISUAL dial position —
+    // shown under the primary line only while Kepler mode is active.
     function updateKeplerInfo() {
         const fullEl = document.getElementById('full-kairos-date');
         const civilEl = document.getElementById('civil-kairos-date');
         const pulseEl = document.getElementById('pulse-length');
-        if (!fullEl && !civilEl && !pulseEl) return;
+        const visualEl = document.getElementById('visual-time');
+        if (!fullEl && !civilEl && !pulseEl && !visualEl) return;
         if (typeof isKairosKeplerSelected === 'function' && isKairosKeplerSelected()
             && typeof getKairosKeplerDisplay === 'function') {
             try {
@@ -349,6 +351,18 @@
                     if (fullEl) { fullEl.textContent = d.fullStr; fullEl.hidden = false; }
                     if (civilEl) { civilEl.textContent = d.civilStr; civilEl.hidden = false; }
                     if (pulseEl) { pulseEl.textContent = `Pulse: ${d.pulseLength.toFixed(4)} s`; pulseEl.hidden = false; }
+                    // VISUAL_TIME: the Sun's azimuth mapped back onto the
+                    // 26 × 28 × 7 dial (kairos_dual_time.js) — the dial hand
+                    // position next to the global orbital text.
+                    if (visualEl) {
+                        if (typeof getVisualDialTime === 'function' && typeof getSolarAzimuth === 'function') {
+                            const v = getVisualDialTime(getSolarAzimuth());
+                            visualEl.textContent = `Dial: ${v.formatted}`;
+                            visualEl.hidden = false;
+                        } else {
+                            visualEl.hidden = true;
+                        }
+                    }
                     return;
                 }
             } catch (e) { /* fall through to hidden */ }
@@ -356,6 +370,7 @@
         if (fullEl) fullEl.hidden = true;
         if (civilEl) civilEl.hidden = true;
         if (pulseEl) pulseEl.hidden = true;
+        if (visualEl) visualEl.hidden = true;
     }
 
     // The short civil year badge ("EE 26") — shown only while the zodiac
