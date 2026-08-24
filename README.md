@@ -82,17 +82,48 @@ The system calculates your local solar noon from these observations.
   Taoist, Vedic, Pagan/Wiccan, Mesopotamian, Egyptian, Mayan — or **None**
   for pure Kairos. Your choices are remembered on the device.
 - Pick a **⏱️ Time System** — read the same sky through a 13-based clock
-  (13 hours per day, 28 minutes per hour, 13 seconds per minute) or the
+  (13 hours per day, 28 minutes per hour, 13 seconds per minute), the
   **26-hour rhythm** — 13 light + 13 dark hours (26 hours per day,
-  28 minutes per hour, 7 seconds per minute). Both count true solar time,
-  so natural noon is solar noon and the header degree stays the Sun's
-  azimuth — the number and the sky-dome bead still agree.
+  28 minutes per hour, 7 seconds per minute) — or the **🌿 Kairos Kepler
+  clock** (26 Strides / 28 Beats / 7 Pulses), whose **pulse length breathes**
+  with the equation of time (see *Time calculation & the Kepler second*
+  below). All count true solar time, so natural noon is solar noon and the
+  header degree stays the Sun's azimuth — the number and the sky-dome bead
+  still agree.
 
 ### 🌐 Languages
 Kairos speaks seven languages — English (default), Dutch, Frisian, German,
 French, Spanish and Chinese. The web app has a **Language** picker in the
 ⚙️ Configure tab; the CLI takes `--lang=nl` (or `de`, `fr`, `es`, `zh`, `fy`).
 See [docs/I18N.md](docs/I18N.md) to add another language.
+
+---
+
+## Time calculation & the Kepler second
+
+Kairos's Kepler clock divides the apparent solar day into a **26 × 28 × 7**
+grid — **26 Strides × 28 Beats × 7 Pulses = 5,096 Pulses** per day. The
+**pulse is the heartbeat of the system**, and it *breathes*:
+
+- One pulse is **1/5,096 of the apparent solar day** — on average
+  **16.955 Gregorian seconds**, varying by a few milliseconds through the
+  year (a **Kepler second** is one pulse: the fundamental unit that keeps
+  Kairos honest to the sky).
+- The length comes from the **equation of time** (Meeus, *Astronomical
+  Algorithms*, ch. 28) — the difference between sundial (apparent) time and
+  mean clock time, caused by Earth's elliptical orbit (**Kepler's law**) and
+  the axial tilt.
+- Because 5,096 pulses always span exactly **one apparent solar day**
+  (≈ 86,400 s ± 30 s), the calendar stays aligned with the sky **without
+  leap days** — instead of skipping a day, the pulse simply lengthens or
+  shortens.
+
+The web app shows this live: choose **🌿 Kairos Kepler** in ⚙️ Configure →
+⏱️ Time System and a pulse panel under the clock displays the current
+**pulse length**, the **apparent day length** (with its 📈 / 📉 trend against
+a mean day) and the **equation of time** in minutes. The whole pulse grid is
+anchored at apparent solar midnight — `01:01:01` — so the clock reads the
+same sky the dial shows.
 
 ---
 

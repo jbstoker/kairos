@@ -84,10 +84,15 @@
         const line = document.getElementById('kstDisplayLine');
         if (!line) return;
         window.__lastKairosString = kairosString;
-        // The pure Kairos calendar (calendar lens 'kairos', legacy 'rhythm')
-        // passes the canonical line through unchanged; the other calendar
-        // lenses rebuild it with their own month names.
-        if (tradition && tradition !== 'rhythm' && tradition !== 'kairos') {
+        // The Kairos Kepler header is self-contained ("SS:BB:PP · Month Day ·
+        // 26 (270.1°)" — its month/date come from the Kepler clock itself) and
+        // must never be rebuilt with a calendar lens. The pure Kairos calendar
+        // (calendar lens 'kairos', legacy 'rhythm') passes the canonical line
+        // through unchanged; the other calendar lenses rebuild it with their
+        // own month names.
+        const keplerHeader = (typeof isKairosKeplerSelected === 'function')
+            && isKairosKeplerSelected();
+        if (!keplerHeader && tradition && tradition !== 'rhythm' && tradition !== 'kairos') {
             line.textContent = buildTraditionLine(kairosString, tradition) || kairosString;
         } else {
             line.textContent = kairosString;

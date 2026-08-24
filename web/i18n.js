@@ -81,6 +81,8 @@
             'config.time_system_natural_badge': '🌿 Natural',
             'config.time_system_kairos_natural': '🌿 Kairos Natural (26h / 28m / 7s)',
             'config.time_system_kairos_natural_badge': '🌿 Kairos Natural',
+            'config.time_system_kairos_kepler': '🌿 Kairos Kepler (26 Strides / 28 Beats / 7 Pulses)',
+            'config.time_system_kairos_kepler_badge': '🌿 Kairos Kepler',
             'config.light_beam': '🌍 Show Sun Light',
             'config.seasonal_filters': '🌿 Seasonal filters & editing',
             'config.seasonal_filters_hint':
@@ -479,6 +481,10 @@
             // ---- Energy Lens -------------------------------------------------
             'config.calendar_lens': '📅 Calendar Lens',
             'config.energy_lens': '🌿 Energy Lens',
+            'config.month_style': '📅 Month Names',
+            'config.month_style_kairos': '🌿 Kairos Moons (Root Moon, etc.)',
+            'config.month_style_zodiac': '♐ True Zodiac (Capricornus, etc.)',
+            'obs.month_style_switched': 'Month style set to {style}',
             'energy_lens_none': 'None (pure Kairos)',
             'energy_lens_curanderismo': 'Curanderismo',
             'energy_lens_taoist': 'Taoist',
@@ -832,6 +838,8 @@
             'config.time_system_natural_badge': '🌿 Natuurlijk',
             'config.time_system_kairos_natural': '🌿 Kairos Natuurlijk (26u / 28m / 7s)',
             'config.time_system_kairos_natural_badge': '🌿 Kairos Natuurlijk',
+            'config.time_system_kairos_kepler': '🌿 Kairos Kepler (26 Stappen / 28 Slagen / 7 Pulsen)',
+            'config.time_system_kairos_kepler_badge': '🌿 Kairos Kepler',
             'config.light_beam': '🌍 Toon zonlicht',
             'config.seasonal_filters': '🌿 Seizoensfilters en bewerken',
             'config.seasonal_filters_hint':
@@ -1230,6 +1238,10 @@
             // ---- Energy Lens -------------------------------------------------
             'config.calendar_lens': '📅 Kalenderlens',
             'config.energy_lens': '🌿 Energielens',
+            'config.month_style': '📅 Maandnamen',
+            'config.month_style_kairos': '🌿 Kairos-manen (Wortelmaan, enz.)',
+            'config.month_style_zodiac': '♐ Ware Dierenriem (Steenbok, enz.)',
+            'obs.month_style_switched': 'Maandstijl ingesteld op {style}',
             'energy_lens_none': 'Geen (puur Kairos)',
             'energy_lens_curanderismo': 'Curanderismo',
             'energy_lens_taoist': 'Taoïsme',
@@ -1583,6 +1595,8 @@
             'config.time_system_natural_badge': '🌿 Natuerlik',
             'config.time_system_kairos_natural': '🌿 Kairos Natuerlik (26o / 28m / 7s)',
             'config.time_system_kairos_natural_badge': '🌿 Kairos Natuerlik',
+            'config.time_system_kairos_kepler': '🌿 Kairos Kepler (26 Stappen / 28 Slagen / 7 Pulsen)',
+            'config.time_system_kairos_kepler_badge': '🌿 Kairos Kepler',
             'config.light_beam': '🌍 Sinneljocht sjen',
             'config.seasonal_filters': '🌿 Seizoenfilters en bewurkje',
             'config.seasonal_filters_hint':
@@ -1984,6 +1998,10 @@
             // ---- Energy Lens -------------------------------------------------
             'config.calendar_lens': '📅 Kalinderylens',
             'config.energy_lens': '🌿 Enerzjylens',
+            'config.month_style': '📅 Moannenammen',
+            'config.month_style_kairos': '🌿 Kairos-moannen (Woartelmoanne, ens.)',
+            'config.month_style_zodiac': '♐ Wiere Diereriem (Stienbok, ens.)',
+            'obs.month_style_switched': 'Moannestyl ynsteld op {style}',
             'energy_lens_none': 'Gjin (suver Kairos)',
             'energy_lens_curanderismo': 'Curanderismo',
             'energy_lens_taoist': 'Taoïsme',
@@ -2338,6 +2356,8 @@
             'config.time_system_natural_badge': '🌿 Natürlich',
             'config.time_system_kairos_natural': '🌿 Kairos Natürlich (26h / 28m / 7s)',
             'config.time_system_kairos_natural_badge': '🌿 Kairos Natürlich',
+            'config.time_system_kairos_kepler': '🌿 Kairos Kepler (26 Schritte / 28 Schläge / 7 Pulse)',
+            'config.time_system_kairos_kepler_badge': '🌿 Kairos Kepler',
             'config.light_beam': '🌍 Sonnenlicht anzeigen',
             'config.seasonal_filters': '🌿 Saisonfilter und Bearbeiten',
             'config.seasonal_filters_hint':
@@ -2746,6 +2766,10 @@
             // ---- Energy Lens -------------------------------------------------
             'config.calendar_lens': '📅 Kalenderlinse',
             'config.energy_lens': '🌿 Energielinse',
+            'config.month_style': '📅 Monatsnamen',
+            'config.month_style_kairos': '🌿 Kairos-Monde (Wurzelmond, usw.)',
+            'config.month_style_zodiac': '♐ Wahre Tierkreiszeichen (Steinbock, usw.)',
+            'obs.month_style_switched': 'Monatsstil gesetzt auf {style}',
             'energy_lens_none': 'Keine (reines Kairos)',
             'energy_lens_curanderismo': 'Curanderismo',
             'energy_lens_taoist': 'Taoistisch',
@@ -3101,6 +3125,8 @@
             'config.time_system_natural_badge': '🌿 Naturel',
             'config.time_system_kairos_natural': '🌿 Kairos Naturel (26 h / 28 m / 7 s)',
             'config.time_system_kairos_natural_badge': '🌿 Kairos Naturel',
+            'config.time_system_kairos_kepler': '🌿 Kairos Kepler (26 Pas / 28 Battements / 7 Pulsations)',
+            'config.time_system_kairos_kepler_badge': '🌿 Kairos Kepler',
             'config.light_beam': '🌍 Afficher la lumière du soleil',
             'config.seasonal_filters': '🌿 Filtres saisonniers et édition',
             'config.seasonal_filters_hint':
@@ -3522,6 +3548,10 @@
             // ---- Energy Lens -------------------------------------------------
             'config.calendar_lens': '📅 Lentille calendaire',
             'config.energy_lens': '🌿 Lentille énergétique',
+            'config.month_style': '📅 Noms des mois',
+            'config.month_style_kairos': '🌿 Lunes Kairos (Lune des racines, etc.)',
+            'config.month_style_zodiac': '♐ Vrai zodiaque (Capricorne, etc.)',
+            'obs.month_style_switched': 'Style de mois réglé sur {style}',
             'energy_lens_none': 'Aucune (Kairos pur)',
             'energy_lens_curanderismo': 'Curanderismo',
             'energy_lens_taoist': 'Taoïste',
@@ -3876,6 +3906,8 @@
             'config.time_system_natural_badge': '🌿 Natural',
             'config.time_system_kairos_natural': '🌿 Kairos Natural (26h / 28m / 7s)',
             'config.time_system_kairos_natural_badge': '🌿 Kairos Natural',
+            'config.time_system_kairos_kepler': '🌿 Kairos Kepler (26 Pasos / 28 Latidos / 7 Pulsos)',
+            'config.time_system_kairos_kepler_badge': '🌿 Kairos Kepler',
             'config.light_beam': '🌍 Mostrar luz solar',
             'config.seasonal_filters': '🌿 Filtros de temporada y edición',
             'config.seasonal_filters_hint':
@@ -4284,6 +4316,10 @@
             // ---- Energy Lens -------------------------------------------------
             'config.calendar_lens': '📅 Lente del calendario',
             'config.energy_lens': '🌿 Lente de energía',
+            'config.month_style': '📅 Nombres de los meses',
+            'config.month_style_kairos': '🌿 Lunas Kairos (Luna de raíz, etc.)',
+            'config.month_style_zodiac': '♐ Zodíaco real (Capricornio, etc.)',
+            'obs.month_style_switched': 'Estilo de mes configurado en {style}',
             'energy_lens_none': 'Ninguna (Kairos puro)',
             'energy_lens_curanderismo': 'Curanderismo',
             'energy_lens_taoist': 'Taoísta',
@@ -4634,6 +4670,8 @@
             'config.time_system_natural_badge': '🌿 自然时间',
             'config.time_system_kairos_natural': '🌿 凯洛斯自然时间（26小时 / 28分 / 7秒）',
             'config.time_system_kairos_natural_badge': '🌿 凯洛斯自然时间',
+            'config.time_system_kairos_kepler': '🌿 开普勒凯洛斯（26 步 / 28 拍 / 7 脉冲）',
+            'config.time_system_kairos_kepler_badge': '🌿 开普勒凯洛斯',
             'config.light_beam': '🌍 显示阳光',
             'config.seasonal_filters': '🌿 季节筛选与编辑',
             'config.seasonal_filters_hint':
@@ -4982,6 +5020,10 @@
             // ---- Energy Lens -------------------------------------------------
             'config.calendar_lens': '📅 历法透镜',
             'config.energy_lens': '🌿 能量透镜',
+            'config.month_style': '📅 月份名称',
+            'config.month_style_kairos': '🌿 凯洛斯之月（根月等）',
+            'config.month_style_zodiac': '♐ 真实黄道（摩羯座等）',
+            'obs.month_style_switched': '月份样式已设置为 {style}',
             'energy_lens_none': '无（纯净凯罗斯）',
             'energy_lens_curanderismo': '库兰德罗主义',
             'energy_lens_taoist': '道家',

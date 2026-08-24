@@ -188,7 +188,12 @@
         const weekday = kairosDayName(doy);
         if (doy > 364) return { month: KAIROS_YEAR_DAY, day: doy - 364, weekday };
         const m = Math.floor((doy - 1) / 28);
-        return { month: KAIROS_MONTHS[m], day: ((doy - 1) % 28) + 1, weekday };
+        // The month name follows the selected style (web/static/js/
+        // calendar_style.js): the canonical Root Moon names or the 13 true
+        // zodiac constellations. Falls back to the canonical names.
+        const month = (typeof getMonthName === 'function')
+            ? getMonthName(m) : KAIROS_MONTHS[m];
+        return { month, day: ((doy - 1) % 28) + 1, weekday };
     }
 
     // Primary Kairos Time line — always the visual leader:
@@ -204,16 +209,35 @@
     };
     function updateKSTSummary(season) {
         const now = new Date();
-        const doy = kairosDayOfYear(now);
-        const kd = kairosDate(doy);
         const kairosSeason = KAIROS_SEASONS[season] || season;
-        const timeStr = primaryTime(now);
-        const yearStr = formatYear(getEarthAge(now));
-        const dayIcon = DAY_ICONS[kd.weekday] || '';
-        const seasonIcon = SEASON_ICONS[kairosSeason] || '';
-        const kairosString =
-            `${timeStr} · ${dayIcon}${trName('day.', kd.weekday)} · ${trName('month.', kd.month)} ${kd.day} · ${seasonIcon}${trName('season.', kairosSeason)} · ${yearStr}`;
+        let kairosString;
+        if (typeof isKairosKeplerSelected === 'function' && isKairosKeplerSelected()
+            && typeof getKairosKeplerHeader === 'function') {
+            // Compact Kepler header: "09:19:02 · Scorpius 3 · 26 (270.1°)" —
+            // the Stride:Beat:Pulse clock, its month/day and the short civil
+            // year, with the Sun's azimuth kept (web/static/js/
+            // kairos_kepler_display.js).
+            kairosString = getKairosKeplerHeader(now) || primaryTime(now);
+        } else {
+            const doy = kairosDayOfYear(now);
+            const kd = kairosDate(doy);
+            const timeStr = primaryTime(now);
+            // The year slot: the signature "4.54B / 2026.624" (Earth age split
+            // into scale + precision), or the Earth Era year "EE 4.540.002.026"
+            // while the zodiac month style is active (calendar_style.js).
+            const yearStr = (typeof isZodiacStyle === 'function' && isZodiacStyle()
+                && typeof getEarthEraYear === 'function')
+                ? `EE ${getEarthEraYear().full}`
+                : formatYear(getEarthAge(now));
+            const dayIcon = DAY_ICONS[kd.weekday] || '';
+            const seasonIcon = SEASON_ICONS[kairosSeason] || '';
+            kairosString =
+                `${timeStr} · ${dayIcon}${trName('day.', kd.weekday)} · ${trName('month.', kd.month)} ${kd.day} · ${seasonIcon}${trName('season.', kairosSeason)} · ${yearStr}`;
+        }
         setText('kstDisplayLine', kairosString);
+        updateCivilYearBadge();
+        updateKeplerInfo();
+        updatePulsePanel();
         // FINAL UNIFIED HEADER: the primary line adapts to the selected
         // tradition (Gregorian lives only in the matrix's centre clock).
         if (window.updateDisplay) {
@@ -283,12 +307,22 @@
 
     // ---- Primary display time: the solar position, not the wall clock ---------
     // "12:00 (180.0°)" — time as a position (web/static/js/solar_time.js).
-    // The optional Natural Time layers (web/static/js/natural_time.js — the
-    // 13h / 28m / 13s dial — and web/static/js/kairos_natural_time.js — the
-    // 26h / 28m / 7s "13 light + 13 dark" dial) remap the same solar day,
-    // keeping the degree — so the natural number and the sky-dome bead still
-    // agree.
+    // The optional reading layers remap the same solar day, keeping the
+    // degree — so the number and the sky-dome bead still agree:
+    //   · web/static/js/natural_time.js        — 13h / 28m / 13s dial
+    //   · web/static/js/kairos_natural_time.js — 26h / 28m / 7s "13 light +
+    //     13 dark" dial
+    //   · web/static/js/kairos_time.js         — Kairos Kepler: 26 strides /
+    //     28 beats / 7 pulses with a VARIABLE pulse length from the equation
+    //     of time (5096 pulses = one apparent solar day).
     function primaryTime(now) {
+        if (typeof isKairosKeplerSelected === 'function' && isKairosKeplerSelected()) {
+            if (typeof getKairosKeplerHeader === 'function') {
+                const h = getKairosKeplerHeader(now);
+                if (h) return h;
+            }
+            if (typeof getKairosKeplerTimeDisplay === 'function') return getKairosKeplerTimeDisplay();
+        }
         if (typeof isKairosNaturalSelected === 'function' && isKairosNaturalSelected()) {
             if (typeof getKairosNaturalTimeDisplay === 'function') return getKairosNaturalTimeDisplay();
         }
@@ -297,6 +331,77 @@
         }
         if (typeof getKairosTimeDisplay === 'function') return getKairosTimeDisplay();
         return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+    }
+
+    // The Kairos Kepler info panel (web/static/js/kairos_kepler_display.js):
+    // the full Earth Era date, the short civil date and the variable pulse
+    // length — shown under the primary line only while Kepler mode is active.
+    function updateKeplerInfo() {
+        const fullEl = document.getElementById('full-kairos-date');
+        const civilEl = document.getElementById('civil-kairos-date');
+        const pulseEl = document.getElementById('pulse-length');
+        if (!fullEl && !civilEl && !pulseEl) return;
+        if (typeof isKairosKeplerSelected === 'function' && isKairosKeplerSelected()
+            && typeof getKairosKeplerDisplay === 'function') {
+            try {
+                const d = getKairosKeplerDisplay(new Date());
+                if (d) {
+                    if (fullEl) { fullEl.textContent = d.fullStr; fullEl.hidden = false; }
+                    if (civilEl) { civilEl.textContent = d.civilStr; civilEl.hidden = false; }
+                    if (pulseEl) { pulseEl.textContent = `Pulse: ${d.pulseLength.toFixed(4)} s`; pulseEl.hidden = false; }
+                    return;
+                }
+            } catch (e) { /* fall through to hidden */ }
+        }
+        if (fullEl) fullEl.hidden = true;
+        if (civilEl) civilEl.hidden = true;
+        if (pulseEl) pulseEl.hidden = true;
+    }
+
+    // The short civil year badge ("EE 26") — shown only while the zodiac
+    // month style is active (calendar_style.js) and the Kepler info panel is
+    // NOT (the panel already carries the short civil date).
+    function updateCivilYearBadge() {
+        const el = document.getElementById('civilYear');
+        if (!el) return;
+        const keplerActive = (typeof isKairosKeplerSelected === 'function')
+            && isKairosKeplerSelected();
+        if (!keplerActive && typeof isZodiacStyle === 'function' && isZodiacStyle()
+            && typeof getEarthEraYear === 'function') {
+            try {
+                el.textContent = `EE ${getEarthEraYear().short}`;
+                el.hidden = false;
+                return;
+            } catch (e) { /* fall through to hidden */ }
+        }
+        el.hidden = true;
+    }
+
+    // The Kairos Kepler pulse panel (web/static/js/kairos_kepler_display.js):
+    // the live variable pulse length, the apparent day length and the
+    // equation of time — the "heart" of the system. Visible only while the
+    // kairos_kepler time system is active; refreshed on the 10 s KST cycle
+    // and whenever the time system changes.
+    function updatePulsePanel() {
+        const panel = document.getElementById('pulse-panel');
+        if (!panel) return;
+        const active = (typeof isKairosKeplerSelected === 'function')
+            && isKairosKeplerSelected();
+        panel.hidden = !active;
+        if (!active) return;
+        if (typeof getPulseDisplayData !== 'function'
+            || typeof formatPulseDisplay !== 'function') return;
+        try {
+            const data = getPulseDisplayData(new Date());
+            if (!data) return;
+            const formatted = formatPulseDisplay(data);
+            const pulseEl = document.getElementById('pulse-value');
+            const dayEl = document.getElementById('day-value');
+            const eotEl = document.getElementById('eot-value');
+            if (pulseEl) pulseEl.textContent = formatted.pulseStr;
+            if (dayEl) dayEl.textContent = `${formatted.dayStr} (${formatted.dayVarStr})`;
+            if (eotEl) eotEl.textContent = formatted.eotStr;
+        } catch (e) { /* ignore */ }
     }
 
     function renderKST(data) {

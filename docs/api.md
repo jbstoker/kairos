@@ -321,6 +321,43 @@ dial (altitude 0, azimuth = local day fraction × 360).
   06:14, 18:00 → 19:14), `getKairosNaturalTimeDisplay()` → `"☀️ 13:00 (180.0°)"`
   (light/dark icon + the Sun's azimuth) and `isKairosNaturalSelected()` (reads
   `kairos_time_system`). Selected in ⚙️ Configure → ⏱️ Time System.
+- `web/static/js/kairos_time.js` — the **Kairos Kepler layer** (26 strides /
+  28 beats / 7 pulses = 5,096 pulses per day, **variable pulse length**):
+  `equationOfTime(jd)` → the equation of time in SECONDS (Meeus ch. 28,
+  ported 1:1 from `core/meeus_algorithms.py` — the JS and the CLI agree to
+  ~1e-12 s), `getApparentDayLength(date)` → `86400 + ΔEoT` (the apparent
+  solar day, ≈ 86,400 s ± 30 s), `getPulseLength(date)` → `dayLength / 5096`
+  (≈ 16.955 s, varying a few ms/day), `getKairosKeplerTime(date)` →
+  `{ stride, beat, pulse, totalPulses, pulseLength, dayOfYear, year }`
+  (1-indexed, anchored at **apparent solar midnight**: 01:01:01 = apparent
+  midnight, 14:01:01 = apparent noon, 26:28:07 = the day's end),
+  `getKairosKeplerTimeDisplay()` → `"14:01:01 (180.0°)"` and
+  `isKairosKeplerSelected()` (reads `kairos_time_system`). Because 5,096
+  pulses always span exactly one apparent solar day, the pulse length varies
+  instead of leap days. Selected in ⚙️ Configure → ⏱️ Time System.
+- `web/static/js/calendar_style.js` — the **month-name style + Earth Era
+  year** layer: `KAIROS_MONTH_STYLES` (the canonical `kairos` Root Moon…
+  Star Moon names, and `zodiac` — the 13 true zodiac constellations the Sun
+  actually crosses in a year, Capricornus…Sagittarius incl. Ophiuchus),
+  `getMonthStyle()` / `setMonthStyle()` (persisted as `kairos_month_style`),
+  `getMonthName(monthIndex)` (0–12 in the selected style), `isZodiacStyle()`
+  and `getEarthEraYear()` → `{ full: "4.540.002.026", short: "26" }` (4,540
+  million + the civil year, dot-grouped). The header's month slot and year
+  slot follow the style (`web/kst_display.js`): zodiac shows
+  `EE 4.540.002.026` instead of `4.54B / 2026.624`, plus a short `EE 26`
+  badge (`#civilYear`). Selected in ⚙️ Configure → 📅 Month Names.
+- `web/static/js/kairos_kepler_display.js` — the **Kepler display formatter**:
+  `getKairosKeplerDisplay(date)` → `{ stride, beat, pulse, timeStr, dateStr,
+  fullDateStr, fullStr, civilStr, pulseLength, monthName, dayInMonth, year,
+  shortYear }` and `getKairosKeplerHeader(date)` → `"14:01:01 · Root Moon 15 ·
+  26 (180.0°)"`. It reuses the Kepler engine (`getKairosKeplerTime`) and the
+  calendar-style layer (`getMonthName` / `getEarthEraYear`), so the month
+  names and the Earth Era year follow the user's 📅 Month Names choice. The
+  header (`web/kst_display.js`) shows the compact `SS:BB:PP · Month Day ·
+  shortYear (azimuth°)` line in Kepler mode, and the info panel below shows
+  the full Earth Era date (`EE 4.540.002.026/01/15 14:01:01`), the short civil
+  date (`26/01/15 14:01:01`) and the variable pulse length
+  (`Pulse: 16.9504 s`).
 - `web/static/js/unified_display.js` — the FINAL UNIFIED HEADER layer: the
   calendar-lens-aware primary line — `window.updateDisplay(kairosString, tradition)`
   merges with app.js's own `updateDisplay()` (both call styles preserved) and

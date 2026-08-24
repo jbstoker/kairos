@@ -654,6 +654,15 @@ worker). Open it two ways:
   traditions — Curanderismo, Taoist, Vedic, Pagan/Wiccan, Mesopotamian,
   Egyptian, Mayan — or **None** for pure Kairos. All labels are i18n keys in
   the 7-language catalog.
+- **Month-name style + Earth Era year** — ⚙️ Configure → 📅 Month Names
+  (`#month-style`, persisted as `kairos_month_style`, driven by
+  `web/static/js/calendar_style.js`): the same 13 Kairos months read as the
+  canonical Root Moon…Star Moon names or as the 13 true zodiac constellations
+  (Capricornus…Sagittarius, incl. Ophiuchus). While the zodiac style is
+  active the header (`web/kst_display.js`) replaces the `4.54B / 2026.624`
+  year slot with the **Earth Era year** (`EE 4.540.002.026`) and shows a
+  short civil-year badge (`EE 26`). The style applies to the Kairos/Rhythm
+  lens; other calendar lenses keep their own month names.
 - **Manual observer location** — ⚙️ Configure → 📍 Your location: lat/lon
   fields + "Use my GPS". Saved to `kairos_location`; the dial reads it
   live (no GPS required).
@@ -722,8 +731,18 @@ worker). Open it two ways:
   ⏱️ Time System (`kairos_time_system`); `primaryTime()` in `kst_display.js`
   uses `getNaturalTimeDisplay()` / `getKairosNaturalTimeDisplay()` while
   active, so the header keeps the Sun's azimuth — the number and the bead
-  still agree. Both fall back to the wall clock only without the solar
-  engine; the watch face stays a pure solar clock.
+  still agree. The equation-of-time sibling (`web/static/js/kairos_time.js`)
+  reads the same day as **26 strides / 28 beats / 7 pulses** with a **variable
+  pulse length** (`getPulseLength()` = apparent solar day ÷ 5,096, ≈ 16.955 s)
+  derived from Meeus ch. 28 — ported 1:1 from `core/meeus_algorithms.py` so
+  the browser and the CLI agree — and anchored at apparent solar midnight
+  (01:01:01). While it is active, `kst_display.js` renders the compact
+  `SS:BB:PP · Month Day · shortYear (azimuth°)` header (via
+  `web/static/js/kairos_kepler_display.js`, which reuses the calendar-style
+  month names / Earth Era year) and an info panel with the full Earth Era
+  date, the short civil date and the pulse length. All three layers fall back
+  to the wall clock only without the solar engine; the watch face stays a
+  pure solar clock.
 
 ## Data & file formats
 

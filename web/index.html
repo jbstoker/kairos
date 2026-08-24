@@ -27,6 +27,31 @@
              set in Configure). -->
         <div class="kst-primary-line" id="kstDisplayLine">--:-- (--.-°) · -- · -- · -- · --</div>
         <span class="time-system-badge" id="timeSystemBadge" data-i18n="config.time_system_natural_badge" hidden>🌿 Natural</span>
+        <span class="time-system-badge" id="civilYear" hidden>EE --</span>
+        <!-- Kairos Kepler info panel (kairos_kepler time system): the full
+             Earth Era date, the short civil date and the variable pulse
+             length. -->
+        <div id="full-kairos-date" style="font-size: 0.85rem; color: #8e9ab0;" hidden></div>
+        <div id="civil-kairos-date" style="font-size: 0.85rem; color: #8e9ab0;" hidden></div>
+        <div id="pulse-length" style="font-size: 0.8rem; color: #5a6a7c; opacity: 0.7;" hidden></div>
+        <!-- Kairos Kepler pulse panel — the "heart" of the system: the live
+             variable pulse length, the apparent day length and the equation
+             of time. Visible only while the kairos_kepler time system is
+             active. -->
+        <div id="pulse-panel" style="margin-top: 12px; padding: 12px; background: #1a2230; border-radius: 16px; border: 1px solid #2a3442;" hidden>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span style="color: #8e9ab0; font-size: 0.85rem;">⚡ Pulse Length</span>
+                <span id="pulse-value" style="color: #f5e6c4; font-family: monospace; font-size: 1rem;">--</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span style="color: #8e9ab0; font-size: 0.85rem;">📅 Day Length</span>
+                <span id="day-value" style="color: #f5e6c4; font-family: monospace; font-size: 1rem;">--</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="color: #8e9ab0; font-size: 0.85rem;">🌓 Equation of Time</span>
+                <span id="eot-value" style="color: #f5e6c4; font-family: monospace; font-size: 1rem;">--</span>
+            </div>
+        </div>
 
         <!-- Master Unified Astronomical Viewport -->
         <div class="spatial-matrix-wrapper">
@@ -332,6 +357,15 @@
                         <option value="mayan">🌎 Mayan</option>
                     </select>
                 </div>
+                <div>
+                    <label for="month-style" data-i18n="config.month_style" style="color: #8e9ab0; font-size: 0.8rem; display: block; text-align: center;">
+                        📅 Month Names
+                    </label>
+                    <select id="month-style" style="background: #1e2632; color: #f5e6c4; border: 1px solid #2a3442; border-radius: 40px; padding: 6px 16px; font-size: 0.9rem; cursor: pointer;">
+                        <option value="kairos" data-i18n="config.month_style_kairos">🌿 Kairos Moons (Root Moon, etc.)</option>
+                        <option value="zodiac" data-i18n="config.month_style_zodiac">♐ True Zodiac (Capricornus, etc.)</option>
+                    </select>
+                </div>
             </div>
         </div>
 
@@ -342,6 +376,7 @@
                 <option value="current" data-i18n="config.time_system_current">🌍 Current Time (24h / 60 / 60)</option>
                 <option value="natural" data-i18n="config.time_system_natural">🌿 Natural Time (13h / 28 / 13)</option>
                 <option value="kairos_natural" data-i18n="config.time_system_kairos_natural">🌿 Kairos Natural (26h / 28m / 7s)</option>
+                <option value="kairos_kepler" data-i18n="config.time_system_kairos_kepler">🌿 Kairos Kepler (26 Strides / 28 Beats / 7 Pulses)</option>
             </select>
         </div>
 
@@ -589,6 +624,7 @@
 
 <script src="i18n.js"></script>
 <script src="static/js/lens_manager.js"></script>
+<script src="static/js/calendar_style.js"></script>
 <script src="static/js/energy_data.js"></script>
 <script src="lib/suncalc.js"></script>
 <script src="planets.js"></script>
@@ -605,6 +641,8 @@
 <script src="static/js/solar_time.js"></script>
 <script src="static/js/natural_time.js"></script>
 <script src="static/js/kairos_natural_time.js"></script>
+<script src="static/js/kairos_time.js"></script>
+<script src="static/js/kairos_kepler_display.js"></script>
 <script src="static/js/degree_wheel.js"></script>
 <script src="static/js/solar_geometry.js"></script>
 <script src="kst_display.js"></script>

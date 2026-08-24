@@ -100,6 +100,24 @@ Both choices persist on the device, and the energy card adapts instantly.
 | `☀️Radiance` | The season — Emergence, Radiance, Release, or Stillness |
 | `4.54B / 2026.635` | The year — Earth's age, split into scale and precision |
 
+## Month Names & the Earth Era Year
+
+In **⚙️ Configure → 📅 Month Names** you can read the same 13 Kairos months
+through a different lens:
+
+- **🌿 Kairos Moons** (the default) — *Root Moon, Sap Moon, … Star Moon*.
+- **♐ True Zodiac** — the 13 zodiac constellations the Sun actually crosses
+  in a year: *Capricornus, Aquarius, Pisces, Aries, Taurus, Gemini, Cancer,
+  Leo, Virgo, Libra, Scorpius, Ophiuchus, Sagittarius* (yes — Ophiuchus is
+  one of the 13).
+
+While the **True Zodiac** style is active, the header also switches the year
+to the **Earth Era year** — the unbroken count of years from the beginning of
+our world, e.g. `EE 4.540.002.026` — and a small `EE 26` badge (the short
+civil year) appears under the primary line. Switch back to Kairos Moons and
+the familiar `4.54B / 2026.635` returns. The choice is remembered on the
+device.
+
 ## Tidy View
 
 - The **energy** and **In season** cards are **collapsed by default** —
@@ -163,6 +181,29 @@ Configure → ⏱️ Time System:
   stays the Sun's azimuth and the number and the bead always agree.
 - The *🌿 Kairos Natural* pill replaces the *🌿 Natural* pill while it's
   active.
+
+### Kairos Kepler (26 / 28 / 7, variable pulse)
+
+Choose **🌿 Kairos Kepler (26 Strides / 28 Beats / 7 Pulses)** to read the
+same day on a 26 × 28 × 7 grid where the **pulse itself breathes**: its
+length comes from the *equation of time* — the difference between sundial
+(apparent) time and mean clock time, caused by Earth's elliptical orbit and
+axial tilt — so 5,096 pulses always span exactly one **apparent solar day**
+(≈ 86,400 s ± 30 s). The calendar stays aligned with the sky **without leap
+days**: instead of skipping a day, the pulse just lengthens or shortens.
+
+- The day starts at **apparent solar midnight** (when the Sun crosses the
+  anti-meridian): **01:01:01**. Apparent solar noon is **14:01:01** (the
+  clock is 1-indexed), and the day's end is **26:28:07**.
+- The primary line reads `SS:BB:PP · Month Day · shortYear (azimuth°)`, e.g.
+  `09:19:02 · Scorpius 3 · 26 (270.1°)` — the month follows your 📅 Month
+  Names choice (Kairos moons or the true zodiac), the short year is the civil
+  year, and the azimuth keeps the number and the bead agreeing.
+- Under the primary line, an info panel shows the full Earth Era date
+  (`EE 4.540.002.026/11/03 09:19:02`), the short civil date
+  (`26/11/03 09:19:02`) and the **pulse length** (`Pulse: 17.0129 s`) — about
+  **16.955 seconds**, varying by a few milliseconds through the year.
+- The *🌿 Kairos Kepler* pill replaces the other pills while it's active.
 
 Switch back to **🌍 Current Time (24h / 60 / 60)** at any time — your choice
 is remembered on the device.

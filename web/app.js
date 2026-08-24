@@ -152,6 +152,14 @@ function updateDisplay() {
     }
 
     const d = traditionDate(dayOfYear(new Date()), TRADITIONS[tradition]);
+    // The month-name style (web/static/js/calendar_style.js) renames the
+    // canonical Kairos months (Root Moon…) to the 13 true zodiac
+    // constellations for the Kairos/Rhythm lens.
+    if ((tradition === 'kairos' || tradition === 'rhythm')
+        && typeof getMonthName === 'function') {
+        const doy = dayOfYear(new Date());
+        d.month = getMonthName(Math.floor((doy - 1) / 28));
+    }
 
     // The unified kstDisplay panel header carries the active context:
     // tradition · calendar date · observation-driven solar time.
@@ -529,6 +537,26 @@ if (energyLensSel) {
     });
 }
 
+// --- Month-name style (calendar_style.js) ------------------------------------
+// ⚙️ Configure → 📅 Month Names: "kairos" (Root Moon…) or "zodiac" (the 13
+// true zodiac constellations, incl. Ophiuchus). calendar_style.js persists
+// `kairos_month_style` and refreshes the header on change.
+const monthStyleSel = document.getElementById('month-style');
+if (monthStyleSel && typeof window.setMonthStyle === 'function') {
+    monthStyleSel.value = window.getMonthStyle();
+    monthStyleSel.addEventListener('change', (e) => {
+        window.setMonthStyle(e.target.value);
+        document.getElementById('status').textContent =
+            t('obs.month_style_switched', { style: e.target.value });
+    });
+} else if (monthStyleSel) {
+    try { monthStyleSel.value = localStorage.getItem('kairos_month_style') || 'kairos'; } catch (e) { /* ignore */ }
+    monthStyleSel.addEventListener('change', (e) => {
+        try { localStorage.setItem('kairos_month_style', e.target.value); } catch (err) { /* ignore */ }
+        if (window.refreshKST) window.refreshKST();
+    });
+}
+
 // --- Observer location: pin the sky to where you are (kairos_location) ------
 function getStoredLocation() {
     try {
@@ -652,7 +680,8 @@ function refreshTimeSystemBadge() {
     if (!badge) return;
     const labels = {
         natural: { key: 'config.time_system_natural_badge', fallback: '🌿 Natural' },
-        kairos_natural: { key: 'config.time_system_kairos_natural_badge', fallback: '🌿 Kairos Natural' }
+        kairos_natural: { key: 'config.time_system_kairos_natural_badge', fallback: '🌿 Kairos Natural' },
+        kairos_kepler: { key: 'config.time_system_kairos_kepler_badge', fallback: '🌿 Kairos Kepler' }
     };
     const label = labels[getTimeSystem()];
     badge.hidden = !label;
