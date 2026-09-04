@@ -160,7 +160,10 @@ function buildEnergyHTML(kstData) {
 function renderTodaysEnergy(kstData) {
     const card = document.getElementById('energyCard');
     if (!card) return;
-    const body = buildEnergyHTML(kstData);
+    // The star-sign section (web/static/js/zodiac_engine.js) joins the energy
+    // rows when the engine is loaded; the card stays whole without it.
+    const body = buildEnergyHTML(kstData)
+        + ((typeof window.buildStarSignHTML === 'function') ? window.buildStarSignHTML() : '');
     // Collapsible: collapsed by default so the card saves room.
     card.innerHTML =
         `<button type="button" class="energy-toggle" id="energyToggle" aria-expanded="false" aria-controls="energyCardBody">` +
