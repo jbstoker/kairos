@@ -168,19 +168,19 @@ class TestKairosKeplerJs(unittest.TestCase):
             "}));\n"
         )
         out = self._run(script)
-        self.assertEqual(out["start"]["stride"], 1)
-        self.assertEqual(out["start"]["beat"], 1)
-        self.assertEqual(out["start"]["pulse"], 1)
-        # 1-indexed: half a 26-stride day is the start of stride 14.
-        self.assertEqual(out["noon"]["stride"], 14)
-        self.assertEqual(out["noon"]["beat"], 1)
-        self.assertEqual(out["noon"]["pulse"], 1)
-        self.assertEqual(out["end"]["stride"], 26)
-        self.assertEqual(out["end"]["beat"], 28)
-        self.assertEqual(out["end"]["pulse"], 7)
-        self.assertEqual(out["nearEnd"]["stride"], 26)
-        self.assertEqual(out["nearEnd"]["beat"], 28)
-        self.assertEqual(out["nearEnd"]["pulse"], 7)
+        # 0-indexed natural dial: midnight 00:00:00, noon 13:00:00.
+        self.assertEqual(out["start"]["stride"], 0)
+        self.assertEqual(out["start"]["beat"], 0)
+        self.assertEqual(out["start"]["pulse"], 0)
+        self.assertEqual(out["noon"]["stride"], 13)
+        self.assertEqual(out["noon"]["beat"], 0)
+        self.assertEqual(out["noon"]["pulse"], 0)
+        self.assertEqual(out["end"]["stride"], 25)
+        self.assertEqual(out["end"]["beat"], 27)
+        self.assertEqual(out["end"]["pulse"], 6)
+        self.assertEqual(out["nearEnd"]["stride"], 25)
+        self.assertEqual(out["nearEnd"]["beat"], 27)
+        self.assertEqual(out["nearEnd"]["pulse"], 6)
 
     def test_day_of_year_is_1_to_364(self):
         script = (
@@ -198,8 +198,8 @@ class TestKairosKeplerJs(unittest.TestCase):
 
     def test_apparent_midnight_anchor_with_engine(self):
         """End-to-end with SunCalc (Wergea): at the instant of apparent solar
-        noon the clock reads 14:01:01; at the anti-meridian (nadir) it reads
-        01:01:01 — the day starts at apparent solar midnight."""
+        noon the clock reads 13:00:00; at the anti-meridian (nadir) it reads
+        00:00:00 — the day starts at apparent solar midnight."""
         script = (
             "const REAL = Date;\n"
             "global.SunCalc = require('./web/lib/suncalc.js');\n"
@@ -224,13 +224,13 @@ class TestKairosKeplerJs(unittest.TestCase):
             "}));\n"
         )
         out = self._run(script)
-        self.assertEqual(out["noon"], "14:01:01")
-        self.assertEqual(out["midnight"], "01:01:01")
+        self.assertEqual(out["noon"], "13:00:00")
+        self.assertEqual(out["midnight"], "00:00:00")
         self.assertTrue(16.94 < out["pulse"] < 16.97, out["pulse"])
 
     def test_wall_clock_fallback_is_deterministic(self):
         """Without the solar engine, the day fraction falls back to the wall
-        clock — local noon → 14:01:01, still with today's real pulse."""
+        clock — local noon → 13:00:00, still with today's real pulse."""
         script = (
             "const REAL = Date;\n"
             "const FIXED = new REAL(2024, 0, 15, 12, 0, 0).getTime();\n"
@@ -246,7 +246,7 @@ class TestKairosKeplerJs(unittest.TestCase):
             "}));\n"
         )
         out = self._run(script)
-        self.assertEqual(out["formatted"], "14:01:01")
+        self.assertEqual(out["formatted"], "13:00:00")
         self.assertTrue(16.94 < out["pulse"] < 16.97, out["pulse"])
 
     def test_is_kairos_kepler_selected(self):

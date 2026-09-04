@@ -193,16 +193,20 @@ axial tilt — so 5,096 pulses always span exactly one **apparent solar day**
 days**: instead of skipping a day, the pulse just lengthens or shortens.
 
 - The day starts at **apparent solar midnight** (when the Sun crosses the
-  anti-meridian): **01:01:01**. Apparent solar noon is **14:01:01** (the
-  clock is 1-indexed), and the day's end is **26:28:07**.
+  anti-meridian): **00:00:00**. Apparent solar noon is **13:00:00**, and the
+  day's end is **25:27:06** (the natural 0-indexed dial — it matches the
+  🌿 Kairos Natural clock, so sunrise ≈ 07:00, noon = 13:00, sunset ≈ 20:00).
 - The primary line reads `SS:BB:PP · Month Day · shortYear (azimuth°)`, e.g.
-  `09:19:02 · Scorpius 3 · 26 (270.1°)` — the month follows your 📅 Month
+  `08:19:02 · Scorpius 3 · 26 (270.1°)` — the month follows your 📅 Month
   Names choice (Kairos moons or the true zodiac), the short year is the civil
   year, and the azimuth keeps the number and the bead agreeing.
 - Under the primary line, an info panel shows the full Earth Era date
-  (`EE 4.540.002.026/11/03 09:19:02`), the short civil date
-  (`26/11/03 09:19:02`) and the **pulse length** (`Pulse: 17.0129 s`) — about
+  (`EE 4.540.002.026/11/03 08:19:02`), the short civil date
+  (`26/11/03 08:19:02`) and the **pulse length** (`Pulse: 17.0129 s`) — about
   **16.955 seconds**, varying by a few milliseconds through the year.
+- Prefer the older **1-indexed** form (`01:01:01`–`26:28:07`, noon `14:01:01`)?
+  Switch **⚙️ Configure → 🔢 Display Index → 🌿 Traditional** — the choice is
+  remembered on the device.
 - The *🌿 Kairos Kepler* pill replaces the other pills while it's active.
 
 **Dual-Time** — the text and the dial are two different things by design: the

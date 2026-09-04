@@ -93,11 +93,26 @@ class TestKairosDualTimeJs(unittest.TestCase):
             "}));\n"
         )
         out = self._run(script)
+        # 0-indexed natural dial.
+        self.assertEqual(out["zero"], "00:00:00")
+        self.assertEqual(out["stride"], "01:00:00")
+        self.assertEqual(out["noon"], "13:00:00")
+        self.assertEqual(out["last"], "25:27:06")
+        self.assertEqual(out["clamped"], "25:27:06")
+
+    def test_orbital_timestamp_legacy_one_indexed(self):
+        script = (
+            "const dt = require('./web/static/js/kairos_dual_time.js');\n"
+            "process.stdout.write(JSON.stringify({\n"
+            "  zero: dt.getOrbitalTimestamp(0, true),\n"
+            "  noon: dt.getOrbitalTimestamp(2548, true),\n"
+            "  last: dt.getOrbitalTimestamp(5095, true)\n"
+            "}));\n"
+        )
+        out = self._run(script)
         self.assertEqual(out["zero"], "01:01:01")
-        self.assertEqual(out["stride"], "02:01:01")
         self.assertEqual(out["noon"], "14:01:01")
         self.assertEqual(out["last"], "26:28:07")
-        self.assertEqual(out["clamped"], "26:28:07")
 
     def test_visual_dial_time(self):
         script = (
@@ -112,18 +127,24 @@ class TestKairosDualTimeJs(unittest.TestCase):
         )
         out = self._run(script)
         self.assertEqual(out["north"]["visualPulses"], 0)
-        self.assertEqual(out["north"]["formatted"], "01:01:01")
-        self.assertEqual(out["east"], {"visualPulses": 1274, "stride": 7,
-                                       "beat": 15, "pulse": 1,
-                                       "formatted": "07:15:01"})
-        self.assertEqual(out["south"], {"visualPulses": 2548, "stride": 14,
-                                        "beat": 1, "pulse": 1,
-                                        "formatted": "14:01:01"})
+        self.assertEqual(out["north"]["formatted"], "00:00:00")
+        self.assertEqual(out["north"]["formatted1"], "01:01:01")   # legacy
+        self.assertEqual(out["east"], {"visualPulses": 1274, "stride": 6,
+                                       "beat": 14, "pulse": 0,
+                                       "formatted": "06:14:00",
+                                       "stride1": 7, "beat1": 15, "pulse1": 1,
+                                       "formatted1": "07:15:01"})
+        self.assertEqual(out["south"], {"visualPulses": 2548, "stride": 13,
+                                        "beat": 0, "pulse": 0,
+                                        "formatted": "13:00:00",
+                                        "stride1": 14, "beat1": 1, "pulse1": 1,
+                                        "formatted1": "14:01:01"})
         self.assertEqual(out["west"]["visualPulses"], 3822)
-        self.assertEqual(out["west"]["formatted"], "20:15:01")
+        self.assertEqual(out["west"]["formatted"], "19:14:00")
+        self.assertEqual(out["west"]["formatted1"], "20:15:01")
         # 360° wraps to 0°.
         self.assertEqual(out["full"]["visualPulses"], 0)
-        self.assertEqual(out["full"]["formatted"], "01:01:01")
+        self.assertEqual(out["full"]["formatted"], "00:00:00")
 
     def test_calculate_pulse_length(self):
         script = (
@@ -190,10 +211,12 @@ class TestKairosDualTimeJs(unittest.TestCase):
             "process.stdout.write(JSON.stringify(dt.getDualTime()));\n"
         )
         out = self._run(script)
-        self.assertEqual(out["orbitalText"], "14:01:01")
+        self.assertEqual(out["orbitalText"], "13:00:00")
+        self.assertEqual(out["orbitalText1"], "14:01:01")   # legacy
         self.assertEqual(out["sunAzimuth"], 180)
         self.assertEqual(out["visualPulses"], 2548)
-        self.assertEqual(out["visualTime"], "14:01:01")
+        self.assertEqual(out["visualTime"], "13:00:00")
+        self.assertEqual(out["visualTime1"], "14:01:01")
         self.assertEqual(out["dayOfYear"], 15)
         self.assertTrue(16.9 < out["pulseLength"] < 17.0, out["pulseLength"])
 

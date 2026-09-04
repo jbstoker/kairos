@@ -54,18 +54,18 @@ function calculatePulseLength(date) {
  * The ORBITAL TEXT timestamp for a pulse count (0–5,095): the global
  * "HH:MM:SS" (Stride:Beat:Pulse) string. Same for every observer.
  *
- * The on-screen format is 1-indexed (01:01:01–26:28:07) to match the app's
- * approved header — the spec's 0-indexed breakdown is adapted so the string
- * returned here equals what is displayed.
+ * 0-INDEXED by default (00:00:00–25:27:06 — the natural dial); pass
+ * `oneIndexed = true` for the 1-indexed traditional form (01:01:01–26:28:07).
  */
-function getOrbitalTimestamp(currentPulses) {
+function getOrbitalTimestamp(currentPulses, oneIndexed) {
     const total = Math.max(0, Math.min(DUAL_TIME.TOTAL_PULSES_PER_DAY - 1,
         Math.floor(currentPulses || 0)));
     const stride = Math.floor(total / DUAL_TIME.PULSES_PER_STRIDE);
     const remainder = total % DUAL_TIME.PULSES_PER_STRIDE;
     const beat = Math.floor(remainder / DUAL_TIME.PULSES_PER_BEAT);
     const pulse = remainder % DUAL_TIME.PULSES_PER_BEAT;
-    return `${dualTimePad2(stride + 1)}:${dualTimePad2(beat + 1)}:${dualTimePad2(pulse + 1)}`;
+    const offset = oneIndexed ? 1 : 0;
+    return `${dualTimePad2(stride + offset)}:${dualTimePad2(beat + offset)}:${dualTimePad2(pulse + offset)}`;
 }
 
 /**
@@ -107,8 +107,9 @@ function getPhysicalSunAzimuth(lat, lon, date, currentPulses) {
 
 /**
  * Map a compass azimuth back onto the 26 × 28 × 7 dial: visual_pulses =
- * round(azimuth / 360 × 5,096), broken into Stride/Beat/Pulse (1-indexed,
- * wrapped so 360° = 0°).
+ * round(azimuth / 360 × 5,096), broken into Stride/Beat/Pulse (0-indexed by
+ * default — the natural dial — with the 1-indexed traditional form in
+ * stride1/beat1/pulse1/formatted1; wrapped so 360° = 0°).
  */
 function getVisualDialTime(azimuthDegrees) {
     const az = ((azimuthDegrees % 360) + 360) % 360;
@@ -120,17 +121,18 @@ function getVisualDialTime(azimuthDegrees) {
     const pulse = remainder % DUAL_TIME.PULSES_PER_BEAT;
     return {
         visualPulses,
-        stride: stride + 1,
-        beat: beat + 1,
-        pulse: pulse + 1,
-        formatted: `${dualTimePad2(stride + 1)}:${dualTimePad2(beat + 1)}:${dualTimePad2(pulse + 1)}`
+        stride, beat, pulse,   // 0-indexed natural
+        formatted: `${dualTimePad2(stride)}:${dualTimePad2(beat)}:${dualTimePad2(pulse)}`,
+        stride1: stride + 1, beat1: beat + 1, pulse1: pulse + 1,   // 1-indexed
+        formatted1: `${dualTimePad2(stride + 1)}:${dualTimePad2(beat + 1)}:${dualTimePad2(pulse + 1)}`
     };
 }
 
 /**
- * The complete Dual-Time snapshot for a moment:
- *   { orbitalText, sunAzimuth, visualPulses, visualTime, pulseLength,
- *     dayOfYear }
+ * The complete Dual-Time snapshot for a moment (0-indexed natural values,
+ * with the 1-indexed traditional forms alongside):
+ *   { orbitalText, orbitalText1, sunAzimuth, visualPulses, visualTime,
+ *     visualTime1, pulseLength, dayOfYear }
  */
 function getDualTime(date) {
     const now = date || new Date();
@@ -138,6 +140,7 @@ function getDualTime(date) {
     const kairos = getKairosKeplerTime(now);
     const pulseCount = Math.floor(kairos.totalPulses);
     const orbitalText = getOrbitalTimestamp(pulseCount);
+    const orbitalText1 = getOrbitalTimestamp(pulseCount, true);
     let sunAzimuth = 0;
     if (typeof getSolarAzimuth === 'function') {
         try { sunAzimuth = getSolarAzimuth(); } catch (e) { /* ignore */ }
@@ -145,9 +148,11 @@ function getDualTime(date) {
     const visual = getVisualDialTime(sunAzimuth);
     return {
         orbitalText,
+        orbitalText1,
         sunAzimuth,
         visualPulses: visual.visualPulses,
         visualTime: visual.formatted,
+        visualTime1: visual.formatted1,
         pulseLength: kairos.pulseLength,
         dayOfYear: kairos.dayOfYear
     };

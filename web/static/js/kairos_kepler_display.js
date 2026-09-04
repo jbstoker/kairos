@@ -45,8 +45,41 @@ function getKairosMonthAndDay(dayOfYear) {
 }
 
 /**
+ * The selected display-index style: 'zero' (natural dial, 00:00:00–25:27:06,
+ * the default) or 'one' (traditional, 01:01:01–26:28:07). Persisted in
+ * `kairos_index_style`.
+ */
+function getIndexStyle() {
+    try {
+        if (typeof localStorage === 'undefined') return 'zero';
+        const value = localStorage.getItem('kairos_index_style');
+        if (value === 'one' || value === 'zero') return value;
+    } catch (e) { /* ignore */ }
+    return 'zero';
+}
+
+function setIndexStyle(value) {
+    const style = (value === 'one' || value === 'zero') ? value : 'zero';
+    try { localStorage.setItem('kairos_index_style', style); } catch (e) { /* ignore */ }
+    // Refresh the context label (app.js) and the primary line (kst_display.js).
+    if (typeof window !== 'undefined' && typeof window.updateDisplay === 'function') {
+        window.updateDisplay();
+    }
+    if (typeof window !== 'undefined' && typeof window.refreshKST === 'function') {
+        window.refreshKST();
+    }
+    return style;
+}
+
+function isOneIndexed() {
+    return getIndexStyle() === 'one';
+}
+
+/**
  * The full formatted Kepler display for a moment:
- *   { stride, beat, pulse, timeStr, dateStr, fullDateStr, fullStr, civilStr,
+ *   { stride, beat, pulse, timeStr,           ← 0-indexed natural (primary)
+ *     stride1, beat1, pulse1, timeStr1,        ← 1-indexed traditional (legacy)
+ *     dateStr, fullDateStr, fullStr, civilStr, ← follow the 📐 Display Index
  *     pulseLength, monthName, dayInMonth, year, shortYear }
  *
  * Reuses the Kepler engine (getKairosKeplerTime) and the calendar-style
@@ -73,18 +106,22 @@ function getKairosKeplerDisplay(date) {
         : { full: String(4540000000 + now.getFullYear()),
             short: String(now.getFullYear()).slice(-2) };
 
-    const timeStr = `${kairosKeplerPad2(kairos.stride)}:${kairosKeplerPad2(kairos.beat)}:${kairosKeplerPad2(kairos.pulse)}`;
+    // 0-indexed natural dial (primary) + 1-indexed traditional (legacy).
+    const stride = kairos.stride, beat = kairos.beat, pulse = kairos.pulse;
+    const timeStr = `${kairosKeplerPad2(stride)}:${kairosKeplerPad2(beat)}:${kairosKeplerPad2(pulse)}`;
+    const timeStr1 = `${kairosKeplerPad2(stride + 1)}:${kairosKeplerPad2(beat + 1)}:${kairosKeplerPad2(pulse + 1)}`;
+    const shown = isOneIndexed() ? timeStr1 : timeStr;
     const dateStr = `${kairosKeplerPad2(monthIndex + 1)}/${kairosKeplerPad2(dayInMonth)}`;
 
     return {
-        stride: kairos.stride,
-        beat: kairos.beat,
-        pulse: kairos.pulse,
-        timeStr,
+        stride, beat, pulse,                    // 0-indexed
+        timeStr,                                 // 0-indexed
+        stride1: stride + 1, beat1: beat + 1, pulse1: pulse + 1,   // 1-indexed
+        timeStr1,                                // 1-indexed
         dateStr,
         fullDateStr: `${earthEra.full}/${dateStr}`,
-        fullStr: `EE ${earthEra.full}/${dateStr} ${timeStr}`,
-        civilStr: `${earthEra.short}/${dateStr} ${timeStr}`,
+        fullStr: `EE ${earthEra.full}/${dateStr} ${shown}`,
+        civilStr: `${earthEra.short}/${dateStr} ${shown}`,
         pulseLength: kairos.pulseLength,
         monthName,
         dayInMonth,
@@ -93,17 +130,19 @@ function getKairosKeplerDisplay(date) {
     };
 }
 
-// "09:19:02 · Scorpius 3 · 26 (270.1°)" — the compact header line for the
-// Kepler clock. The Sun's true azimuth is kept so the header number and the
-// sky-dome bead still agree.
+// "08:19:02 · Scorpius 3 · 26 (270.1°)" — the compact header line for the
+// Kepler clock. Follows the 📐 Display Index choice (0-indexed natural by
+// default, 1-indexed traditional with the toggle). The Sun's true azimuth is
+// kept so the header number and the sky-dome bead still agree.
 function getKairosKeplerHeader(date) {
     const display = getKairosKeplerDisplay(date);
     if (!display) return null;
+    const shown = isOneIndexed() ? display.timeStr1 : display.timeStr;
     let azimuth = 0;
     if (typeof getSolarAzimuth === 'function') {
         try { azimuth = getSolarAzimuth(); } catch (e) { /* ignore */ }
     }
-    return `${display.timeStr} · ${display.monthName} ${display.dayInMonth} · ${display.shortYear} (${azimuth.toFixed(1)}°)`;
+    return `${shown} · ${display.monthName} ${display.dayInMonth} · ${display.shortYear} (${azimuth.toFixed(1)}°)`;
 }
 
 /**
@@ -175,5 +214,8 @@ if (typeof module !== 'undefined' && module.exports) {
     module.exports.getKairosMonthAndDay = getKairosMonthAndDay;
     module.exports.getPulseDisplayData = getPulseDisplayData;
     module.exports.formatPulseDisplay = formatPulseDisplay;
+    module.exports.getIndexStyle = getIndexStyle;
+    module.exports.setIndexStyle = setIndexStyle;
+    module.exports.isOneIndexed = isOneIndexed;
     module.exports.KAIROS_DISPLAY = KAIROS_DISPLAY;
 }

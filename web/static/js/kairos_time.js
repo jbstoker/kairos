@@ -127,24 +127,28 @@ function kairosKeplerDayOfYear(date) {
 /**
  * Convert a fraction of the day (0.0–1.0) into the 26 × 28 × 7 clock parts.
  * Pure and deterministic, so it is unit-testable. fraction 1 → the day's end
- * (26:28:07), mirroring the natural layers' 13:00 / 26:00.
+ * (25:27:06), mirroring the natural layers' "26:00 is the day's end".
+ *
+ * The parts are 0-INDEXED (stride 0–25, beat 0–27, pulse 0–6) — the natural
+ * dial: solar midnight = 00:00:00, solar noon = 13:00:00. The 1-indexed
+ * "Traditional" display is a legacy view (web/static/js/kairos_kepler_display.js).
  */
 function kairosKeplerFromFraction(fraction) {
     const clamped = Math.max(0, Math.min(1, fraction));
     const total = clamped * KAIROS_CONSTANTS.PULSES_PER_DAY;
     if (total >= KAIROS_CONSTANTS.PULSES_PER_DAY) {
-        // fraction 1 → the day's end (26:28:07), mirroring the natural
+        // fraction 1 → the day's end (25:27:06), mirroring the natural
         // layers' "26:00 is the day's end".
-        return { stride: 26, beat: 28, pulse: 7, totalPulses: total };
+        return { stride: 25, beat: 27, pulse: 6, totalPulses: total };
     }
     const stride = Math.floor(total / KAIROS_PULSES_PER_STRIDE);
     const remainder = total % KAIROS_PULSES_PER_STRIDE;
     const beat = Math.floor(remainder / KAIROS_CONSTANTS.PULSES_PER_BEAT);
     const pulse = Math.floor(remainder % KAIROS_CONSTANTS.PULSES_PER_BEAT);
     return {
-        stride: stride + 1,   // 1-indexed: 1–26
-        beat: beat + 1,       // 1-indexed: 1–28
-        pulse: pulse + 1,     // 1-indexed: 1–7
+        stride: stride,   // 0-indexed: 0–25
+        beat: beat,       // 0-indexed: 0–27
+        pulse: pulse,     // 0-indexed: 0–6
         totalPulses: total
     };
 }
@@ -180,7 +184,8 @@ function kairosKeplerDayFraction(now) {
 /**
  * Live Kairos Kepler time (26 strides / 28 beats / 7 pulses), anchored at
  * apparent solar midnight. The pulse length is today's real one — the clock
- * advances one pulse every ~16.95 seconds.
+ * advances one pulse every ~16.95 seconds. The parts are 0-indexed (the
+ * natural dial: midnight 00:00:00, noon 13:00:00).
  */
 function getKairosKeplerTime(date) {
     const now = date || new Date();
@@ -197,16 +202,22 @@ function getKairosKeplerTime(date) {
     };
 }
 
-// "14:01:01 (180.0°)" — the Kairos Kepler clock + the Sun's true azimuth, the
+// "13:00:00 (180.0°)" — the Kairos Kepler clock + the Sun's true azimuth, the
 // same shape as the other displays so the header keeps its degree and the
-// bead and the number still agree.
+// bead and the number still agree. Follows the 📐 Display Index choice
+// (kairos_kepler_display.js): 0-indexed natural (default) or 1-indexed
+// traditional.
 function getKairosKeplerTimeDisplay() {
     const k = getKairosKeplerTime();
+    const one = (typeof getIndexStyle === 'function' && getIndexStyle() === 'one');
+    const timeStr = one
+        ? `${kairosKeplerPad2(k.stride + 1)}:${kairosKeplerPad2(k.beat + 1)}:${kairosKeplerPad2(k.pulse + 1)}`
+        : k.formatted;
     let azimuth = 0;
     if (typeof getSolarAzimuth === 'function') {
         try { azimuth = getSolarAzimuth(); } catch (e) { /* ignore */ }
     }
-    return `${k.formatted} (${azimuth.toFixed(1)}°)`;
+    return `${timeStr} (${azimuth.toFixed(1)}°)`;
 }
 
 // Is the Kairos Kepler Time system active? (localStorage is guarded so this

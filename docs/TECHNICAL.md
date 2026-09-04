@@ -736,7 +736,9 @@ worker). Open it two ways:
   pulse length** (`getPulseLength()` = apparent solar day ÷ 5,096, ≈ 16.955 s)
   derived from Meeus ch. 28 — ported 1:1 from `core/meeus_algorithms.py` so
   the browser and the CLI agree — and anchored at apparent solar midnight
-  (01:01:01). While it is active, `kst_display.js` renders the compact
+  (00:00:00). The display is **0-indexed** (the natural dial: noon = 13:00:00,
+  day's end = 25:27:06; a 📐 Display Index toggle offers the 1-indexed
+  traditional form). While it is active, `kst_display.js` renders the compact
   `SS:BB:PP · Month Day · shortYear (azimuth°)` header (via
   `web/static/js/kairos_kepler_display.js`, which reuses the calendar-style
   month names / Earth Era year) and an info panel with the full Earth Era

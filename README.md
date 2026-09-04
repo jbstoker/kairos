@@ -122,8 +122,9 @@ The web app shows this live: choose **🌿 Kairos Kepler** in ⚙️ Configure �
 ⏱️ Time System and a pulse panel under the clock displays the current
 **pulse length**, the **apparent day length** (with its 📈 / 📉 trend against
 a mean day) and the **equation of time** in minutes. The whole pulse grid is
-anchored at apparent solar midnight — `01:01:01` — so the clock reads the
-same sky the dial shows.
+anchored at apparent solar midnight — `00:00:00` — so solar noon reads
+**13:00:00** and the clock matches the natural dial (a 🔢 Display Index
+toggle in ⚙️ Configure offers the 1-indexed traditional form).
 
 **Dual-Time** — the text and the dial are decoupled by design: the time you
 read is the **global orbital time** (a pure pulse count, identical for every
