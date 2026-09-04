@@ -21,7 +21,10 @@ def solar_noon_from_observation():
 
 
 def current_solar_time():
-    """Hours since the last observed solar noon (0..24).
+    """True solar time in hours (0..24) — 12.0 is solar noon.
+
+    Matches the web convention (web/static/js/solar_time.js):
+    hours = 12 + (now - solar noon).
 
     Returns None when no solar noon has ever been observed.
     """
@@ -30,7 +33,7 @@ def current_solar_time():
         return None
     now = datetime.now()
     diff = now - noon
-    hours = diff.total_seconds() / 3600
+    hours = 12 + diff.total_seconds() / 3600
     return hours % 24
 
 

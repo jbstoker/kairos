@@ -171,6 +171,9 @@ class Kairos:
     def _solar_time_and_noon(self):
         """Return (solar_hours, noon_dt, method).
 
+        solar_hours is TRUE SOLAR TIME in hours (0..24) — 12.0 is solar
+        noon, matching the web convention (web/static/js/solar_time.js).
+
         - With lat/lon, predict solar noon via the cross-reference engine
           and let recent observations correct it.
         - Without lat/lon, fall back to the last recorded solar noon.
@@ -181,19 +184,19 @@ class Kairos:
             if observed is None:
                 return None, None, None
             diff = datetime.now() - observed
-            return (diff.total_seconds() / 3600.0) % 24, observed, "observation"
+            return (12 + diff.total_seconds() / 3600.0) % 24, observed, "observation"
 
         result = cross_reference_solar_noon(self.lat, self.lon)
         if result is not None:
             predicted = correct_solar_noon(result.value)
             diff = datetime.now() - predicted
             method = f"cross-referenced ({', '.join(result.methods)})"
-            return (diff.total_seconds() / 3600.0) % 24, predicted, method
+            return (12 + diff.total_seconds() / 3600.0) % 24, predicted, method
 
         if observed is None:
             return None, None, None
         diff = datetime.now() - observed
-        return (diff.total_seconds() / 3600.0) % 24, observed, "observation"
+        return (12 + diff.total_seconds() / 3600.0) % 24, observed, "observation"
 
     # ------------------------------------------------------------------ #
     # Now
