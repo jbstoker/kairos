@@ -54,10 +54,6 @@ class TestKairosNaturalServed(unittest.TestCase):
         self.assertIn('<option value="kairos_natural"', html)
         self.assertIn('data-i18n="config.time_system_kairos_natural"', html)
 
-    def test_time_system_badge_markup_present(self):
-        html = self.client.get("/").get_data(as_text=True)
-        self.assertIn('id="timeSystemBadge"', html)
-
     def test_watch_face_does_not_load_kairos_natural(self):
         """The isolated watch face stays a pure solar clock — the Kairos
         Natural layer is a main-app reading option and must not leak in."""

@@ -58,11 +58,10 @@ class TestKairosKeplerServed(unittest.TestCase):
         self.assertIn('data-i18n="config.time_system_kairos_kepler"', html)
 
     def test_kepler_info_panel_markup_present(self):
-        """The Kairos Kepler info panel (full Earth Era date, short civil
-        date, variable pulse length) lives under the primary line."""
+        """The Kairos Kepler info line (full Earth Era date, variable pulse
+        length) lives under the primary line."""
         html = self.client.get("/").get_data(as_text=True)
         self.assertIn('id="full-kairos-date"', html)
-        self.assertIn('id="civil-kairos-date"', html)
         self.assertIn('id="pulse-length"', html)
         self.assertNotIn('id="pulseLengthReadout"', html)
 

@@ -55,11 +55,6 @@ class TestNaturalTimeServed(unittest.TestCase):
         # The toggle label is translated (catalog key present in the HTML).
         self.assertIn('data-i18n="config.time_system"', html)
 
-    def test_time_system_badge_in_header(self):
-        html = self.client.get("/").get_data(as_text=True)
-        self.assertIn('id="timeSystemBadge"', html)
-        self.assertIn('data-i18n="config.time_system_natural_badge"', html)
-
     def test_watch_face_does_not_load_natural_time(self):
         """The isolated watch face stays a pure solar clock — the Natural
         Time layer is a main-app reading option and must not leak in."""

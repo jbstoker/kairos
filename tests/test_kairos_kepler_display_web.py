@@ -54,15 +54,6 @@ class TestKairosKeplerDisplayServed(unittest.TestCase):
         html = self.client.get("/watch.html").get_data(as_text=True)
         self.assertNotIn('src="static/js/kairos_kepler_display.js"', html)
 
-    def test_pulse_panel_markup_present(self):
-        """The real-time pulse panel (pulse length, day length, equation of
-        time) lives in the Kairos Kepler info area."""
-        html = self.client.get("/").get_data(as_text=True)
-        self.assertIn('id="pulse-panel"', html)
-        self.assertIn('id="pulse-value"', html)
-        self.assertIn('id="day-value"', html)
-        self.assertIn('id="eot-value"', html)
-
     def test_index_style_toggle_markup_present(self):
         """The 🔢 Display Index toggle (0-indexed natural / 1-indexed
         traditional) lives in the Configure panel."""

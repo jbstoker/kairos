@@ -237,7 +237,6 @@
         setText('kstDisplayLine', kairosString);
         updateCivilYearBadge();
         updateKeplerInfo();
-        updatePulsePanel();
         // FINAL UNIFIED HEADER: the primary line adapts to the selected
         // tradition (Gregorian lives only in the matrix's centre clock).
         if (window.updateDisplay) {
@@ -333,23 +332,21 @@
         return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
     }
 
-    // The Kairos Kepler info panel (web/static/js/kairos_kepler_display.js +
-    // web/static/js/kairos_dual_time.js): the full Earth Era date, the short
-    // civil date, the variable pulse length and the VISUAL dial position —
-    // shown under the primary line only while Kepler mode is active.
+    // The Kairos Kepler info line (web/static/js/kairos_kepler_display.js +
+    // web/static/js/kairos_dual_time.js): the full Earth Era date, the
+    // variable pulse length and the VISUAL dial position — shown under the
+    // primary line only while Kepler mode is active.
     function updateKeplerInfo() {
         const fullEl = document.getElementById('full-kairos-date');
-        const civilEl = document.getElementById('civil-kairos-date');
         const pulseEl = document.getElementById('pulse-length');
         const visualEl = document.getElementById('visual-time');
-        if (!fullEl && !civilEl && !pulseEl && !visualEl) return;
+        if (!fullEl && !pulseEl && !visualEl) return;
         if (typeof isKairosKeplerSelected === 'function' && isKairosKeplerSelected()
             && typeof getKairosKeplerDisplay === 'function') {
             try {
                 const d = getKairosKeplerDisplay(new Date());
                 if (d) {
                     if (fullEl) { fullEl.textContent = d.fullStr; fullEl.hidden = false; }
-                    if (civilEl) { civilEl.textContent = d.civilStr; civilEl.hidden = false; }
                     if (pulseEl) { pulseEl.textContent = `Pulse: ${d.pulseLength.toFixed(4)} s`; pulseEl.hidden = false; }
                     // VISUAL_TIME: the Sun's azimuth mapped back onto the
                     // 26 × 28 × 7 dial (kairos_dual_time.js) — the dial hand
@@ -370,7 +367,6 @@
             } catch (e) { /* fall through to hidden */ }
         }
         if (fullEl) fullEl.hidden = true;
-        if (civilEl) civilEl.hidden = true;
         if (pulseEl) pulseEl.hidden = true;
         if (visualEl) visualEl.hidden = true;
     }
@@ -392,33 +388,6 @@
             } catch (e) { /* fall through to hidden */ }
         }
         el.hidden = true;
-    }
-
-    // The Kairos Kepler pulse panel (web/static/js/kairos_kepler_display.js):
-    // the live variable pulse length, the apparent day length and the
-    // equation of time — the "heart" of the system. Visible only while the
-    // kairos_kepler time system is active; refreshed on the 10 s KST cycle
-    // and whenever the time system changes.
-    function updatePulsePanel() {
-        const panel = document.getElementById('pulse-panel');
-        if (!panel) return;
-        const active = (typeof isKairosKeplerSelected === 'function')
-            && isKairosKeplerSelected();
-        panel.hidden = !active;
-        if (!active) return;
-        if (typeof getPulseDisplayData !== 'function'
-            || typeof formatPulseDisplay !== 'function') return;
-        try {
-            const data = getPulseDisplayData(new Date());
-            if (!data) return;
-            const formatted = formatPulseDisplay(data);
-            const pulseEl = document.getElementById('pulse-value');
-            const dayEl = document.getElementById('day-value');
-            const eotEl = document.getElementById('eot-value');
-            if (pulseEl) pulseEl.textContent = formatted.pulseStr;
-            if (dayEl) dayEl.textContent = `${formatted.dayStr} (${formatted.dayVarStr})`;
-            if (eotEl) eotEl.textContent = formatted.eotStr;
-        } catch (e) { /* ignore */ }
     }
 
     function renderKST(data) {

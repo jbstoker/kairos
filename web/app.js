@@ -696,34 +696,14 @@ function getTimeSystem() {
     catch (e) { return 'current'; }
 }
 
-function refreshTimeSystemBadge() {
-    const badge = document.getElementById('timeSystemBadge');
-    if (!badge) return;
-    const labels = {
-        natural: { key: 'config.time_system_natural_badge', fallback: '🌿 Natural' },
-        kairos_natural: { key: 'config.time_system_kairos_natural_badge', fallback: '🌿 Kairos Natural' },
-        kairos_kepler: { key: 'config.time_system_kairos_kepler_badge', fallback: '🌿 Kairos Kepler' }
-    };
-    const label = labels[getTimeSystem()];
-    badge.hidden = !label;
-    if (label) {
-        // Keep data-i18n in sync so i18n.apply() re-translates the badge on a
-        // language switch; set the text immediately for the current language.
-        badge.setAttribute('data-i18n', label.key);
-        badge.textContent = I18n ? t(label.key) : label.fallback;
-    }
-}
-
 function initTimeSystem() {
     const sel = document.getElementById('time-system');
     if (!sel) return;
     sel.value = getTimeSystem();
     sel.addEventListener('change', () => {
         try { localStorage.setItem('kairos_time_system', sel.value); } catch (e) { /* ignore */ }
-        refreshTimeSystemBadge();
         if (window.refreshKST) window.refreshKST();
     });
-    refreshTimeSystemBadge();
 }
 initTimeSystem();
 
