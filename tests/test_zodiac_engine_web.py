@@ -4,9 +4,10 @@ web/static/js/zodiac_engine.js reads the same sky through two wheels:
 
   · TROPICAL (old) — 12 signs of 30°, season-based, anchored to the March
     equinox (0° ≈ day 80), the inherited Western zodiac.
-  · SIDEREAL (true) — 13 signs of 360/13 ≈ 27.69° (the 13-fold natural
-    ring), shifted back by the 24° precession offset; Ophiuchus takes its
-    place between Scorpius and Sagittarius and every sign is reachable.
+  · SIDEREAL (true) — the 13 REAL constellations on the Sun's path by their
+    IAU boundary dates: unequal spans (Virgo ~45 days, Scorpius only ~7),
+    with Ophiuchus between Scorpius and Sagittarius. No offset model — the
+    ~24° drift is baked into where the Sun truly stands.
 
 The birthday never leaves the device (localStorage 'kairos_birthday', set in
 ⚙️ Configure → 📅 Birthday); without it the engine reads today's sky. The
@@ -113,8 +114,8 @@ class TestZodiacEngineJs(unittest.TestCase):
         self.assertEqual(out["aug1"], "Leo")
 
     def test_all_thirteen_sidereal_signs_reachable(self):
-        """13 × 27.69° = 360° exactly: no sign is absorbed by the drift —
-        Ophiuchus AND Pisces must both occur during the year."""
+        """Every IAU constellation hosts the Sun at some point in the year —
+        Ophiuchus AND tiny Scorpius (7 days) must both occur."""
         script = (
             "const z = require('./web/static/js/zodiac_engine.js');\n"
             "const seen = new Set();\n"
@@ -133,20 +134,24 @@ class TestZodiacEngineJs(unittest.TestCase):
         self.assertIn("Pisces", out)
         self.assertIn("Aries", out)
 
-    def test_sidereal_precession_offset_applied(self):
-        """Dec 1: tropical Sagittarius, but the true (sidereal) sign lags the
-        24° drift — the Sun stands in Ophiuchus."""
+    def test_sidereal_iau_known_dates(self):
+        """The true sign follows the IAU constellation boundaries, not the
+        inherited wheel: Oct 10 → Virgo (real sky), Dec 1 → Ophiuchus,
+        Aug 1 → Cancer (tropical Leo), Jan 10 → Sagittarius."""
         script = (
             "const z = require('./web/static/js/zodiac_engine.js');\n"
-            "const date = new Date(2026, 11, 1);\n"
+            "const f = (m, d) => ({\n"
+            "  t: z.getTropicalSign(new Date(2026, m, d)).name,\n"
+            "  s: z.getSiderealSign(new Date(2026, m, d)).name });\n"
             "process.stdout.write(JSON.stringify({\n"
-            "  tropical: z.getTropicalSign(date).name,\n"
-            "  sidereal: z.getSiderealSign(date).name\n"
+            "  oct10: f(9, 10), dec1: f(11, 1), aug1: f(7, 1), jan10: f(0, 10)\n"
             "}));\n"
         )
         out = self._run(script)
-        self.assertEqual(out["tropical"], "Sagittarius")
-        self.assertEqual(out["sidereal"], "Ophiuchus")
+        self.assertEqual(out["oct10"], {"t": "Libra", "s": "Virgo"})
+        self.assertEqual(out["dec1"], {"t": "Sagittarius", "s": "Ophiuchus"})
+        self.assertEqual(out["aug1"], {"t": "Leo", "s": "Cancer"})
+        self.assertEqual(out["jan10"], {"t": "Capricornus", "s": "Sagittarius"})
 
     def test_get_star_signs_with_saved_birthday(self):
         script = (
@@ -198,7 +203,8 @@ class TestZodiacEngineJs(unittest.TestCase):
             "const html = z.buildStarSignHTML();\n"
             "process.stdout.write(JSON.stringify({\n"
             "  section: html.includes('id=\"star-sign-section\"'),\n"
-            "  dual: html.includes('True (Sidereal)') && html.includes('Old (Tropical)'),\n"
+            "  dual: html.includes('True · Real Sky') && html.includes('Old · Tropical'),\n"
+            "  versus: html.includes('>VS<'),\n"
             "  feeling: html.includes('You were born under the constellation of'),\n"
             "  strengths: html.includes('Your Strengths'),\n"
             "  drift: html.includes('24° drift')\n"
@@ -206,6 +212,31 @@ class TestZodiacEngineJs(unittest.TestCase):
         )
         out = self._run(script)
         self.assertTrue(all(out.values()), out)
+
+    def test_same_sign_shows_unified_profile_not_comparison(self):
+        """When both wheels agree (Aug 15: tropical Leo = real-sky Leo), the
+        section shows ONE unified card — no VS comparison."""
+        script = (
+            "global.localStorage = {\n"
+            "    getItem: (k) => (k === 'kairos_birthday' ? '1990-08-15' : null),\n"
+            "    setItem: () => {}, removeItem: () => {}\n"
+            "};\n"
+            "const z = require('./web/static/js/zodiac_engine.js');\n"
+            "const s = z.getStarSigns();\n"
+            "const html = z.buildStarSignHTML();\n"
+            "process.stdout.write(JSON.stringify({\n"
+            "  tropical: s.tropical.name, sidereal: s.sidereal.name,\n"
+            "  agree: html.includes('both wheels agree'),\n"
+            "  noVersus: !html.includes('>VS<'),\n"
+            "  feeling: html.includes('and there the Sun still stands')\n"
+            "}));\n"
+        )
+        out = self._run(script)
+        self.assertEqual(out["tropical"], "Leo")
+        self.assertEqual(out["sidereal"], "Leo")
+        self.assertTrue(out["agree"])
+        self.assertTrue(out["noVersus"])
+        self.assertTrue(out["feeling"])
 
 
 if __name__ == "__main__":

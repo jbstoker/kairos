@@ -160,22 +160,26 @@ function buildEnergyHTML(kstData) {
 function renderTodaysEnergy(kstData) {
     const card = document.getElementById('energyCard');
     if (!card) return;
+    // The KST loop re-renders this card; the expanded/collapsed choice lives
+    // on the card element itself so it survives every refresh.
+    const wasOpen = card.dataset.open === '1';
     // The star-sign section (web/static/js/zodiac_engine.js) joins the energy
     // rows when the engine is loaded; the card stays whole without it.
     const body = buildEnergyHTML(kstData)
         + ((typeof window.buildStarSignHTML === 'function') ? window.buildStarSignHTML() : '');
     // Collapsible: collapsed by default so the card saves room.
     card.innerHTML =
-        `<button type="button" class="energy-toggle" id="energyToggle" aria-expanded="false" aria-controls="energyCardBody">` +
-        `<svg class="icon-line icon-line-no-margin energy-toggle-icon" aria-hidden="true"><use href="static/icons.svg#icon-chevron-down"/></svg>` +
+        `<button type="button" class="energy-toggle" id="energyToggle" aria-expanded="${wasOpen}" aria-controls="energyCardBody">` +
+        `<svg class="icon-line icon-line-no-margin energy-toggle-icon" aria-hidden="true"><use href="static/icons.svg#icon-chevron-${wasOpen ? 'up' : 'down'}"/></svg>` +
         `<span>${t('help.todays_energy')}</span></button>` +
-        `<div class="energy-body" id="energyCardBody" hidden>${body}</div>`;
+        `<div class="energy-body" id="energyCardBody"${wasOpen ? '' : ' hidden'}>${body}</div>`;
     const toggle = document.getElementById('energyToggle');
     const bodyEl = document.getElementById('energyCardBody');
     if (toggle && bodyEl) {
         toggle.addEventListener('click', () => {
             const open = bodyEl.hidden;
             bodyEl.hidden = !open;
+            card.dataset.open = open ? '1' : '0';
             toggle.setAttribute('aria-expanded', String(open));
             const icon = toggle.querySelector('.energy-toggle-icon use');
             if (icon) {

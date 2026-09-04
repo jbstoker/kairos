@@ -5,11 +5,12 @@
  *   · TROPICAL (old) — 12 equal signs of 30°, season-based, anchored to the
  *     March equinox (0° ≈ day 80 of the year, the sun's position at the
  *     equinox). This is the inherited Western zodiac.
- *   · SIDEREAL (true) — 13 equal signs of 360/13 ≈ 27.69° (the 13-fold
- *     natural ring, echoing the 13 · 28 · 7 sequence), shifted back by
- *     ZODIAC_PRECESSION_OFFSET degrees to account for the drift of the
- *     equinoxes since the tropical wheel froze. Ophiuchus takes its
- *     rightful place between Scorpius and Sagittarius.
+ *   · SIDEREAL (true) — the 13 REAL constellations on the Sun's path, by
+ *     their actual IAU boundary dates in the current era: unequal spans
+ *     (Virgo ~45 days, Scorpius only ~7), with Ophiuchus between Scorpius
+ *     and Sagittarius. This is the sky you can point at — no offset model,
+ *     no equal slices: the drift of ~24° (ZODIAC_PRECESSION_OFFSET, shown
+ *     for comparison) is already baked into where the Sun truly stands.
  *
  * The birthday is optional and never leaves the device (localStorage
  * 'kairos_birthday'); without it the engine reads today's sky.
@@ -20,10 +21,9 @@
  */
 
 // --- Constants ---
-const ZODIAC_PRECESSION_OFFSET = 24;      // degrees of drift (tropical − sidereal)
+const ZODIAC_PRECESSION_OFFSET = 24;      // nominal drift in degrees (display only)
 const ZODIAC_EQUINOX_DAY = 80;            // ~March 21: 0° tropical longitude
 const ZODIAC_YEAR_DAYS = 365.2422;        // tropical year
-const SIDEREAL_SIGN_SPAN = 360 / 13;      // 27.6923…° per true sign
 const TROPICAL_SIGN_SPAN = 30;            // 30° per old sign
 
 // --- Tropical Zodiac (12 signs, season-based) ---
@@ -42,25 +42,26 @@ const TROPICAL_SIGNS = [
     { name: "Pisces", emoji: "♓" }
 ].map((s, i) => ({ ...s, start: i * TROPICAL_SIGN_SPAN, end: (i + 1) * TROPICAL_SIGN_SPAN }));
 
-// --- Sidereal Zodiac (13 signs, the 13-fold natural ring) ---
-// Ophiuchus ⛎ sits between Scorpius and Sagittarius; every sign spans
-// exactly 360/13 degrees so all thirteen are reachable — no sign is
-// absorbed by the drift.
+// --- Sidereal Zodiac (the 13 REAL constellations, IAU boundary dates) ---
+// The Sun's actual path through the constellations in the current era —
+// unequal spans (Virgo ~45 days, Scorpius only ~7, Ophiuchus ~18). `start`
+// is [month, day]; a sign holds from its start until the next sign's start
+// (Sagittarius wraps the year-end into mid-January).
 const SIDEREAL_SIGNS = [
-    { name: "Aries", emoji: "♈" },
-    { name: "Taurus", emoji: "♉" },
-    { name: "Gemini", emoji: "♊" },
-    { name: "Cancer", emoji: "♋" },
-    { name: "Leo", emoji: "♌" },
-    { name: "Virgo", emoji: "♍" },
-    { name: "Libra", emoji: "♎" },
-    { name: "Scorpius", emoji: "♏" },
-    { name: "Ophiuchus", emoji: "⛎" },
-    { name: "Sagittarius", emoji: "♐" },
-    { name: "Capricornus", emoji: "♑" },
-    { name: "Aquarius", emoji: "♒" },
-    { name: "Pisces", emoji: "♓" }
-].map((s, i) => ({ ...s, start: i * SIDEREAL_SIGN_SPAN, end: (i + 1) * SIDEREAL_SIGN_SPAN }));
+    { name: "Capricornus", emoji: "♑", start: [1, 19] },
+    { name: "Aquarius", emoji: "♒", start: [2, 16] },
+    { name: "Pisces", emoji: "♓", start: [3, 12] },
+    { name: "Aries", emoji: "♈", start: [4, 19] },
+    { name: "Taurus", emoji: "♉", start: [5, 14] },
+    { name: "Gemini", emoji: "♊", start: [6, 20] },
+    { name: "Cancer", emoji: "♋", start: [7, 21] },
+    { name: "Leo", emoji: "♌", start: [8, 10] },
+    { name: "Virgo", emoji: "♍", start: [9, 16] },
+    { name: "Libra", emoji: "♎", start: [10, 31] },
+    { name: "Scorpius", emoji: "♏", start: [11, 23] },
+    { name: "Ophiuchus", emoji: "⛎", start: [11, 30] },
+    { name: "Sagittarius", emoji: "♐", start: [12, 18] }
+];
 
 
 // --- Zodiac Strengths ---
@@ -148,7 +149,16 @@ function getTropicalSign(date) {
 }
 
 function getSiderealSign(date) {
-    return signForLongitude(SIDEREAL_SIGNS, getEclipticLongitude(date) - ZODIAC_PRECESSION_OFFSET);
+    // The real sky: which constellation the Sun actually stands in, by IAU
+    // boundary dates. Sagittarius wraps the year-end (Dec 18 – Jan 18).
+    const m = date.getMonth() + 1;
+    const d = date.getDate();
+    let current = SIDEREAL_SIGNS[SIDEREAL_SIGNS.length - 1];
+    for (const sign of SIDEREAL_SIGNS) {
+        const [sm, sd] = sign.start;
+        if (m > sm || (m === sm && d >= sd)) current = sign;
+    }
+    return current;
 }
 
 function getStarSigns() {
@@ -180,47 +190,61 @@ function buildStarSignHTML() {
     const attrs = data.attributes;
     const tropicalAttrs = ZODIAC_ATTRIBUTES[tropical.name] || { element: "—", quality: "—" };
 
+    const sameSign = tropical.name === sidereal.name;
+
     let html = `<div id="star-sign-section">`;
 
     // Compact row — same .energy-line pattern as the other energy rows.
     html += `<div class="energy-line"><span class="energy-key">⭐ True Star Sign</span>` +
         `<span class="energy-val">${sidereal.emoji} ${sidereal.name}</span>` +
-        `<span class="energy-note">tropical: ${tropical.emoji} ${tropical.name} · ${data.offset}° drift</span></div>`;
+        `<span class="energy-note">${sameSign ? 'both wheels agree' : `old: ${tropical.emoji} ${tropical.name} · ~${data.offset}° drift`}</span></div>`;
 
-    // Dual profile — old (tropical) vs. true (sidereal), side by side.
-    html += `<div style="display: flex; gap: 16px; flex-wrap: wrap; margin-top: 8px;">`;
-    html += `<div style="flex: 1; min-width: 200px; padding: 16px; background: #0b0e14; border-radius: 16px; border: 1px solid #2a3442;">`;
-    html += `<div style="text-align: center;">`;
-    html += `<div style="font-size: 2.4rem;">${tropical.emoji}</div>`;
-    html += `<div style="color: #8e9ab0; font-size: 0.7rem;">Old (Tropical)</div>`;
-    html += `<div style="color: #f5e6c4; font-size: 1.2rem; font-weight: bold;">${tropical.name}</div>`;
-    html += `</div>`;
-    html += `<div style="margin-top: 12px; font-size: 0.85rem; color: #d4d9e6;">`;
-    html += `<div><span style="color: #8e9ab0;">Element:</span> ${tropicalAttrs.element}</div>`;
-    html += `<div><span style="color: #8e9ab0;">Quality:</span> ${tropicalAttrs.quality}</div>`;
-    html += `</div></div>`;
-    html += `<div style="display: flex; align-items: center; color: #5a6a7c; font-size: 1.6rem;">→</div>`;
-    html += `<div style="flex: 1; min-width: 200px; padding: 16px; background: #1e2632; border-radius: 16px; border: 2px solid #f0c27f;">`;
-    html += `<div style="text-align: center;">`;
-    html += `<div style="font-size: 2.4rem;">${sidereal.emoji}</div>`;
-    html += `<div style="color: #f0c27f; font-size: 0.7rem;">True (Sidereal)</div>`;
-    html += `<div style="color: #f0c27f; font-size: 1.2rem; font-weight: bold;">${sidereal.name}</div>`;
-    html += `</div>`;
-    html += `<div style="margin-top: 12px; font-size: 0.85rem; color: #d4d9e6;">`;
-    html += `<div><span style="color: #8e9ab0;">Element:</span> ${attrs.element}</div>`;
-    html += `<div><span style="color: #8e9ab0;">Quality:</span> ${attrs.quality}</div>`;
-    html += `</div>`;
-    html += `<div style="margin-top: 12px; font-size: 0.8rem;">`;
-    html += `<div style="color: #f0c27f;">Strengths</div>`;
-    html += `<div style="color: #d4d9e6;">${strengths}</div>`;
-    html += `</div></div></div>`;
+    if (sameSign) {
+        // Both wheels point at the same sign — no comparison needed, one
+        // unified profile.
+        html += `<div style="margin-top: 8px; padding: 16px; background: #1e2632; border-radius: 16px; border: 2px solid #f0c27f; text-align: center;">`;
+        html += `<div style="font-size: 2.4rem;">${sidereal.emoji}</div>`;
+        html += `<div style="color: #f0c27f; font-size: 1.2rem; font-weight: bold;">${sidereal.name}</div>`;
+        html += `<div style="color: #8e9ab0; font-size: 0.75rem; margin-top: 4px;">both wheels agree — old and true</div>`;
+        html += `<div style="margin-top: 12px; font-size: 0.85rem; color: #d4d9e6; display: flex; justify-content: center; gap: 16px;">`;
+        html += `<span><span style="color: #8e9ab0;">Element:</span> ${attrs.element}</span>`;
+        html += `<span><span style="color: #8e9ab0;">Quality:</span> ${attrs.quality}</span>`;
+        html += `</div>`;
+        html += `<div style="margin-top: 12px; font-size: 0.8rem;">`;
+        html += `<div style="color: #f0c27f;">Strengths</div>`;
+        html += `<div style="color: #d4d9e6;">${strengths}</div>`;
+        html += `</div></div>`;
+    } else {
+        // Dual profile — a real side-by-side comparison (grid stays
+        // two-column even on narrow screens, VS badge between the cards).
+        html += `<div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: stretch; margin-top: 8px;">`;
+        html += `<div style="padding: 12px 8px; background: #0b0e14; border-radius: 16px; border: 1px solid #2a3442; text-align: center;">`;
+        html += `<div style="font-size: 2rem;">${tropical.emoji}</div>`;
+        html += `<div style="color: #8e9ab0; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1px; margin-top: 2px;">Old · Tropical</div>`;
+        html += `<div style="color: #f5e6c4; font-size: 1.1rem; font-weight: bold;">${tropical.name}</div>`;
+        html += `<div style="margin-top: 8px; font-size: 0.75rem; color: #d4d9e6;">${tropicalAttrs.element}<br>${tropicalAttrs.quality}</div>`;
+        html += `</div>`;
+        html += `<div style="align-self: center; color: #8e9ab0; font-size: 0.65rem; font-weight: bold; border: 1px solid #2a3442; border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center;">VS</div>`;
+        html += `<div style="padding: 12px 8px; background: #1e2632; border-radius: 16px; border: 2px solid #f0c27f; text-align: center;">`;
+        html += `<div style="font-size: 2rem;">${sidereal.emoji}</div>`;
+        html += `<div style="color: #f0c27f; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1px; margin-top: 2px;">True · Real Sky</div>`;
+        html += `<div style="color: #f0c27f; font-size: 1.1rem; font-weight: bold;">${sidereal.name}</div>`;
+        html += `<div style="margin-top: 8px; font-size: 0.75rem; color: #d4d9e6;">${attrs.element}<br>${attrs.quality}</div>`;
+        html += `<div style="margin-top: 8px; font-size: 0.7rem;"><span style="color: #f0c27f;">Strengths:</span> <span style="color: #d4d9e6;">${strengths}</span></div>`;
+        html += `</div></div>`;
+    }
 
 
     // Feeling statement — the philosophical anchor. Without a birthday the
     // engine reads today's sky and says so honestly.
     html += `<div style="margin: 8px 0; padding: 8px 16px; background: #0b0e14; border-radius: 12px; border-left: 3px solid #f0c27f;">`;
     html += `<div style="font-size: 0.85rem; color: #a0b3c9; font-style: italic; text-align: center; line-height: 1.6;">`;
-    if (data.hasBirthday) {
+    if (data.hasBirthday && sameSign) {
+        html += `“You were born under <span style="color: #f0c27f; font-style: normal; font-weight: bold;">${sidereal.name}</span> — and there the Sun still stands.<br>`;
+        html += `The old wheel and the true sky agree on you.<br>`;
+        html += `Your strengths—<span style="color: #f0c27f; font-style: normal; font-weight: bold;">${strengths}</span>—are written in the stars.<br>`;
+        html += `This is where you are. This is where you have always been.”`;
+    } else if (data.hasBirthday) {
         html += `“You were born under the constellation of <span style="color: #f0c27f; font-style: normal; font-weight: bold;">${sidereal.name}</span> — not <span style="color: #8e9ab0; font-style: normal;">${tropical.name}</span>.<br>`;
         html += `The sky has shifted, but your place in it is real.<br>`;
         html += `Your strengths—<span style="color: #f0c27f; font-style: normal; font-weight: bold;">${strengths}</span>—are written in the stars.<br>`;
@@ -281,7 +305,6 @@ if (typeof window !== 'undefined') {
 if (typeof module !== 'undefined' && module.exports) {
     module.exports.ZODIAC_PRECESSION_OFFSET = ZODIAC_PRECESSION_OFFSET;
     module.exports.ZODIAC_EQUINOX_DAY = ZODIAC_EQUINOX_DAY;
-    module.exports.SIDEREAL_SIGN_SPAN = SIDEREAL_SIGN_SPAN;
     module.exports.TROPICAL_SIGNS = TROPICAL_SIGNS;
     module.exports.SIDEREAL_SIGNS = SIDEREAL_SIGNS;
     module.exports.ZODIAC_STRENGTHS = ZODIAC_STRENGTHS;
