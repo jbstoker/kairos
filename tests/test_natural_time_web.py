@@ -47,14 +47,6 @@ class TestNaturalTimeServed(unittest.TestCase):
             html.index('<script src="static/js/natural_time.js"></script>'),
             html.index('<script src="kst_display.js"></script>'))
 
-    def test_configure_panel_has_time_system_toggle(self):
-        html = self.client.get("/").get_data(as_text=True)
-        self.assertIn('id="time-system"', html)
-        self.assertIn('<option value="current"', html)
-        self.assertIn('<option value="natural"', html)
-        # The toggle label is translated (catalog key present in the HTML).
-        self.assertIn('data-i18n="config.time_system"', html)
-
     def test_watch_face_does_not_load_natural_time(self):
         """The isolated watch face stays a pure solar clock — the Natural
         Time layer is a main-app reading option and must not leak in."""

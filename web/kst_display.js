@@ -350,13 +350,12 @@
                     if (pulseEl) { pulseEl.textContent = `Pulse: ${d.pulseLength.toFixed(4)} s`; pulseEl.hidden = false; }
                     // VISUAL_TIME: the Sun's azimuth mapped back onto the
                     // 26 × 28 × 7 dial (kairos_dual_time.js) — the dial hand
-                    // position next to the global orbital text. Follows the
-                    // 📐 Display Index choice (0-indexed default).
+                    // position next to the global orbital text. The display
+                    // index is fixed to the natural 0-indexed form.
                     if (visualEl) {
                         if (typeof getVisualDialTime === 'function' && typeof getSolarAzimuth === 'function') {
                             const v = getVisualDialTime(getSolarAzimuth());
-                            const one = (typeof getIndexStyle === 'function' && getIndexStyle() === 'one');
-                            visualEl.textContent = `Dial: ${one ? v.formatted1 : v.formatted}`;
+                            visualEl.textContent = `Dial: ${v.formatted}`;
                             visualEl.hidden = false;
                         } else {
                             visualEl.hidden = true;

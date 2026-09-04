@@ -34,7 +34,7 @@ const KAIROS_MONTH_STYLES = {
     ]
 };
 
-const KAIROS_MONTH_STYLE_DEFAULT = 'kairos';
+const KAIROS_MONTH_STYLE_DEFAULT = 'zodiac';
 const KAIROS_MONTH_STYLE_STORAGE = 'kairos_month_style';
 const EARTH_AGE_YEARS = 4540000000; // ~4.54 billion years (configurable)
 

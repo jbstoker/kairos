@@ -45,34 +45,20 @@ function getKairosMonthAndDay(dayOfYear) {
 }
 
 /**
- * The selected display-index style: 'zero' (natural dial, 00:00:00–25:27:06,
- * the default) or 'one' (traditional, 01:01:01–26:28:07). Persisted in
- * `kairos_index_style`.
+ * The display-index style is now fixed to 'zero' (natural dial,
+ * 00:00:00–25:27:06). The Configure toggle has been removed, so these helpers
+ * ignore localStorage and always report the natural zero-indexed form.
  */
 function getIndexStyle() {
-    try {
-        if (typeof localStorage === 'undefined') return 'zero';
-        const value = localStorage.getItem('kairos_index_style');
-        if (value === 'one' || value === 'zero') return value;
-    } catch (e) { /* ignore */ }
     return 'zero';
 }
 
 function setIndexStyle(value) {
-    const style = (value === 'one' || value === 'zero') ? value : 'zero';
-    try { localStorage.setItem('kairos_index_style', style); } catch (e) { /* ignore */ }
-    // Refresh the context label (app.js) and the primary line (kst_display.js).
-    if (typeof window !== 'undefined' && typeof window.updateDisplay === 'function') {
-        window.updateDisplay();
-    }
-    if (typeof window !== 'undefined' && typeof window.refreshKST === 'function') {
-        window.refreshKST();
-    }
-    return style;
+    return 'zero';
 }
 
 function isOneIndexed() {
-    return getIndexStyle() === 'one';
+    return false;
 }
 
 /**

@@ -45,14 +45,6 @@ class TestCalendarStyleServed(unittest.TestCase):
             html.index('<script src="static/js/calendar_style.js"></script>'),
             html.index('<script src="kst_display.js"></script>'))
 
-    def test_configure_panel_has_month_style_select(self):
-        html = self.client.get("/").get_data(as_text=True)
-        self.assertIn('id="month-style"', html)
-        self.assertIn('<option value="kairos"', html)
-        self.assertIn('<option value="zodiac"', html)
-        self.assertIn('data-i18n="config.month_style"', html)
-        self.assertIn('data-i18n="config.month_style_zodiac"', html)
-
     def test_civil_year_badge_markup_present(self):
         """The short civil year badge ("EE 26") lives under the primary line."""
         html = self.client.get("/").get_data(as_text=True)
@@ -79,20 +71,20 @@ class TestCalendarStyleJs(unittest.TestCase):
                               capture_output=True, text=True, cwd=REPO_ROOT)
         self.assertEqual(proc.returncode, 0, proc.stderr)
 
-    def test_default_style_is_kairos_with_canonical_names(self):
+    def test_default_style_is_zodiac_with_true_sign_names(self):
         script = (
             "const cs = require('./web/static/js/calendar_style.js');\n"
             "process.stdout.write(JSON.stringify({\n"
             "  style: cs.getMonthStyle(),\n"
             "  first: cs.getMonthName(0),\n"
             "  last: cs.getMonthName(12),\n"
-            "  count: cs.KAIROS_MONTH_STYLES.kairos.length\n"
+            "  count: cs.KAIROS_MONTH_STYLES.zodiac.length\n"
             "}));\n"
         )
         out = self._run(script)
-        self.assertEqual(out["style"], "kairos")
-        self.assertEqual(out["first"], "Root Moon")
-        self.assertEqual(out["last"], "Star Moon")
+        self.assertEqual(out["style"], "zodiac")
+        self.assertEqual(out["first"], "Capricornus")
+        self.assertEqual(out["last"], "Sagittarius")
         self.assertEqual(out["count"], 13)
 
     def test_zodiac_style_names_and_flag(self):
@@ -153,9 +145,9 @@ class TestCalendarStyleJs(unittest.TestCase):
             "process.stdout.write(JSON.stringify({ before, after, bad }));\n"
         )
         out = self._run(script)
-        self.assertEqual(out["before"], "kairos")
+        self.assertEqual(out["before"], "zodiac")
         self.assertEqual(out["after"], "zodiac")
-        self.assertEqual(out["bad"], "kairos")
+        self.assertEqual(out["bad"], "zodiac")
 
     def test_default_without_localstorage(self):
         script = (
@@ -165,8 +157,8 @@ class TestCalendarStyleJs(unittest.TestCase):
             "}));\n"
         )
         out = self._run(script)
-        self.assertEqual(out["style"], "kairos")
-        self.assertFalse(out["zodiac"])
+        self.assertEqual(out["style"], "zodiac")
+        self.assertTrue(out["zodiac"])
 
 
 if __name__ == "__main__":

@@ -54,14 +54,13 @@ class TestKairosKeplerDisplayServed(unittest.TestCase):
         html = self.client.get("/watch.html").get_data(as_text=True)
         self.assertNotIn('src="static/js/kairos_kepler_display.js"', html)
 
-    def test_index_style_toggle_markup_present(self):
-        """The 🔢 Display Index toggle (0-indexed natural / 1-indexed
-        traditional) lives in the Configure panel."""
+    def test_index_style_toggle_markup_removed(self):
+        """The 🔢 Display Index toggle has been removed from the Configure
+        panel; only the natural 0-indexed form is used."""
         html = self.client.get("/").get_data(as_text=True)
-        self.assertIn('id="index-style"', html)
-        self.assertIn('<option value="zero"', html)
-        self.assertIn('<option value="one"', html)
-        self.assertIn('data-i18n="config.index_style"', html)
+        self.assertNotIn('id="index-style"', html)
+        self.assertNotIn('<option value="zero"', html)
+        self.assertNotIn('<option value="one"', html)
 
 
 @requires_node
@@ -110,7 +109,7 @@ class TestKairosKeplerDisplayJs(unittest.TestCase):
         self.assertEqual(out["fullDateStr"], "4.540.002.026/01/15")
         self.assertEqual(out["fullStr"], "EE 4.540.002.026/01/15 13:00:00")
         self.assertEqual(out["civilStr"], "26/01/15 13:00:00")
-        self.assertEqual(out["monthName"], "Root Moon")   # default month style
+        self.assertEqual(out["monthName"], "Capricornus")   # default zodiac month style
         self.assertEqual(out["dayInMonth"], 15)
         self.assertEqual(out["year"], "4.540.002.026")
         self.assertEqual(out["shortYear"], "26")
@@ -170,7 +169,7 @@ class TestKairosKeplerDisplayJs(unittest.TestCase):
             "process.stdout.write(JSON.stringify(kd.getKairosKeplerHeader()));\n"
         )
         out = self._run(script)
-        self.assertEqual(out, "13:00:00 · Root Moon 15 · 26 (180.0°)")
+        self.assertEqual(out, "13:00:00 · Capricornus 15 · 26 (180.0°)")
 
     def test_month_and_day_mapping(self):
         script = (
@@ -201,8 +200,8 @@ class TestKairosKeplerDisplayJs(unittest.TestCase):
         self.assertIsNone(out["pulse"])
 
     def test_index_style_selection(self):
-        """0-indexed natural is the default; 'one' switches the display to
-        the 1-indexed traditional form (fullStr/civilStr follow it)."""
+        """0-indexed natural is the only display form; setIndexStyle('one') is
+        a no-op now that the Configure toggle has been removed."""
         script = (
             "const storage = {};\n"
             "global.localStorage = {\n"
@@ -248,12 +247,13 @@ class TestKairosKeplerDisplayJs(unittest.TestCase):
         self.assertEqual(out["naturalTime"], "13:00:00")
         self.assertEqual(out["naturalFull"], "EE 4.540.002.026/01/15 13:00:00")
         self.assertEqual(out["legacyTime"], "14:01:01")
-        self.assertEqual(out["naturalHeader"], "13:00:00 · Root Moon 15 · 26 (180.0°)")
-        self.assertEqual(out["afterStyle"], "one")
-        self.assertTrue(out["oneIndexed"])
-        self.assertEqual(out["traditionalTime"], "13:00:00")  # timeStr stays 0-indexed
-        self.assertEqual(out["traditionalFull"], "EE 4.540.002.026/01/15 14:01:01")
-        self.assertEqual(out["traditionalHeader"], "14:01:01 · Root Moon 15 · 26 (180.0°)")
+        self.assertEqual(out["naturalHeader"], "13:00:00 · Capricornus 15 · 26 (180.0°)")
+        # setIndexStyle('one') no longer changes the display.
+        self.assertEqual(out["afterStyle"], "zero")
+        self.assertFalse(out["oneIndexed"])
+        self.assertEqual(out["traditionalTime"], "13:00:00")
+        self.assertEqual(out["traditionalFull"], "EE 4.540.002.026/01/15 13:00:00")
+        self.assertEqual(out["traditionalHeader"], "13:00:00 · Capricornus 15 · 26 (180.0°)")
 
     def test_index_style_defaults_without_localstorage(self):
         script = (

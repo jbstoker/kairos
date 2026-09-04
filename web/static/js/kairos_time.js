@@ -204,30 +204,26 @@ function getKairosKeplerTime(date) {
 
 // "13:00:00 (180.0°)" — the Kairos Kepler clock + the Sun's true azimuth, the
 // same shape as the other displays so the header keeps its degree and the
-// bead and the number still agree. Follows the 📐 Display Index choice
-// (kairos_kepler_display.js): 0-indexed natural (default) or 1-indexed
-// traditional.
+// bead and the number still agree. Uses the natural 0-indexed dial only.
 function getKairosKeplerTimeDisplay() {
     const k = getKairosKeplerTime();
-    const one = (typeof getIndexStyle === 'function' && getIndexStyle() === 'one');
-    const timeStr = one
-        ? `${kairosKeplerPad2(k.stride + 1)}:${kairosKeplerPad2(k.beat + 1)}:${kairosKeplerPad2(k.pulse + 1)}`
-        : k.formatted;
     let azimuth = 0;
     if (typeof getSolarAzimuth === 'function') {
         try { azimuth = getSolarAzimuth(); } catch (e) { /* ignore */ }
     }
-    return `${timeStr} (${azimuth.toFixed(1)}°)`;
+    return `${k.formatted} (${azimuth.toFixed(1)}°)`;
 }
 
-// Is the Kairos Kepler Time system active? (localStorage is guarded so this
-// is safe to call from Node tests and the isolated watch face.)
+// Is the Kairos Kepler Time system active? With the Configure selector removed
+// this is the default and only time system; returns true when there is no
+// stored preference as well as when it is explicitly set to 'kairos_kepler'.
 function isKairosKeplerSelected() {
     try {
-        if (typeof localStorage === 'undefined') return false;
-        return localStorage.getItem('kairos_time_system') === 'kairos_kepler';
+        if (typeof localStorage === 'undefined') return true;
+        const value = localStorage.getItem('kairos_time_system');
+        return value === null || value === 'kairos_kepler';
     } catch (e) {
-        return false;
+        return true;
     }
 }
 

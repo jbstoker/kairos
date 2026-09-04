@@ -538,46 +538,6 @@ if (energyLensSel) {
     });
 }
 
-// --- Month-name style (calendar_style.js) ------------------------------------
-// ⚙️ Configure → 📅 Month Names: "kairos" (Root Moon…) or "zodiac" (the 13
-// true zodiac constellations, incl. Ophiuchus). calendar_style.js persists
-// `kairos_month_style` and refreshes the header on change.
-const monthStyleSel = document.getElementById('month-style');
-if (monthStyleSel && typeof window.setMonthStyle === 'function') {
-    monthStyleSel.value = window.getMonthStyle();
-    monthStyleSel.addEventListener('change', (e) => {
-        window.setMonthStyle(e.target.value);
-        document.getElementById('status').textContent =
-            t('obs.month_style_switched', { style: e.target.value });
-    });
-} else if (monthStyleSel) {
-    try { monthStyleSel.value = localStorage.getItem('kairos_month_style') || 'kairos'; } catch (e) { /* ignore */ }
-    monthStyleSel.addEventListener('change', (e) => {
-        try { localStorage.setItem('kairos_month_style', e.target.value); } catch (err) { /* ignore */ }
-        if (window.refreshKST) window.refreshKST();
-    });
-}
-
-// --- Display-index style (kairos_kepler_display.js) --------------------------
-// ⚙️ Configure → 🔢 Display Index: "zero" (natural dial, 00:00:00–25:27:06,
-// the default) or "one" (traditional, 01:01:01–26:28:07). kairos_kepler_display.js
-// persists `kairos_index_style` and refreshes the header on change.
-const indexStyleSel = document.getElementById('index-style');
-if (indexStyleSel) {
-    try { indexStyleSel.value = localStorage.getItem('kairos_index_style') || 'zero'; } catch (e) { /* ignore */ }
-    indexStyleSel.addEventListener('change', (e) => {
-        const style = e.target.value;
-        if (typeof window.setIndexStyle === 'function') {
-            window.setIndexStyle(style);
-        } else {
-            try { localStorage.setItem('kairos_index_style', style); } catch (err) { /* ignore */ }
-            if (window.refreshKST) window.refreshKST();
-        }
-        document.getElementById('status').textContent =
-            t('obs.index_style_switched', { style });
-    });
-}
-
 // --- Observer location: pin the sky to where you are (kairos_location) ------
 function getStoredLocation() {
     try {

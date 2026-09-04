@@ -52,11 +52,6 @@ class TestKairosKeplerServed(unittest.TestCase):
             html.index('<script src="static/js/kairos_time.js"></script>'),
             html.index('<script src="kst_display.js"></script>'))
 
-    def test_configure_panel_has_kairos_kepler_option(self):
-        html = self.client.get("/").get_data(as_text=True)
-        self.assertIn('<option value="kairos_kepler"', html)
-        self.assertIn('data-i18n="config.time_system_kairos_kepler"', html)
-
     def test_kepler_info_panel_markup_present(self):
         """The Kairos Kepler info line (full Earth Era date, variable pulse
         length) lives under the primary line."""
@@ -268,7 +263,7 @@ class TestKairosKeplerJs(unittest.TestCase):
             "process.stdout.write(JSON.stringify({ none, current, natural, kairosNatural, kairosKepler }));\n"
         )
         out = self._run(script)
-        self.assertFalse(out["none"])
+        self.assertTrue(out["none"])
         self.assertFalse(out["current"])
         self.assertFalse(out["natural"])
         self.assertFalse(out["kairosNatural"])
@@ -280,7 +275,7 @@ class TestKairosKeplerJs(unittest.TestCase):
             "process.stdout.write(JSON.stringify(kt.isKairosKeplerSelected()));\n"
         )
         out = self._run(script)
-        self.assertFalse(out)
+        self.assertTrue(out)
 
 
 if __name__ == "__main__":
