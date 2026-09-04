@@ -54,8 +54,35 @@
             </div>
         </div>
 
-        <!-- Master Unified Astronomical Viewport -->
-        <div class="spatial-matrix-wrapper">
+        <!-- Sky Mirror — the clean, mobile-first sky view (DEFAULT). Sun and
+             Moon sit at their real altitude + azimuth; the horizon line is
+             the only reference. Driven by static/js/sky_mirror.js. The full
+             observation matrix below survives behind ⚙️ Configure →
+             🗺️ Show detailed sky map (off by default). -->
+        <div id="sky-mirror-view" style="width: 100%;">
+            <div id="sky-mirror" style="position: relative; width: 100%; max-width: 400px; aspect-ratio: 1/1; margin: 0 auto; border-radius: 50%; overflow: hidden; background: #1a2a3a;">
+                <!-- Sky gradient (follows day / twilight / night) -->
+                <div id="sky-gradient" style="position: absolute; inset: 0; background: linear-gradient(to bottom, #1a2a3a, #3a5a7a); transition: background 2s ease;"></div>
+                <!-- Horizon line — the only reference -->
+                <div id="horizon-line" style="position: absolute; bottom: 30%; left: 0; right: 0; height: 2px; background: rgba(255, 255, 255, 0.15);"></div>
+                <!-- Horizon glow (sunrise/sunset) -->
+                <div id="horizon-glow" style="position: absolute; bottom: 28%; left: 10%; right: 10%; height: 40px; background: radial-gradient(ellipse at center, rgba(255, 200, 100, 0.3), transparent); transition: opacity 2s ease; opacity: 0;"></div>
+                <!-- Sun -->
+                <div id="sun-bead-visual" style="position: absolute; width: 40px; height: 40px; border-radius: 50%; background: radial-gradient(circle, #f39c12, #f1c40f); box-shadow: 0 0 60px rgba(243, 156, 18, 0.5); transition: all 1s ease; top: 50%; left: 50%; transform: translate(-50%, -50%);"></div>
+                <!-- Moon -->
+                <div id="moon-bead-visual" style="position: absolute; width: 24px; height: 24px; border-radius: 50%; background: radial-gradient(circle, #ecf0f1, #bdc3c7); box-shadow: 0 0 30px rgba(236, 240, 241, 0.3); transition: all 1s ease; display: none; top: 50%; left: 50%; transform: translate(-50%, -50%);"></div>
+                <!-- Stars (subtle, night only) -->
+                <div id="stars-container" style="position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity 2s ease;"></div>
+            </div>
+            <!-- Time display below the mirror (echoes the primary line) -->
+            <div style="text-align: center; margin-top: 8px; font-size: 1.2rem; color: #f5e6c4;">
+                <span id="primary-time">--:--</span>
+            </div>
+        </div>
+
+        <!-- Master Unified Astronomical Viewport (detailed sky map — hidden
+             by default, revealed by ⚙️ Configure → 🗺️ Show detailed sky map) -->
+        <div class="spatial-matrix-wrapper" id="detailed-sky-map" hidden>
             <svg id="kairos-observation-matrix" viewBox="0 0 800 800" style="width: 90%; max-width: 550px; height: auto; overflow: visible;">
                 <style>
                     .degree-tick { stroke: #444; stroke-width: 1.5; }
@@ -367,6 +394,15 @@
                         <option value="zodiac" data-i18n="config.month_style_zodiac">♐ True Zodiac (Capricornus, etc.)</option>
                     </select>
                 </div>
+                <div>
+                    <label for="index-style" data-i18n="config.index_style" style="color: #8e9ab0; font-size: 0.8rem; display: block; text-align: center;">
+                        🔢 Display Index
+                    </label>
+                    <select id="index-style" style="background: #1e2632; color: #f5e6c4; border: 1px solid #2a3442; border-radius: 40px; padding: 6px 16px; font-size: 0.9rem; cursor: pointer;">
+                        <option value="zero" data-i18n="config.index_style_zero">🌿 Natural (00:00:00 – 25:28:06)</option>
+                        <option value="one" data-i18n="config.index_style_one">🌿 Traditional (01:01:01 – 26:28:07)</option>
+                    </select>
+                </div>
             </div>
         </div>
 
@@ -382,6 +418,10 @@
         </div>
 
         <div class="config-section">
+            <div style="display: flex; align-items: center; gap: 12px; margin: 8px 0;">
+                <input type="checkbox" id="detailed-sky-toggle" style="width: 20px; height: 20px; accent-color: #f0c27f; cursor: pointer;">
+                <label for="detailed-sky-toggle" style="color: #f5e6c4; font-size: 0.9rem; cursor: pointer;">🗺️ Show detailed sky map</label>
+            </div>
             <div style="display: flex; align-items: center; gap: 12px; margin: 8px 0;">
                 <input type="checkbox" id="light-beam-toggle" style="width: 20px; height: 20px; accent-color: #f0c27f; cursor: pointer;">
                 <label for="light-beam-toggle" style="color: #f5e6c4; font-size: 0.9rem; cursor: pointer;" data-i18n="config.light_beam">🌍 Show Sun Light</label>
@@ -401,6 +441,13 @@
                 <button class="action-btn" id="saveLocationBtn" style="flex: 0 0 auto;">💾 Save location</button>
                 <button class="action-btn" id="useGpsBtn" style="flex: 0 0 auto;">📡 Use my GPS</button>
             </div>
+        </div>
+
+        <div class="config-section">
+            <h3>📅 Birthday (optional)</h3>
+            <p class="config-hint">Find your true star sign — the constellation the Sun actually stood in when you were born. Saved on this device; leave empty to read today's sky.</p>
+            <input type="date" id="birthday-input" aria-label="Birthday"
+                   style="width: 100%; box-sizing: border-box; background: #1e2632; color: #f5e6c4; border: 1px solid #2a3442; border-radius: 40px; padding: 8px 16px; font-size: 0.9rem; cursor: pointer; font-family: inherit;">
         </div>
 
         <div class="config-section">
@@ -639,6 +686,7 @@
 <script src="phytochemical_display.js"></script>
 <script src="help_data.js"></script>
 <script src="help.js"></script>
+<script src="static/js/zodiac_engine.js"></script>
 <script src="static/js/solar_time.js"></script>
 <script src="static/js/natural_time.js"></script>
 <script src="static/js/kairos_natural_time.js"></script>
@@ -650,6 +698,7 @@
 <script src="kst_display.js"></script>
 <script src="static/js/astronomy_engine.js"></script>
 <script src="static/js/canvas_renderer.js"></script>
+<script src="static/js/sky_mirror.js"></script>
 <script src="static/js/app_controller.js"></script>
 <script src="static/js/unified_display.js"></script>
 <script src="static/js/mobile.js"></script>

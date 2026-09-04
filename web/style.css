@@ -1142,6 +1142,10 @@ select {
     align-self: center;
 }
 
+.spatial-matrix-wrapper[hidden] {
+    display: none;
+}
+
 .spatial-matrix-wrapper {
     width: 100%;
     display: flex;

@@ -145,7 +145,8 @@ function updateDisplay() {
         const noon = new Date(solar.timestamp);
         const now = new Date();
         const diff = (now - noon) / 3600000;
-        const hours = ((diff % 24) + 24) % 24;
+        // True solar time — 12:00 is solar noon (cf. static/js/solar_time.js).
+        const hours = (((12 + diff) % 24) + 24) % 24;
         const hh = Math.floor(hours);
         const mm = Math.floor((hours - hh) * 60);
         solarTime = `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
@@ -557,6 +558,26 @@ if (monthStyleSel && typeof window.setMonthStyle === 'function') {
     });
 }
 
+// --- Display-index style (kairos_kepler_display.js) --------------------------
+// ⚙️ Configure → 🔢 Display Index: "zero" (natural dial, 00:00:00–25:27:06,
+// the default) or "one" (traditional, 01:01:01–26:28:07). kairos_kepler_display.js
+// persists `kairos_index_style` and refreshes the header on change.
+const indexStyleSel = document.getElementById('index-style');
+if (indexStyleSel) {
+    try { indexStyleSel.value = localStorage.getItem('kairos_index_style') || 'zero'; } catch (e) { /* ignore */ }
+    indexStyleSel.addEventListener('change', (e) => {
+        const style = e.target.value;
+        if (typeof window.setIndexStyle === 'function') {
+            window.setIndexStyle(style);
+        } else {
+            try { localStorage.setItem('kairos_index_style', style); } catch (err) { /* ignore */ }
+            if (window.refreshKST) window.refreshKST();
+        }
+        document.getElementById('status').textContent =
+            t('obs.index_style_switched', { style });
+    });
+}
+
 // --- Observer location: pin the sky to where you are (kairos_location) ------
 function getStoredLocation() {
     try {
@@ -731,6 +752,34 @@ function initLightBeamToggle() {
     });
 }
 initLightBeamToggle();
+
+// ⚙️ Configure → 🗺️ Show detailed sky map (off by default). The clean sky
+// mirror (static/js/sky_mirror.js) is the default view; this reveals the
+// full observation matrix (degree wheel, orbit tracks, eclipse pill) again.
+function isDetailedSkyMapEnabled() {
+    try { return localStorage.getItem('kairos_detailed_sky_map') === 'true'; }
+    catch (e) { return false; }
+}
+
+function applySkyViewVisibility() {
+    const detailed = isDetailedSkyMapEnabled();
+    const dome = document.getElementById('detailed-sky-map');
+    const mirror = document.getElementById('sky-mirror-view');
+    if (dome) dome.hidden = !detailed;
+    if (mirror) mirror.hidden = detailed;
+}
+
+function initDetailedSkyToggle() {
+    const toggle = document.getElementById('detailed-sky-toggle');
+    applySkyViewVisibility();
+    if (!toggle) return;
+    toggle.checked = isDetailedSkyMapEnabled();
+    toggle.addEventListener('change', () => {
+        try { localStorage.setItem('kairos_detailed_sky_map', String(toggle.checked)); } catch (e) { /* ignore */ }
+        applySkyViewVisibility();
+    });
+}
+initDetailedSkyToggle();
 
 // Load saved lenses (calendar + energy) — lens_manager.js persists them.
 if (window.syncLensSelectors) window.syncLensSelectors();
