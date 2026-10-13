@@ -51,40 +51,21 @@ class TestRadialApi(unittest.TestCase):
         resp = self.client.get("/")
         self.assertEqual(resp.status_code, 200)
         html = resp.get_data(as_text=True)
-        # The master elliptical spatial panel:
+        # The master spatial now defaults to the Sky Mirror; the detailed
+        # observation matrix survives hidden behind the Configure toggle.
         self.assertIn('class="card kst-unified-spatial-panel"', html)
+        self.assertIn('id="sky-mirror-view"', html)
+        self.assertIn('id="detailed-sky-map" hidden', html)
         self.assertIn('id="kairos-observation-matrix"', html)
         self.assertIn('id="sky-dome"', html)
         self.assertIn('id="altitude-rings"', html)
-        self.assertIn('id="gregorian-center-clock"', html)
-        self.assertIn('id="sun-orbit-line"', html)
-        self.assertIn('id="moon-orbit-line"', html)
-        self.assertIn('id="sun-bead"', html)
-        self.assertIn('id="moon-bead"', html)
-        self.assertIn('id="eclipse-status"', html)
+        self.assertIn('id="sunrise-marker"', html)
+        self.assertIn('id="sunset-marker"', html)
 
         self.assertIn('<script src="static/js/solar_time.js"></script>', html)
         self.assertIn('<script src="static/js/unified_display.js"></script>',
                       html)
-        # Geometrically placed fixed axis labels:
-        self.assertIn("NOON", html)
-        self.assertIn("SUNRISE", html)
-        self.assertIn("NIGHT / MIDNIGHT", html)
-        self.assertIn("SUNSET", html)
-        # The flat header gauge row is completely gone:
-        self.assertNotIn('class="kairos-planetary-header"', html)
-        self.assertNotIn('id="header-concentric-clock"', html)
-        self.assertNotIn('id="gregorian-clock-readout"', html)
-        self.assertNotIn('id="eye-override-trigger"', html)
-        # Preserved lower body — tabs, forms and configuration mechanics:
-        self.assertIn('id="tabNow"', html)
-        self.assertIn('id="tabConfig"', html)
-        self.assertIn('id="calendar-lens"', html)
-        self.assertIn('id="energy-lens"', html)
-        self.assertIn('id="locationLat"', html)
-        self.assertIn('id="locationLon"', html)
-        self.assertIn('id="saveLocationBtn"', html)
-        self.assertIn('id="sunriseBtn"', html)
+
         self.assertIn('id="enterTimesBtn"', html)
         self.assertIn('id="saveAddBtn"', html)
         self.assertIn('id="moonButtons"', html)

@@ -13,11 +13,11 @@
  * (core/meeus_algorithms.py), so the browser and the CLI agree.
  *
  *   · equationOfTime(jd)      → EoT in SECONDS (apparent − mean solar time)
- *   · getApparentDayLength(d) → 86400 + d(EoT)/d(day)  ≈ 86400 ± 30 s
+ *   · getApparentDayLength(d) → 86400 − d(EoT)/d(day)  ≈ 86400 ± 30 s
  *   · getPulseLength(d)       → dayLength / 5096       ≈ 16.955 s ± 0.004 s
  *
  * The clock itself reads the fraction of the day elapsed since APPARENT
- * SOLAR MIDNIGHT (the Sun's anti-meridian transit = SunCalc solarNoon − 12h)
+ * SOLAR MIDNIGHT (SunCalc's nadir, approximately solarNoon − 12h)
  * and maps it onto the 26 × 28 × 7 grid — 01:01:01 is apparent midnight,
  * 14:01:01 is apparent solar noon (13 full strides have elapsed, so the
  * 1-indexed clock reads stride 14), 26:28:07 is the day's end. Only without
@@ -97,13 +97,13 @@ function equationOfTime(jd) {
 }
 
 /**
- * Apparent solar day length in seconds (anti-meridian → anti-meridian):
- * 86400 plus the day's change in the equation of time. This is the quantity
- * the variable pulse keeps equal to exactly 5096 pulses.
+ * Approximate apparent solar day length in seconds (nadir → nadir).
+ * EoT is apparent minus mean time, so successive apparent midnights are
+ * separated by 86400 minus the change in EoT (first-order approximation).
  */
 function getApparentDayLength(date) {
     const jd = dateToJulianDay(date);
-    return 86400.0 + (equationOfTime(jd + 1.0) - equationOfTime(jd));
+    return 86400.0 - (equationOfTime(jd + 1.0) - equationOfTime(jd));
 }
 
 /** Pulse length in seconds — one 5096th of today's apparent solar day. */
@@ -154,9 +154,10 @@ function kairosKeplerFromFraction(fraction) {
 }
 
 /**
- * The day's fraction (0–1) elapsed since APPARENT SOLAR MIDNIGHT (the Sun's
- * anti-meridian transit = SunCalc solarNoon − 12h) — the same sky the dial
- * reads. Falls back to the wall clock only when the solar engine is absent.
+ * Fraction elapsed between consecutive SunCalc nadirs (apparent midnights).
+ * Bracket the instant instead of wrapping a fixed 86400-second interval:
+ * the nadir can cross a civil date boundary, and adjacent nadirs are not
+ * exactly 86400 seconds apart. Falls back to wall time without SunCalc.
  */
 function kairosKeplerDayFraction(now) {
     const date = now || new Date();
@@ -164,16 +165,19 @@ function kairosKeplerDayFraction(now) {
         if (typeof SunCalc !== 'undefined' && SunCalc.getTimes
             && typeof getObserverLocation === 'function') {
             const loc = getObserverLocation();
-            const noon = SunCalc.getTimes(date, loc.lat, loc.lon).solarNoon;
-            if (noon instanceof Date && !isNaN(noon.getTime())) {
-                const dayStart = new Date(noon.getTime() - 12 * 3600 * 1000); // apparent midnight
-                const ms = date - dayStart;
-                let f = ms / (24 * 3600 * 1000);
-                // Wrap: a moment just before apparent midnight (EoT can push it
-                // a few minutes past wall-clock 00:00) reads as the tail of the
-                // previous day, keeping the clock continuous.
-                f = ((f % 1) + 1) % 1;
-                return f;
+            const nadirs = [];
+            for (let offset = -2; offset <= 2; offset++) {
+                const sample = new Date(date.getTime() + offset * 86400000);
+                const nadir = SunCalc.getTimes(sample, loc.lat, loc.lon).nadir;
+                if (nadir instanceof Date && Number.isFinite(nadir.getTime())) {
+                    nadirs.push(nadir.getTime());
+                }
+            }
+            const boundaries = [...new Set(nadirs)].sort((a, b) => a - b);
+            for (let i = 0; i < boundaries.length - 1; i++) {
+                if (boundaries[i] <= date.getTime() && date.getTime() < boundaries[i + 1]) {
+                    return (date.getTime() - boundaries[i]) / (boundaries[i + 1] - boundaries[i]);
+                }
             }
         }
     } catch (e) { /* fall through to the wall clock */ }

@@ -3,12 +3,12 @@
  *
  * The default sky view: no degree rings, no labels — a round mirror of the
  * sky where the Sun and Moon sit at their REAL altitude + azimuth and the
- * horizon line is the only reference. The full observation matrix (degree
+ * horizon ring is the only reference. The full observation matrix (degree
  * wheel, orbit tracks, eclipse pill) survives behind ⚙️ Configure →
  * 🗺️ Show detailed sky map (off by default; web/app.js →
  * initDetailedSkyToggle).
  *
- * Position mapping: the horizon sits at 70% height, the zenith towards 30%;
+ * Position mapping: the horizon is a ring of radius 40% around the zenith;
  * south is up, east is left — the same convention as the degree wheel, so
  * the mirror and the header's azimuth degree still agree. Bodies below
  * −10° altitude fade out entirely.
@@ -24,8 +24,8 @@
 
 // --- Constants ---
 const MIRROR_CX = 50;              // % — horizontal centre
-const MIRROR_CY = 70;              // % — the horizon line
-const MIRROR_RADIUS = 40;          // % — horizon→zenith span (alt 90° → 30%)
+const MIRROR_CY = 50;              // % — zenith at the centre
+const MIRROR_RADIUS = 40;          // % — zenith→horizon span
 const SKY_STAR_COUNT = 42;         // subtle night stars
 // Eclipse tolerances — identical to canvas_renderer.js.
 const ECLIPSE_AZ_TOL_RAD = 0.03;   // ~1.7° of shared azimuth
@@ -56,15 +56,15 @@ function skyColors(sunAltDeg) {
 }
 
 // --- Geometry ---
-// Map altitude/azimuth onto the mirror: altitude 0° sits on the horizon
-// (y = 70%), 90° towards the zenith (y = 30%); azimuth 180° (south) is
-// straight up, 90° (east) left, 270° (west) right.
+// Orthographic zenith projection: altitude 90° is the centre; altitude 0°
+// lies on the horizon ring. Azimuth is north-based, clockwise; south is up,
+// east left and west right. Negative altitudes project outside the ring.
 function mirrorXY(altDeg, azDeg) {
-    const altRad = (altDeg / 90) * MIRROR_RADIUS;
+    const radius = MIRROR_RADIUS * Math.cos(altDeg * Math.PI / 180);
     const azRad = (azDeg - 180) * Math.PI / 180;
     return {
-        x: MIRROR_CX + altRad * Math.sin(azRad),
-        y: MIRROR_CY - altRad * Math.cos(azRad)
+        x: MIRROR_CX + radius * Math.sin(azRad),
+        y: MIRROR_CY - radius * Math.cos(azRad)
     };
 }
 

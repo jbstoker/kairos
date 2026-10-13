@@ -98,7 +98,7 @@ class TestCliIntegration(unittest.TestCase):
         kairos = Kairos("rhythm", lang="nl")
         cal = kairos.calendar_date(1)
         self.assertEqual(cal["month"], "Wortelmaan")   # Root Moon
-        self.assertEqual(cal["weekday"], "Zonnewijzer")  # Sundial
+        self.assertEqual(cal["weekday"], "Imix")  # Tzolk'in-inspired proper name
 
 
 if __name__ == "__main__":

@@ -26,14 +26,20 @@
              system (Kairos or the selected tradition; the tradition itself is
              set in Configure). -->
         <div class="kst-primary-line" id="kstDisplayLine">--:-- (--.-°) · -- · -- · -- · --</div>
+        <div id="kairos-time-display" aria-live="off" style="text-align: center; color: #8e9ab0; font-size: 0.85rem;">
+            <span id="kairos-half">Sky clock: calculating…</span>
+            <span id="kairos-time" style="font-family: monospace; color: #f5e6c4;">--:--:--</span>
+            <span id="kairos-stride"></span>
+            <span id="kairos-pulse-length"></span>
+        </div>
         <span class="time-system-badge" id="civilYear" hidden>EE --</span>
         <!-- Kairos Kepler info line (kairos_kepler time system): the full
              Earth Era date and the variable pulse length. -->
-        <div id="full-kairos-date" style="font-size: 0.85rem; color: #8e9ab0;" hidden></div>
-        <div id="pulse-length" style="font-size: 0.8rem; color: #5a6a7c; opacity: 0.7;" hidden></div>
-        <div id="visual-time" style="font-size: 0.8rem; color: #5a6a7c; opacity: 0.7;" hidden></div>
+        <small id="full-kairos-date" style="font-size: 0.75rem; color: #8e9ab0;" hidden></small>
+        <div id="pulse-length" style="font-size: 0.75rem; color: #5a6a7c; opacity: 0.7;" hidden></div>
+<!--        <div id="visual-time" style="font-size: 0.8rem; color: #5a6a7c; opacity: 0.7;" hidden></div>-->
         <!-- Sky Mirror — the clean, mobile-first sky view (DEFAULT). Sun and
-             Moon sit at their real altitude + azimuth; the horizon line is
+             Moon sit at their calculated altitude + azimuth; the horizon ring is
              the only reference. Driven by static/js/sky_mirror.js. The full
              observation matrix below survives behind ⚙️ Configure →
              🗺️ Show detailed sky map (off by default). -->
@@ -41,8 +47,8 @@
             <div id="sky-mirror" style="position: relative; width: 100%; max-width: 400px; aspect-ratio: 1/1; margin: 0 auto; border-radius: 50%; overflow: hidden; background: #1a2a3a;">
                 <!-- Sky gradient (follows day / twilight / night) -->
                 <div id="sky-gradient" style="position: absolute; inset: 0; background: linear-gradient(to bottom, #1a2a3a, #3a5a7a); transition: background 2s ease;"></div>
-                <!-- Horizon line — the only reference -->
-                <div id="horizon-line" style="position: absolute; bottom: 30%; left: 0; right: 0; height: 2px; background: rgba(255, 255, 255, 0.15);"></div>
+                <!-- Horizon ring — cardinal azimuths lie on its circumference -->
+                <div id="horizon-line" style="position: absolute; left: 10%; top: 10%; width: 80%; height: 80%; box-sizing: border-box; border: 2px solid rgba(255, 255, 255, 0.15); border-radius: 50%; pointer-events: none;"></div>
                 <!-- Horizon glow (sunrise/sunset) -->
                 <div id="horizon-glow" style="position: absolute; bottom: 28%; left: 10%; right: 10%; height: 40px; background: radial-gradient(ellipse at center, rgba(255, 200, 100, 0.3), transparent); transition: opacity 2s ease; opacity: 0;"></div>
                 <!-- Sun -->
@@ -51,10 +57,6 @@
                 <div id="moon-bead-visual" style="position: absolute; width: 24px; height: 24px; border-radius: 50%; background: radial-gradient(circle, #ecf0f1, #bdc3c7); box-shadow: 0 0 30px rgba(236, 240, 241, 0.3); transition: all 1s ease; display: none; top: 50%; left: 50%; transform: translate(-50%, -50%);"></div>
                 <!-- Stars (subtle, night only) -->
                 <div id="stars-container" style="position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity 2s ease;"></div>
-            </div>
-            <!-- Time display below the mirror (echoes the primary line) -->
-            <div style="text-align: center; margin-top: 8px; font-size: 1.2rem; color: #f5e6c4;">
-                <span id="primary-time">--:--</span>
             </div>
         </div>
 
@@ -165,11 +167,10 @@
                     <circle cx="400" cy="400" r="93" fill="none" stroke="#7a8ea5" stroke-width="1" />   <!-- 60° -->
                     <circle cx="400" cy="400" r="31" fill="none" stroke="#7a8ea5" stroke-width="1" />   <!-- 80° -->
                 </g>
-                <!-- Decorative 13-point natural ring (360/13 = 27.692307°),
-                     rendered into this placeholder by web/static/js/degree_wheel.js.
-                     Clearly separate from the physical azimuth wheel — it never
-                     moves the beads or the header degree. -->
-                <g id="natural-13-ring"></g>
+                <!-- Sunrise/sunset markers — updated to the Sun's rising and
+                     setting azimuths for the observer's latitude and date. -->
+                <circle id="sunrise-marker" cx="120" cy="400" r="7" fill="#fff4bd" opacity="0.9" style="pointer-events: none;" />
+                <circle id="sunset-marker" cx="400" cy="680" r="7" fill="#f0c27f" opacity="0.9" style="pointer-events: none;" />
                 <!-- 0° (bottom) -->
                 <line x1="400" y1="680" x2="400" y2="666" class="degree-tick-major" />
                 <text x="400" y="720" class="degree-label">0°</text>
@@ -211,9 +212,9 @@
                      True celestial axis: the sun rises in the EAST (left) and
                      sets in the WEST (right), facing south. -->
                 <text x="400" y="30" text-anchor="middle" class="quadrant-label">NOON</text>
-                <text x="25" y="405" text-anchor="end" class="quadrant-label">SUNRISE</text>
-                <text x="400" y="785" text-anchor="middle" class="quadrant-label">NIGHT / MIDNIGHT</text>
-                <text x="775" y="405" text-anchor="start" class="quadrant-label">SUNSET</text>
+                <text x="25" y="405" text-anchor="end" class="quadrant-label"></text>
+                <text x="400" y="785" text-anchor="middle" class="quadrant-label">MIDNIGHT</text>
+                <text x="775" y="405" text-anchor="start" class="quadrant-label"></text>
 
                 <!-- True Breathing Elliptical Tracks -->
                 <!-- Stretched out and rotated to match true Earth/Moon orbital paths -->
@@ -233,25 +234,8 @@
                     <!-- Earth background -->
                     <circle cx="400" cy="400" r="65" fill="#0b1a2a" stroke="#2a3442" stroke-width="1.5" />
 
-                    <!-- User position (you) -->
-                    <circle cx="400" cy="335" r="4" fill="#f0c27f" stroke="#fff" stroke-width="1.5" />
-                    <text x="400" y="320" text-anchor="middle" fill="#f0c27f" font-size="10" font-weight="bold">YOU</text>
-
                     <!-- Gregorian reference inside globe -->
-                    <text x="400" y="405" id="gregorian-center-clock" text-anchor="middle" fill="#5a6a7c" font-family="monospace" font-size="12px" font-weight="300">--:--</text>
-                </g>
-
-                <!-- Sun light flood (lightbulb effect): glow disc + flood wedge
-                     + Earth's lit half (off by default). -->
-                <g id="sun-light" display="none">
-                    <!-- Soft glow disc around the Sun bead -->
-                    <circle id="sun-glow" cx="400" cy="120" r="40" fill="url(#sunGlowGrad)" opacity="0" />
-
-                    <!-- Soft flood wedge between the Sun and the Earth -->
-                    <path id="light-flood" d="" fill="url(#lightFloodGrad)" opacity="0" />
-
-                    <!-- Earth's lit half (soft gradient, clipped to the globe) -->
-                    <circle id="earth-lit" cx="400" cy="400" r="60" fill="url(#earthGlowGrad)" opacity="0" clip-path="url(#dayClip)" />
+                    <text x="400" y="405" id="gregorian-center-clock" text-anchor="middle" fill="#5a6a7c" font-family="monospace" font-size="22px" font-weight="300">--:--</text>
                 </g>
 
                 <!-- Shifting Observation Nodes (Always locked to the edge of the ellipses) -->
@@ -272,23 +256,27 @@
         <!-- Consolidated Environmental & Planet Metrics Metadata Footer -->
         <div class="celestial-metadata-grid">
             <div class="meta-item">
-                <span class="meta-icon">🌞</span>
-                <span class="meta-label">Solar Longitude:</span>
+                <span class="meta-label">Sunrise</span>
+                <span id="sunrise-val">--</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Sunset</span>
+                <span id="sunset-val">--</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Solar Longitude</span>
                 <span id="solar-longitude-val">--°</span>
             </div>
             <div class="meta-item">
-                <span class="meta-icon">🌙</span>
-                <span class="meta-label">Lunar Age:</span>
+                <span class="meta-label">Lunar Age</span>
                 <span id="lunar-age-val">-- days</span>
             </div>
             <div class="meta-item">
-                <span class="meta-icon">🪐</span>
-                <span class="meta-label">Planets:</span>
+                <span class="meta-label">Planets</span>
                 <span id="active-planets-val">--</span>
             </div>
             <div class="meta-item">
-                <span class="meta-icon">🌍</span>
-                <span class="meta-label">Celestial Season:</span>
+                <span class="meta-label">Celestial Season</span>
                 <span id="celestial-season-val">--</span>
             </div>
         </div>
@@ -305,6 +293,10 @@
 
     <!-- Today's energy -->
     <div class="energy-card" id="energyCard"></div>
+    <div class="card" id="week-card" aria-label="Week rhythm">
+        <div id="kairos-week-row">📅 Kairos Week: <span id="kairos-week-display">--</span></div>
+        <div id="civil-week-row" hidden>📆 Civil Week: <span id="civil-week-display">--</span></div>
+    </div>
 
     <!-- In season now — collapsible, styled like the energy card; filters and
          editing live in the ⚙️ Configure tab -->
@@ -323,6 +315,14 @@
 
     <!-- Tab: configuration -->
     <div class="tab-panel" id="tabConfig" hidden>
+        <div class="config-section">
+            <label for="week-system">📅 Week System</label>
+            <select id="week-system">
+                <option value="kairos">Kairos 13-Day Week</option>
+                <option value="civil">Civil 7-Day Week</option>
+                <option value="both">Both (Kairos primary)</option>
+            </select>
+        </div>
         <div class="config-section">
             <h3 data-i18n="config.tradition">🕰️ Your tradition</h3>
             <p class="config-hint" data-i18n="config.tradition_hint">Read the same observed sky through a different calendar lens.</p>
@@ -373,7 +373,7 @@
             </div>
             <div style="display: flex; align-items: center; gap: 12px; margin: 8px 0;">
                 <input type="checkbox" id="light-beam-toggle" style="width: 20px; height: 20px; accent-color: #f0c27f; cursor: pointer;">
-                <label for="light-beam-toggle" style="color: #f5e6c4; font-size: 0.9rem; cursor: pointer;" data-i18n="config.light_beam">🌍 Show Sun Light</label>
+                <label for="light-beam-toggle" style="color: #f5e6c4; font-size: 0.9rem; cursor: pointer;" data-i18n="config.light_beam">🌍 Show the gregorian clock</label>
             </div>
         </div>
 
@@ -642,6 +642,8 @@
 <script src="static/js/kairos_time.js"></script>
 <script src="static/js/kairos_dual_time.js"></script>
 <script src="static/js/kairos_kepler_display.js"></script>
+<script src="static/js/observational_time.js"></script>
+<script src="static/js/kairos_week.js"></script>
 <script src="static/js/degree_wheel.js"></script>
 <script src="static/js/solar_geometry.js"></script>
 <script src="kst_display.js"></script>

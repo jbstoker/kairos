@@ -26,12 +26,12 @@ const TRADITIONS = {
     kairos: {
         months: 13,
         names: ["Root Moon", "Sap Moon", "Green Moon", "Bloom Moon", "Grain Moon", "Light Moon", "Thirst Moon", "Fruit Moon", "Harvest Moon", "Wine Moon", "Leaf Moon", "Frost Moon", "Star Moon"],
-        yearDay: "Deep Day"
+        yearDay: "The Closing"
     },
     rhythm: {
         months: 13,
         names: ["Root Moon", "Sap Moon", "Green Moon", "Bloom Moon", "Grain Moon", "Light Moon", "Thirst Moon", "Fruit Moon", "Harvest Moon", "Wine Moon", "Leaf Moon", "Frost Moon", "Star Moon"],
-        yearDay: "Deep Day"
+        yearDay: "The Closing"
     },
     tartarian: {
         months: 13,

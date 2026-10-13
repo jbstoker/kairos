@@ -124,10 +124,10 @@ process.stdout.write(JSON.stringify(out));
 
     def test_kairos_dates(self):
         out = self._helpers()
-        self.assertEqual(out["d1"], {"month": "Root Moon", "day": 1, "weekday": "Sundial"})
-        self.assertEqual(out["d29"], {"month": "Sap Moon", "day": 1, "weekday": "Sundial"})
-        self.assertEqual(out["d364"], {"month": "Star Moon", "day": 28, "weekday": "Star"})
-        self.assertEqual(out["d365"], {"month": "Deep Day", "day": 1, "weekday": "Sundial"})
+        self.assertEqual(out["d1"], {"month": "Root Moon", "day": 1, "weekday": "Imix"})
+        self.assertEqual(out["d29"], {"month": "Sap Moon", "day": 1, "weekday": "Akbal"})
+        self.assertEqual(out["d364"], {"month": "Star Moon", "day": 28, "weekday": "Ben"})
+        self.assertEqual(out["d365"], {"month": "The Closing", "day": 1, "weekday": None})
         self.assertEqual(out["doy1"], 1)
         self.assertEqual(out["doy365"], 365)
 

@@ -2,7 +2,7 @@
 
 web/static/js/sky_mirror.js is the DEFAULT sky view: no degree rings, no
 labels — a round mirror where the Sun and Moon sit at their real altitude +
-azimuth and the horizon line (70% height) is the only reference. South is
+azimuth and the horizon ring (radius 40%) is the only reference. South is
 up, east is left — the same convention as the degree wheel.
 
 The full observation matrix (degree wheel, orbit tracks, eclipse pill,
@@ -45,7 +45,7 @@ class TestSkyMirrorServed(unittest.TestCase):
         for element_id in ["sky-mirror-view", "sky-mirror", "sky-gradient",
                            "horizon-line", "horizon-glow", "sun-bead-visual",
                            "moon-bead-visual", "stars-container",
-                           "primary-time"]:
+                           "kstDisplayLine"]:
             self.assertIn(f'id="{element_id}"', html, element_id)
 
     def test_detailed_dome_present_but_hidden_by_default(self):
@@ -112,13 +112,15 @@ class TestSkyMirrorJs(unittest.TestCase):
         self.assertEqual(proc.returncode, 0, proc.stderr)
 
     def test_mirror_xy_mapping(self):
-        """Alt 0° sits ON the horizon (y=70), the zenith rises towards y=30;
-        south is up (x=50), east is left (x<50), west is right (x>50)."""
+        """Cardinal horizon points are distinct; zenith is independent of azimuth."""
         script = (
             "const sm = require('./web/static/js/sky_mirror.js');\n"
             "process.stdout.write(JSON.stringify({\n"
             "  horizonSouth: sm.mirrorXY(0, 180),\n"
-            "  zenith: sm.mirrorXY(90, 180),\n"
+            "  horizonNorth: sm.mirrorXY(0, 0),\n"
+            "  horizonEast: sm.mirrorXY(0, 90),\n"
+            "  horizonWest: sm.mirrorXY(0, 270),\n"
+            "  zenith: sm.mirrorXY(90, 0),\n"
             "  east: sm.mirrorXY(45, 90),\n"
             "  west: sm.mirrorXY(45, 270),\n"
             "  noonSun: sm.mirrorXY(45, 180)\n"
@@ -126,12 +128,16 @@ class TestSkyMirrorJs(unittest.TestCase):
         )
         out = self._run(script)
         self.assertAlmostEqual(out["horizonSouth"]["x"], 50.0)
-        self.assertAlmostEqual(out["horizonSouth"]["y"], 70.0)
-        self.assertAlmostEqual(out["zenith"]["y"], 30.0)
+        self.assertAlmostEqual(out["horizonSouth"]["y"], 10.0)
+        self.assertAlmostEqual(out["horizonNorth"]["y"], 90.0)
+        self.assertAlmostEqual(out["horizonEast"]["x"], 10.0)
+        self.assertAlmostEqual(out["horizonWest"]["x"], 90.0)
+        self.assertAlmostEqual(out["zenith"]["y"], 50.0)
+        self.assertAlmostEqual(out["zenith"]["x"], 50.0)
         self.assertLess(out["east"]["x"], 50.0)
         self.assertGreater(out["west"]["x"], 50.0)
         self.assertAlmostEqual(out["noonSun"]["x"], 50.0)
-        self.assertAlmostEqual(out["noonSun"]["y"], 50.0)
+        self.assertLess(out["noonSun"]["y"], 50.0)
 
     def test_sky_colors_day_twilight_night(self):
         script = (
@@ -192,7 +198,7 @@ class TestSkyMirrorJs(unittest.TestCase):
         out = self._run(script)
         self.assertTrue(out["day"]["sun"]["visible"])
         self.assertAlmostEqual(out["day"]["sun"]["x"], 50.0)
-        self.assertAlmostEqual(out["day"]["sun"]["y"], 50.0)
+        self.assertLess(out["day"]["sun"]["y"], 50.0)
         self.assertFalse(out["day"]["eclipse"])
         self.assertEqual(out["day"]["starOpacity"], 0)
         self.assertFalse(out["night"]["sun"]["visible"])

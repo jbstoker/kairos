@@ -11,24 +11,19 @@ Kairos does not drift. It does not correct. It simply *observes*.
 ---
 
 ### The Day — A Turning, Not a Number
+Kairos's primary constructed week has 13 named days: Imix, Ik, Akbal, Kan,
+Chicchan, Cimi, Manik, Lamat, Muluc, Oc, Chuen, Eb, Ben. Twenty-eight such
+weeks fit into 364 calendar days. The remaining Closing (two days in leap
+years) has no week name; each new year begins again with Imix. A continuous
+civil seven-day week is available as an optional reference.
 
-The seven days of the Kairos week are not named for gods or planets. They are named for what you can *feel* in the turning of the light:
-
-| Day | Meaning |
-|-----|---------|
-| **Sundial** | Clarity, action, visibility |
-| **Well** | Reflection, rest, depth |
-| **Root** | Grounding, patience, endurance |
-| **Bloom** | Growth, connection, emergence |
-| **Forge** | Creation, transformation, will |
-| **Harvest** | Completion, gratitude, closure |
-| **Star** | Vision, dream, renewal |
-
-These are not prescribed. They are *observed*.
+These names are inspired by Maya day-sign names, **not** a representation of
+the historical Tzolk’in (a continuous 260-day combination of 13 numbers and
+20 day signs). The Kairos mapping is symbolic, not an astronomical observation.
 
 ---
 
-### The Months — Observed, Not Invented
+### The Months — A Constructed Rhythm
 
 The thirteen months of Kairos are named for what is *happening* in the living world:
 
@@ -48,7 +43,8 @@ The thirteen months of Kairos are named for what is *happening* in the living wo
 | **Frost Moon** | The first frost, remembrance |
 | **Star Moon** | The clearest nights, the deepest sky |
 
-These are not arbitrary. They are *observable*.
+These are seasonal metaphors; each “Moon” is a fixed 28-day calendar month,
+not a measured lunar phase cycle. Local seasons vary by hemisphere and place.
 
 ---
 

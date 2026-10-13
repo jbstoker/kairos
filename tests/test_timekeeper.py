@@ -15,22 +15,26 @@ from core.timekeeper import Kairos, format_kst, format_year, load_tradition
 
 
 class TestKairosConstants(unittest.TestCase):
-    def test_seven_days(self):
-        self.assertEqual(len(KAIROS_DAY_NAMES), 7)
-        self.assertEqual(KAIROS_DAY_NAMES, ["Sundial", "Well", "Root", "Bloom",
-                                            "Forge", "Harvest", "Star"])
-        self.assertEqual(kairos_day_name(1), "Sundial")
-        self.assertEqual(kairos_day_name(2), "Well")
-        self.assertEqual(kairos_day_name(8), "Sundial")  # the week wraps on day 8
+    def test_thirteen_days(self):
+        self.assertEqual(len(KAIROS_DAY_NAMES), 13)
+        self.assertEqual(KAIROS_DAY_NAMES[0], "Imix")
+        self.assertEqual(KAIROS_DAY_NAMES[-1], "Ben")
+        self.assertEqual(kairos_day_name(1), "Imix")
+        self.assertEqual(kairos_day_name(13), "Ben")
+        self.assertEqual(kairos_day_name(14), "Imix")
+        self.assertEqual(kairos_day_name(364), "Ben")
+        self.assertIsNone(kairos_day_name(365))
 
     def test_kairos_date(self):
         d = kairos_date(1)
-        self.assertEqual((d["month"], d["day"], d["weekday"]), ("Root Moon", 1, "Sundial"))
+        self.assertEqual((d["month"], d["day"], d["weekday"]), ("Root Moon", 1, "Imix"))
         d = kairos_date(29)
         self.assertEqual(d["month"], "Sap Moon")
         d = kairos_date(365)
-        self.assertEqual(d["month"], "Deep Day")
+        self.assertEqual(d["month"], "The Closing")
         self.assertTrue(d["year_day"])
+        self.assertIsNone(d["weekday"])
+        self.assertIsNone(kairos_date(366)["weekday"])
 
     def test_kairos_season_names(self):
         self.assertEqual(kairos_season_name("Summer"), "Radiance")
@@ -120,20 +124,20 @@ class TestTimekeeper(unittest.TestCase):
         self.assertEqual(data["month_names"][0], "Root Moon")
         self.assertEqual(data["month_names"][-1], "Star Moon")
         self.assertEqual(data["season_names"], ["Emergence", "Radiance", "Release", "Stillness"])
-        self.assertEqual(data["weekdays"][0], "Sundial")
-        self.assertEqual(data["year_day"], "Deep Day")
+        self.assertEqual(data["weekdays"][0], "Imix")
+        self.assertEqual(data["year_day"], "The Closing")
 
     def test_rhythm_calendar_and_weekday(self):
         kairos = Kairos("rhythm")
         cal = kairos.calendar_date(1)
         self.assertEqual(cal["month"], "Root Moon")
-        self.assertEqual(cal["weekday"], "Sundial")
+        self.assertEqual(cal["weekday"], "Imix")
         cal = kairos.calendar_date(29)
         self.assertEqual(cal["month"], "Sap Moon")
         cal = kairos.calendar_date(365)
-        self.assertEqual(cal["month"], "Deep Day")
-        # Weekday cycle follows the observed seven.
-        self.assertEqual(kairos.calendar_date(8)["weekday"], "Sundial")
+        self.assertEqual(cal["month"], "The Closing")
+        self.assertIsNone(cal["weekday"])
+        self.assertEqual(kairos.calendar_date(14)["weekday"], "Imix")
 
     def test_unknown_tradition(self):
         with self.assertRaises(ValueError):

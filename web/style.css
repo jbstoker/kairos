@@ -384,8 +384,20 @@ select {
     font-size: 0.88rem;
 }
 .energy-line:last-child { border-bottom: none; }
-.energy-key { color: #8e9ab0; min-width: 92px; }
-.energy-val { color: #f0c27f; font-weight: 600; }
+.energy-key { color: #8e9ab0;
+ white-space: nowrap;
+    width:100%;
+    text-align:center;
+    font-size:16px;
+    display:block;
+    }
+.energy-val { color: #f0c27f;
+    white-space: nowrap;
+    width:100%;
+    text-align:center;
+    font-size:16px;
+    display:block;
+    }
 .energy-note { color: #b7c9e2; flex: 1 1 100%; }
 
 /* ---- Tabs: Now / Configure ---- */
@@ -1122,7 +1134,7 @@ select {
     letter-spacing: 0.5px;
     color: #f5e6c4;
     text-align: center;
-    margin-bottom: 10px;
+    margin-bottom: 0px;
     max-width: 100%;
     overflow-wrap: anywhere;
 }
@@ -1164,7 +1176,7 @@ select {
     border: 1px solid #2a3442;
     border-radius: 14px;
     padding: 8px 10px;
-    display: flex;
+    display: block;
     align-items: baseline;
     gap: 6px;
     font-size: 0.8rem;
@@ -1175,12 +1187,18 @@ select {
 .meta-label {
     color: #8e9ab0;
     white-space: nowrap;
+    width:100%;
+    text-align:center;
+    font-size:16px;
+    display:block;
 }
 
 .meta-item span:last-child {
     margin-left: auto;
     color: #f5e6c4;
-    text-align: right;
+    text-align:center;
+    display: block;
+    width:100%;
 }
 
 

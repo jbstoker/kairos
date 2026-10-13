@@ -166,12 +166,13 @@
     }
 
     // ---- Canonical Kairos names (mirrors core/constants.py) -----------------
-    const KAIROS_DAYS = ["Sundial", "Well", "Root", "Bloom", "Forge", "Harvest", "Star"];
+    const KAIROS_DAYS = ['Imix', 'Ik', 'Akbal', 'Kan', 'Chicchan', 'Cimi',
+        'Manik', 'Lamat', 'Muluc', 'Oc', 'Chuen', 'Eb', 'Ben'];
     const KAIROS_MONTHS = ["Root Moon", "Sap Moon", "Green Moon", "Bloom Moon", "Grain Moon",
         "Light Moon", "Thirst Moon", "Fruit Moon", "Harvest Moon", "Wine Moon",
         "Leaf Moon", "Frost Moon", "Star Moon"];
     const KAIROS_SEASONS = { Spring: "Emergence", Summer: "Radiance", Autumn: "Release", Winter: "Stillness" };
-    const KAIROS_YEAR_DAY = "Deep Day";
+    const KAIROS_YEAR_DAY = "The Closing";
 
     function kairosDayOfYear(date) {
         // Purely calendar-based (Date.UTC), so DST transitions never shift the count.
@@ -181,12 +182,12 @@
     }
 
     function kairosDayName(doy) {
-        return KAIROS_DAYS[(doy - 1) % 7];
+        return doy >= 1 && doy <= 364 ? KAIROS_DAYS[(doy - 1) % 13] : null;
     }
 
     function kairosDate(doy) {
         const weekday = kairosDayName(doy);
-        if (doy > 364) return { month: KAIROS_YEAR_DAY, day: doy - 364, weekday };
+        if (doy > 364) return { month: KAIROS_YEAR_DAY, day: doy - 364, weekday: null };
         const m = Math.floor((doy - 1) / 28);
         // The month name follows the selected style (web/static/js/
         // calendar_style.js): the canonical Root Moon names or the 13 true
@@ -209,15 +210,49 @@
     };
     function updateKSTSummary(season) {
         const now = new Date();
+        const skyClock = updateObservationalClock(now);
+        // The observational day belongs to the date of its starting sunrise.
+        // Civil weekday remains tied to the current local wall-clock date.
+        const kairosDateNow = skyClock ? skyClock.sunrise : now;
         const kairosSeason = KAIROS_SEASONS[season] || season;
+        const week = typeof getKairosWeekDisplay === 'function' ? getKairosWeekDisplay(kairosDateNow) : null;
+        const selectedWeek = weekSystem();
+        const weekLabel = selectedWeek === 'civil'
+            ? now.toLocaleDateString('en-US', { weekday: 'long' })
+            : week ? `${week.daySymbol} ${week.dayName}`.trim() : '';
         let kairosString;
-        if (typeof isKairosKeplerSelected === 'function' && isKairosKeplerSelected()
+        if (skyClock) {
+            const doy = kairosDayOfYear(kairosDateNow);
+            const kd = kairosDate(doy);
+            const yearStr = (typeof isZodiacStyle === 'function' && isZodiacStyle()
+                && typeof getEarthEraYear === 'function')
+                ? `EE ${getEarthEraYear().full}` : formatYear(getEarthAge(kairosDateNow));
+            const month = kd.weekday ? trName('month.', kd.month) : kd.month;
+            const seasonIcon = SEASON_ICONS[kairosSeason] || '';
+            let azimuth = '';
+            if (typeof getSolarAzimuth === 'function') {
+                try { azimuth = ` (${getSolarAzimuth().toFixed(1)}°)`; } catch (e) { /* optional */ }
+            }
+            kairosString = `${skyClock.display}${azimuth} · ${weekLabel} · ${month} ${kd.day} · ${seasonIcon}${trName('season.', kairosSeason)} · ${yearStr}`;
+        } else if (typeof getKairosObservationalTime === 'function') {
+            // At polar latitudes there may be no sunrise or sunset. Do not
+            // silently substitute a nadir-based clock for a sunrise clock.
+            const kd = kairosDate(kairosDayOfYear(now));
+            kairosString = `Sky clock unavailable · ${weekLabel} · ${kd.month} ${kd.day}`;
+        } else if (typeof isKairosKeplerSelected === 'function' && isKairosKeplerSelected()
             && typeof getKairosKeplerHeader === 'function') {
             // Compact Kepler header: "09:19:02 · Scorpius 3 · 26 (270.1°)" —
             // the Stride:Beat:Pulse clock, its month/day and the short civil
             // year, with the Sun's azimuth kept (web/static/js/
             // kairos_kepler_display.js).
             kairosString = getKairosKeplerHeader(now) || primaryTime(now);
+            if (weekLabel) kairosString = kairosString.replace(' · ', ` · ${weekLabel} · `);
+            if (week && week.weekNumber === null) {
+                // Kepler's 364-day month helper wraps; the calendar does not.
+                const parts = kairosString.split(' · ');
+                parts[weekLabel ? 2 : 1] = `The Closing ${kairosDayOfYear(now) - 364}`;
+                kairosString = parts.join(' · ');
+            }
         } else {
             const doy = kairosDayOfYear(now);
             const kd = kairosDate(doy);
@@ -232,9 +267,10 @@
             const dayIcon = DAY_ICONS[kd.weekday] || '';
             const seasonIcon = SEASON_ICONS[kairosSeason] || '';
             kairosString =
-                `${timeStr} · ${dayIcon}${trName('day.', kd.weekday)} · ${trName('month.', kd.month)} ${kd.day} · ${seasonIcon}${trName('season.', kairosSeason)} · ${yearStr}`;
+                `${timeStr} · ${weekLabel || `${dayIcon}${trName('day.', kd.weekday)}`} · ${trName('month.', kd.month)} ${kd.day} · ${seasonIcon}${trName('season.', kairosSeason)} · ${yearStr}`;
         }
         setText('kstDisplayLine', kairosString);
+        updateWeekDisplay(now, week, selectedWeek);
         updateCivilYearBadge();
         updateKeplerInfo();
         // FINAL UNIFIED HEADER: the primary line adapts to the selected
@@ -243,6 +279,49 @@
             window.updateDisplay(kairosString,
                 window.getSelectedTradition ? window.getSelectedTradition() : 'tartarian');
         }
+    }
+
+    function updateObservationalClock(now) {
+        let clock = null;
+        if (typeof getKairosObservationalTime === 'function') {
+            try {
+                const loc = typeof getObserverLocation === 'function'
+                    ? getObserverLocation() : location;
+                clock = getKairosObservationalTime(now, loc.lat, loc.lon);
+            } catch (e) { /* No valid solar event: report unavailable. */ }
+        }
+        setText('kairos-half', clock ? `${clock.isLight ? '☀️ Light' : '🌙 Dark'} ·` : 'Sky clock unavailable (no sunrise/sunset)');
+        setText('kairos-time', clock ? clock.display : '--:--:--');
+        setText('kairos-stride', clock ? `Stride ${clock.stride}/13 ·` : '');
+        setText('kairos-pulse-length', clock ? `Pulse ${clock.pulseLength.toFixed(4)} s` : '');
+        return clock;
+    }
+
+    function weekSystem() {
+        try {
+            const value = localStorage.getItem('kairos_week_system');
+            return ['kairos', 'civil', 'both'].includes(value) ? value : 'kairos';
+        } catch (e) { return 'kairos'; }
+    }
+
+    function updateWeekDisplay(now, week, system) {
+        const kairosRow = document.getElementById('kairos-week-row');
+        const civilRow = document.getElementById('civil-week-row');
+        if (kairosRow) kairosRow.hidden = system === 'civil';
+        if (civilRow) civilRow.hidden = system === 'kairos';
+        setText('kairos-week-display', week ? week.display : '--');
+        setText('civil-week-display', `${now.toLocaleDateString('en-US', { weekday: 'long' })} (7-day week)`);
+    }
+
+    function initWeekSystem() {
+        const select = document.getElementById('week-system');
+        if (!select) return;
+        select.value = weekSystem();
+        select.addEventListener('change', () => {
+            try { localStorage.setItem('kairos_week_system', select.value); } catch (e) { /* private mode */ }
+            const data = window.__kstData;
+            if (data) updateKSTSummary(data.season || getSeason(data.solar_longitude));
+        });
     }
 
     // ---- Visible-star row: primary star + expandable "+N more" -------------
@@ -347,7 +426,12 @@
                 const d = getKairosKeplerDisplay(new Date());
                 if (d) {
                     if (fullEl) { fullEl.textContent = d.fullStr; fullEl.hidden = false; }
-                    if (pulseEl) { pulseEl.textContent = `Pulse: ${d.pulseLength.toFixed(4)} s`; pulseEl.hidden = false; }
+                    if (pulseEl) {
+                        // The primary clock now uses sunrise-to-sunrise halves.
+                        // Never present the old nadir-based pulse as its pulse.
+                        pulseEl.hidden = typeof getKairosObservationalTime === 'function';
+                        if (!pulseEl.hidden) pulseEl.textContent = 'Mean apparent-day pulse (model): ' + d.pulseLength.toFixed(4) + ' s';
+                    }
                     // VISUAL_TIME: the Sun's azimuth mapped back onto the
                     // 26 × 28 × 7 dial (kairos_dual_time.js) — the dial hand
                     // position next to the global orbital text. The display
@@ -388,6 +472,56 @@
         }
         el.hidden = true;
     }
+    // Move the sunrise/sunset markers on the detailed sky-dome wheel to the
+    // Sun's rising and setting azimuths for the observer's latitude and date.
+    // Sun's rising and setting azimuths for the observer's latitude and date.
+    function updateSunriseSunsetMarkers() {
+        if (typeof getSunsetAzimuth !== 'function' || typeof getObserverLocation !== 'function') return;
+        try {
+            const loc = getObserverLocation();
+            const now = new Date();
+            const sunsetAz = getSunsetAzimuth(loc.lat, now);
+            const sunriseAz = (360 - sunsetAz) % 360;
+            const cx = 400, cy = 400, radius = 280;
+            // 0° = bottom (midnight), 90° = left (sunrise), 180° = top (noon),
+            // 270° = right (sunset) in the SVG coordinate system.
+            const sunriseMarker = document.getElementById('sunrise-marker');
+            const sunsetMarker = document.getElementById('sunset-marker');
+            if (sunriseMarker) {
+                const rad = (sunriseAz + 90) * Math.PI / 180;
+                sunriseMarker.setAttribute('cx', (cx + radius * Math.cos(rad)).toFixed(1));
+                sunriseMarker.setAttribute('cy', (cy + radius * Math.sin(rad)).toFixed(1));
+            }
+            if (sunsetMarker) {
+                const rad = (sunsetAz + 90) * Math.PI / 180;
+                sunsetMarker.setAttribute('cx', (cx + radius * Math.cos(rad)).toFixed(1));
+                sunsetMarker.setAttribute('cy', (cy + radius * Math.sin(rad)).toFixed(1));
+            }
+        } catch (e) { /* ignore */ }
+    }
+
+    function updateSunriseSunsetReadouts() {
+        if (typeof getObserverLocation !== 'function') return;
+        try {
+            const loc = getObserverLocation();
+            const now = new Date();
+            let sunriseText = "--";
+            let sunsetText = "--";
+            if (typeof SunCalc !== "undefined" && SunCalc.getTimes) {
+                const times = SunCalc.getTimes(now, loc.lat, loc.lon);
+                const fmt = d => (d instanceof Date && !isNaN(d))
+                    ? `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`
+                    : "--";
+                sunriseText = fmt(times.sunrise);
+                sunsetText = fmt(times.sunset);
+            } else if (typeof getSunriseTimeKairos === "function") {
+                sunriseText = getSunriseTimeKairos(loc.lat, now);
+                sunsetText = getSunsetTimeKairos(loc.lat, now);
+            }
+            setText('sunrise-val', sunriseText);
+            setText('sunset-val', sunsetText);
+        } catch (e) { /* ignore */ }
+    }
 
     function renderKST(data) {
         if (!data) return;
@@ -398,6 +532,8 @@
         // grid and the observed context from this fresh snapshot.
         window.__kstData = data;
         if (window.renderTodaysEnergy) renderTodaysEnergy(data);
+        updateSunriseSunsetMarkers();
+        updateSunriseSunsetReadouts();
 
         // One-line KST summary: "14:32 · Solaris 16 · Summer · 4.54B / 2026.624"
         updateKSTSummary(season);
@@ -449,13 +585,25 @@
     window.refreshKST = updateKST;
 
     // Start.
+    // The sky clock advances every second, independently of API availability.
+    function tickObservationalClock() {
+        const data = window.__kstData;
+        if (data) updateKSTSummary(data.season || getSeason(data.solar_longitude));
+        else {
+            const local = computeKST(new Date());
+            if (local) updateKSTSummary(local.season);
+            else updateObservationalClock(new Date());
+        }
+    }
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => { updateKST(); requestGeolocation(); });
+        document.addEventListener('DOMContentLoaded', () => { initWeekSystem(); updateKST(); requestGeolocation(); });
     } else {
+        initWeekSystem();
         updateKST();
         requestGeolocation();
     }
     setInterval(updateKST, 10000);
+    setInterval(tickObservationalClock, 1000);
 
 })();
 

@@ -151,6 +151,41 @@ class TestKairosKeplerJs(unittest.TestCase):
         # The pulse genuinely varies through the year (not a constant).
         self.assertNotAlmostEqual(out["junPulse"], out["aprPulse"], places=4)
 
+    def test_day_length_eot_sign(self):
+        """Apparent time ahead of mean time shortens the next day when rising."""
+        script = (
+            "const k = require('./web/static/js/kairos_time.js');\n"
+            "const d = new Date('2024-06-21T12:00:00Z');\n"
+            "const jd = k.dateToJulianDay(d);\n"
+            "const delta = k.equationOfTime(jd + 1) - k.equationOfTime(jd);\n"
+            "process.stdout.write(JSON.stringify({ delta, length: k.getApparentDayLength(d) }));\n"
+        )
+        out = self._run(script)
+        self.assertGreater(abs(out["delta"]), 1)
+        self.assertAlmostEqual(out["length"], 86400 - out["delta"], places=6)
+
+    def test_fraction_between_real_nadirs_across_civil_midnight(self):
+        """The clock reaches zero at a transit even when it crosses UTC midnight."""
+        script = (
+            "global.SunCalc = require('./web/lib/suncalc.js');\n"
+            "global.getObserverLocation = () => ({lat: 0, lon: 0});\n"
+            "const k = require('./web/static/js/kairos_time.js');\n"
+            "const base = new Date('2024-02-11T12:00:00Z');\n"
+            "const start = SunCalc.getTimes(base, 0, 0).nadir.getTime();\n"
+            "const end = SunCalc.getTimes(new Date(base.getTime() + 86400000), 0, 0).nadir.getTime();\n"
+            "const span = end - start;\n"
+            "const at = ms => k.kairosKeplerDayFraction(new Date(ms));\n"
+            "process.stdout.write(JSON.stringify({ span, start: at(start),\n"
+            "  middle: at(start + Math.floor(span / 2)),\n"
+            "  before: at(end - 1000), after: at(end) }));\n"
+        )
+        out = self._run(script)
+        self.assertNotEqual(out["span"], 86400000)
+        self.assertAlmostEqual(out["start"], 0, places=8)
+        self.assertAlmostEqual(out["middle"], 0.5, delta=0.00001)
+        self.assertGreater(out["before"], 0.999)
+        self.assertAlmostEqual(out["after"], 0, places=8)
+
     def test_kairos_clock_fraction_boundaries(self):
         script = (
             "const k = require('./web/static/js/kairos_time.js');\n"

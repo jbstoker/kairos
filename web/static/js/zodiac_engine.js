@@ -192,12 +192,7 @@ function buildStarSignHTML() {
 
     const sameSign = tropical.name === sidereal.name;
 
-    let html = `<div id="star-sign-section">`;
-
-    // Compact row — same .energy-line pattern as the other energy rows.
-    html += `<div class="energy-line"><span class="energy-key">⭐ True Star Sign</span>` +
-        `<span class="energy-val">${sidereal.emoji} ${sidereal.name}</span>` +
-        `<span class="energy-note">${sameSign ? 'both wheels agree' : `old: ${tropical.emoji} ${tropical.name} · ~${data.offset}° drift`}</span></div>`;
+    let html = `<div id="star-sign-section" style="width:100%;display:block">`;
 
     if (sameSign) {
         // Both wheels point at the same sign — no comparison needed, one

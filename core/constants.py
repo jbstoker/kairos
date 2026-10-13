@@ -6,15 +6,11 @@ own calendar names on top of the same 13 x 28 + 1 structure (see
 data/traditions/rhythm.json, which uses exactly these names).
 """
 
-# The seven observed days of the Kairos week (day 1 of the year = Sundial).
+# Constructed 13-day Kairos week, inspired by Tzolk'in day signs (not the
+# historical 260-day Tzolk'in). The 364 in-cycle days form 28 full weeks.
 KAIROS_DAY_NAMES = [
-    "Sundial",
-    "Well",
-    "Root",
-    "Bloom",
-    "Forge",
-    "Harvest",
-    "Star",
+    "Imix", "Ik", "Akbal", "Kan", "Chicchan", "Cimi", "Manik",
+    "Lamat", "Muluc", "Oc", "Chuen", "Eb", "Ben",
 ]
 
 # The thirteen observed months (13 x 28 days, plus one year day).
@@ -43,12 +39,14 @@ KAIROS_SEASON_NAMES = {
 }
 
 # The one out-of-cycle day of the 13 x 28 + 1 year.
-KAIROS_YEAR_DAY = "Deep Day"
+KAIROS_YEAR_DAY = "The Closing"
 
 
 def kairos_day_name(day_of_year):
-    """The Kairos day name for a 1-based day-of-year (day 1 = Sundial)."""
-    return KAIROS_DAY_NAMES[(day_of_year - 1) % 7]
+    """Name for days 1–364; The Closing (and leap intercalation) has no week."""
+    if not 1 <= day_of_year <= 364:
+        return None
+    return KAIROS_DAY_NAMES[(day_of_year - 1) % 13]
 
 
 def kairos_date(day_of_year):
@@ -60,7 +58,7 @@ def kairos_date(day_of_year):
         return {
             "month": KAIROS_YEAR_DAY,
             "day": day_of_year - 364,
-            "weekday": kairos_day_name(day_of_year),
+            "weekday": None,
             "year_day": True,
         }
     month = (day_of_year - 1) // 28

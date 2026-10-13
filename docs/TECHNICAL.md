@@ -428,12 +428,13 @@ What you get and what needs it:
 
 Kairos Time has its own observed calendar, defined in `core/constants.py`:
 
-- **13 months of 28 days** plus one year day — 13 × 28 + 1 = 365 days.
-- **Seven observed days** — the week turns with the light:
+- **13 months of 28 days** plus one intercalary day in common years (two
+  in leap years) — 13 × 28 + 1 = 365, or + 2 = 366.
+- **Thirteen named days** — a constructed weekly rhythm:
 
-  `Sundial · Well · Root · Bloom · Forge · Harvest · Star`
+  `Imix · Ik · Akbal · Kan · Chicchan · Cimi · Manik · Lamat · Muluc · Oc · Chuen · Eb · Ben`
 
-  (day 1 of the year is Sundial; day 8 is Sundial again.)
+  (day 1 is Imix; day 14 is Imix again; 28 weeks cover 364 days.)
 
 - **Thirteen observed months** — named for what is happening in the
   living world:
@@ -444,13 +445,57 @@ Kairos Time has its own observed calendar, defined in `core/constants.py`:
 
 - **Four observed seasons**: `Emergence · Radiance · Release · Stillness`
   (Spring, Summer, Autumn, Winter).
-- **The year day** (`Deep Day`) sits outside the months — a breath
+- **The year day** (`The Closing`) sits outside the months — a breath
   between years.
+
+**Intercalation policy:** Days 365 and (in leap years) 366 are The Closing 1
+and The Closing 2. Both are outside months and weeks, with no Kairos weekday or
+week number. The constructed week resets to Imix on January 1, independent
+of the uninterrupted civil seven-day week. The astronomical time and sky
+calculations continue across every civil date. The browser defaults to the
+Kairos week, with civil-only and both-layer views in Configure.
+These borrowed spellings are *inspired by*, not equivalent to, the historical
+Maya Tzolk’in: that calendar combines 20 day signs with 13 numbers in a
+continuous 260-day cycle; Kairos instead repeats 13 selected names annually.
+
+**Units and provenance:** The 13 “Moons” are fixed 28-day *calendar months*,
+not measured lunar synodic cycles. The Earth-age year is a configurable
+~4.54-billion-year baseline plus a civil-year offset, not a precise age
+measurement. The precession checksum compares phases derived from selected
+model assumptions; it cannot independently determine or validate Earth's age.
+The Sky Mirror uses SunCalc altitude (degrees above the ideal horizon) and
+north-based azimuth (0° N, 90° E, 180° S, 270° W) at the configured observer
+location; its zenith-centred orthographic map puts the horizon on a circle.
+Its stars and gradient are illustrative, not calibrated observations. Kairos
+Kepler time spans consecutive SunCalc nadirs; its EoT-derived pulse-length
+readout is a first-order approximation in SI seconds, not an independently
+measured duration of the current SunCalc interval. External accuracy
+calibration against independent dated solar positions remains outstanding.
+
+**Sunrise clock:** `web/static/js/observational_time.js` predicts successive
+sunrises and the intervening sunset for the configured latitude **and**
+longitude, using SunCalc's standard −0.833° sunrise/sunset convention. It
+divides each light and dark interval independently into 13 strides of 28 beats
+of 7 pulses (2,548 pulses **per half**). Pulse duration is the predicted
+half-interval in SI seconds / 2,548; changing seasons, location, and the
+equation of time all affect it. At latitudes/dates without finite sunrise and
+sunset the sky clock reports unavailable; it does not fabricate events.
+The Kairos calendar date and 13-day weekday displayed with the clock use the
+**local date of the starting sunrise**, so the date changes at sunrise rather
+than at civil midnight; the optional civil weekday still changes at midnight.
+The existing nadir-based Kepler clock and approximate EoT pulse API remain
+available to other callers, but the main sky clock does not silently switch
+to them when sunrise events are unavailable.
+The Closing is a **civil intercalation convention**, not the measured instant
+of completion of Earth's orbit: this calendar still starts on January 1 and
+uses Gregorian leap years. An astronomical year boundary would require a
+specified solar-longitude reference and its crossing time; 365.2422 days is
+an approximate mean tropical year, not an exact annual duration.
 
 The primary display shows all of it at once:
 
 ```text
-14:32 · Sundial · Bloom Moon 16 · Radiance · 4.54B / 2026.624
+14:32 · Imix · Bloom Moon 16 · Radiance · 4.54B / 2026.624
 ```
 
 ## Traditions

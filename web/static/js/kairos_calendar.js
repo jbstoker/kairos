@@ -17,12 +17,13 @@
     const EARTH_AGE_YEARS = 4540000000; // ~4.54 billion years (configurable)
 
     // Canonical Kairos names (mirrors core/constants.py).
-    const KAIROS_DAYS = ["Sundial", "Well", "Root", "Bloom", "Forge", "Harvest", "Star"];
+    const KAIROS_DAYS = ['Imix', 'Ik', 'Akbal', 'Kan', 'Chicchan', 'Cimi',
+        'Manik', 'Lamat', 'Muluc', 'Oc', 'Chuen', 'Eb', 'Ben'];
     const KAIROS_MONTHS = ["Root Moon", "Sap Moon", "Green Moon", "Bloom Moon", "Grain Moon",
         "Light Moon", "Thirst Moon", "Fruit Moon", "Harvest Moon", "Wine Moon",
         "Leaf Moon", "Frost Moon", "Star Moon"];
     const KAIROS_SEASONS = { Spring: "Emergence", Summer: "Radiance", Autumn: "Release", Winter: "Stillness" };
-    const KAIROS_YEAR_DAY = "Deep Day";
+    const KAIROS_YEAR_DAY = "The Closing";
 
     // Purely calendar-based (Date.UTC), so DST transitions never shift the count.
     function kairosDayOfYear(date) {
@@ -32,12 +33,12 @@
     }
 
     function kairosDayName(doy) {
-        return KAIROS_DAYS[(doy - 1) % 7];
+        return doy >= 1 && doy <= 364 ? KAIROS_DAYS[(doy - 1) % 13] : null;
     }
 
     function kairosDate(doy) {
         const weekday = kairosDayName(doy);
-        if (doy > 364) return { month: KAIROS_YEAR_DAY, day: doy - 364, weekday };
+        if (doy > 364) return { month: KAIROS_YEAR_DAY, day: doy - 364, weekday: null };
         const m = Math.floor((doy - 1) / 28);
         return { month: KAIROS_MONTHS[m], day: ((doy - 1) % 28) + 1, weekday };
     }

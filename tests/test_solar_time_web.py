@@ -9,6 +9,7 @@ The root page must load it before kst_display.js / unified_display.js.
 """
 
 import json
+import os
 import subprocess
 import unittest
 
@@ -32,6 +33,18 @@ class TestSolarTimeJs(unittest.TestCase):
                         html.index('<script src="kst_display.js"></script>'))
         self.assertLess(html.index('<script src="static/js/solar_time.js"></script>'),
                         html.index('<script src="static/js/unified_display.js"></script>'))
+
+    def test_root_has_sunrise_and_sunset_markers(self):
+        html = self.client.get("/").get_data(as_text=True)
+        self.assertIn('id="sunrise-marker"', html)
+        self.assertIn('id="sunset-marker"', html)
+
+    def test_concentric_template_has_sunrise_and_sunset_markers(self):
+        with open(os.path.join(os.path.dirname(__file__), "..", "web",
+                               "templates", "concentric_view.html"), encoding="utf-8") as f:
+            frag = f.read()
+        self.assertIn('id="sunrise-marker"', frag)
+        self.assertIn('id="sunset-marker"', frag)
 
     def test_degrees_and_time_roundtrip_at_fixed_local_time(self):
         script = (

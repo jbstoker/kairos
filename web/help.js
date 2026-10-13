@@ -30,7 +30,7 @@ const KAIROS_TO_ENERGY_ELEMENT = {
     Light: 'Fire', Shadow: 'Water', Stone: 'Earth', Wind: 'Air', Void: 'Ether'
 };
 const KAIROS_SEASON_MAP = {
-    Spring: 'Emergence', Summer: 'Radiance', Autumn: 'Release', Winter: 'Stillness'
+    Spring: 'Spring', Summer: 'Summer', Autumn: 'Autumn', Winter: 'Winter'
 };
 
 function getCurrentArchetype() {
@@ -118,43 +118,27 @@ function buildEnergyHTML(kstData) {
         }
     }
 
-    // Festival
-    let festivalVal = t('energy.festival');
-    let festivalNote = t('festival.' + season);
-    if (lensData) {
-        const eq = lensVal('festivals', festivalKey, 'equivalent');
-        const practice = lensVal('festivals', festivalKey, 'practice');
-        if (eq) festivalVal = eq;
-        if (practice) festivalNote = practice;
-    }
+    const data = getStarSigns();
+    const tropical = data.tropical;
+    const sidereal = data.sidereal;
+    const sameSign = tropical.name === sidereal.name;
 
-    // In season (foods & herbs)
-    let foodsVal = t('energy.food');
-    let foodsNote = t('food.' + season);
-    if (lensData) {
-        const foods = lensVal('seasons', kairosSeason, 'foods');
-        const herbs = lensVal('seasons', kairosSeason, 'herbs');
-        if (foods) foodsVal = foods;
-        if (herbs) foodsNote = herbs;
-    }
 
     return [
-        `<div class="energy-line"><span class="energy-key">${t('energy.archetype')}</span>` +
+        `<div class="celestial-metadata-grid"><div class="meta-item"><span class="energy-key">${t('energy.archetype')}</span>` +
             `<span class="energy-val">${archetypeVal}</span>` +
             `<span class="energy-note">${archetypeNote}</span></div>`,
-        `<div class="energy-line"><span class="energy-key">${t('energy.moon_mood')}</span>` +
+        `<div class="meta-item"><span class="energy-key">${t('energy.moon_mood')}</span>` +
             `<span class="energy-val">${moodVal}</span>` +
             `<span class="energy-note">${moodNote}</span></div>`,
-        `<div class="energy-line"><span class="energy-key">${t('energy.element', { glyph: '' }).trim()}</span>` +
+        `<div class="meta-item"><span class="energy-key">${t('energy.element', { glyph: '' }).trim()}</span>` +
             `<span class="energy-val">${elementVal}</span>` +
             `<span class="energy-note">${elementNote}</span></div>`,
-        `<div class="energy-line"><span class="energy-key">${trName('season.', kairosSeason)}</span>` +
-            `<span class="energy-val">${festivalVal}</span>` +
-            `<span class="energy-note">${festivalNote}</span></div>`,
-        `<div class="energy-line"><span class="energy-key">${t('energy.in_season')}</span>` +
-            `<span class="energy-val">${foodsVal}</span>` +
-            `<span class="energy-note">${foodsNote}</span></div>`
+        `<div class="meta-item"><span class="energy-key">True star sign</span>` +
+            `<span class="energy-val">${sidereal.emoji} ${sidereal.name}</span>` +
+            `<span class="energy-note">${sameSign ? 'both wheels agree' : `old: ${tropical.emoji} ${tropical.name} · ~${data.offset}° drift`}</span></div></div>`
     ].join("");
+
 }
 
 function renderTodaysEnergy(kstData) {

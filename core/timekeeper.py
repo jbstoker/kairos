@@ -143,9 +143,9 @@ class Kairos:
                                  self.trad_data["month_names"][month_index])
             month_number = month_index + 1
         weekdays = self.trad_data.get("weekdays", DEFAULT_WEEKDAYS)
-        weekday = weekdays[(day_of_year - 1) % 7]
-        translated = tr_name(self.t, "day.", weekday)
-        if translated == weekday:
+        weekday = weekdays[(day_of_year - 1) % len(weekdays)] if kind != "year_day" else None
+        translated = tr_name(self.t, "day.", weekday) if weekday is not None else None
+        if weekday is not None and translated == weekday:
             translated = tr_name(self.t, "weekday.", weekday)
         return {
             "month": month_name,
@@ -280,7 +280,7 @@ class Kairos:
         kst["solar_time"] = format_solar_time(solar_hours) if solar_hours is not None else "--:--"
         kst["month_name"] = tr_name(self.t, "month.", kd["month"])
         kst["day"] = kd["day"]
-        kst["day_name"] = tr_name(self.t, "day.", kd["weekday"])
+        kst["day_name"] = tr_name(self.t, "day.", kd["weekday"]) if kd["weekday"] else None
         kst["season"] = tr_name(self.t, "season.", kairos_season_name(kst["season"]))
         kst["earth_age_year"] = EARTH_AGE_YEARS + now.year + (doy - 1) / 365.2422
         return format_kst(kst, self.lang)

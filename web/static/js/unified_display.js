@@ -63,7 +63,11 @@
         const emoji = (typeof TRADITION_EMOJI !== 'undefined')
             ? (TRADITION_EMOJI[tradition] || '') : '';
         const datePart = `${emoji} ${trName('month.', d.month)} ${d.day}`;
-        return [timeStr, datePart, season, year].filter(Boolean).join(' · ');
+        // Preserve the independent week layer in the live app. Legacy callers
+        // that only supply a historical Kairos string retain their old format.
+        const hasWeekLayer = typeof getKairosWeekDisplay === 'function';
+        return [timeStr, hasWeekLayer ? parts[1] : '', datePart, season, year]
+            .filter(Boolean).join(' · ');
     }
 
     // The addendum's API, merged with app.js's existing updateDisplay().
