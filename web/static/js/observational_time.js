@@ -7,7 +7,23 @@
     const STRIDES_PER_HALF = 13;
     const PULSES_PER_HALF = STRIDES_PER_HALF * 28 * 7;
 
-    function getKairosObservationalTime(date, lat, lon) {
+    // An observed event replaces only the predicted event for its own day and
+    // location. An unpaired observation leaves the other boundary predicted.
+    function substituteEvents(predicted, observations, kind, lat, lon) {
+        if (!Array.isArray(observations)) observations = [];
+        return predicted.map(time => {
+            const matches = observations.filter(event => event && event.kind === kind &&
+                event.lat === lat && event.lon === lon &&
+                typeof event.timestamp === 'string' &&
+                Number.isFinite(Date.parse(event.timestamp)) &&
+                Math.abs(Date.parse(event.timestamp) - time) < 6 * 3600000);
+            return matches.length
+                ? { time: Date.parse(matches[matches.length - 1].timestamp), observed: true }
+                : { time, observed: false };
+        }).sort((a, b) => a.time - b.time);
+    }
+
+    function getKairosObservationalTime(date, lat, lon, observations) {
         if (!(date instanceof Date) || !Number.isFinite(date.getTime()) ||
             !Number.isFinite(lat) || !Number.isFinite(lon) ||
             lat < -90 || lat > 90 || lon < -180 || lon > 180 ||
@@ -25,13 +41,18 @@
             if (times.sunset instanceof Date && Number.isFinite(times.sunset.getTime()))
                 sets.add(times.sunset.getTime());
         }
-        const sunrises = [...rises].sort((a, b) => a - b);
-        const sunsets = [...sets].sort((a, b) => a - b);
-        const previousSunrise = sunrises.filter(t => t <= now).pop();
-        const nextSunrise = sunrises.find(t => t > now);
-        if (previousSunrise === undefined || nextSunrise === undefined) return null;
-        const sunset = sunsets.find(t => t > previousSunrise && t < nextSunrise);
-        if (sunset === undefined) return null;
+        const sunrises = substituteEvents([...rises].sort((a, b) => a - b),
+            observations, 'sunrise', lat, lon);
+        const sunsets = substituteEvents([...sets].sort((a, b) => a - b),
+            observations, 'sunset', lat, lon);
+        const previous = sunrises.filter(event => event.time <= now).pop();
+        const next = sunrises.find(event => event.time > now);
+        if (!previous || !next) return null;
+        const previousSunrise = previous.time;
+        const nextSunrise = next.time;
+        const setting = sunsets.find(event => event.time > previousSunrise && event.time < nextSunrise);
+        if (!setting) return null;
+        const sunset = setting.time;
         const isLight = now < sunset;
         const start = isLight ? previousSunrise : sunset;
         const end = isLight ? sunset : nextSunrise;
@@ -49,12 +70,14 @@
             pulseLength: duration / PULSES_PER_HALF,
             start: new Date(start), end: new Date(end),
             sunrise: new Date(previousSunrise), sunset: new Date(sunset),
-            nextSunrise: new Date(nextSunrise)
+            nextSunrise: new Date(nextSunrise),
+            sunriseObserved: previous.observed,
+            sunsetObserved: setting.observed
         };
     }
 
-    function getKairosObservationalPulseLength(date, lat, lon) {
-        const clock = getKairosObservationalTime(date, lat, lon);
+    function getKairosObservationalPulseLength(date, lat, lon, observations) {
+        const clock = getKairosObservationalTime(date, lat, lon, observations);
         return clock ? clock.pulseLength : null;
     }
 

@@ -379,7 +379,7 @@
 
         <div class="config-section">
             <h3>📍 Your location</h3>
-            <p class="config-hint">Pin the sky to where you are — the sun &amp; moon dial uses your real altitude &amp; azimuth. Saved on this device; fallback is 52°N 5°E.</p>
+            <p class="config-hint">Pin the sky to where you are — sunrise and sunset default to offline SunCalc predictions until you observe them. Saved on this device; fallback is 52°N 5°E.</p>
             <div class="location-row">
                 <input id="locationLat" type="number" step="0.0001" min="-90" max="90"
                        placeholder="Latitude 53.1503" aria-label="Latitude"
@@ -434,6 +434,7 @@
 
             <div class="enter-times">
                 <div class="enter-times-head" data-i18n="config.enter_times">📝 Or enter observed times</div>
+                <p class="config-hint">The suggested sunrise and sunset times are predictions for your location, not observations. Enter actual times to override them.</p>
                 <div class="enter-times-grid">
                     <label class="enter-field">🌅 <span data-i18n="config.sunrise">Sunrise</span>
                         <input type="time" id="enterSunrise">

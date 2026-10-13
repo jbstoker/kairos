@@ -419,6 +419,19 @@ function saveSolarNoon(noonTime, method) {
     if (status) status.textContent = t('obs.noon_calibrated', { label });
 }
 
+// Store actual solar events separately from noon calibration. Predicted times
+// remain placeholders, not observations, and are never written to storage.
+function saveSolarEvent(kind, when) {
+    try {
+        const loc = getStoredLocation();
+        const events = JSON.parse(localStorage.getItem('kairos_solar_events') || '[]');
+        const records = Array.isArray(events) ? events : [];
+        records.push({ kind, timestamp: when.toISOString(), lat: loc.lat, lon: loc.lon });
+        localStorage.setItem('kairos_solar_events', JSON.stringify(records.slice(-60)));
+        if (window.refreshKST) window.refreshKST();
+    } catch (e) { /* Storage may be unavailable; noon calibration still works. */ }
+}
+
 // Turn an <input type="time"> value ("HH:MM" or "HH:MM:SS") into a local
 // Date for today; returns null for invalid input.
 function timeInputToDate(value) {
@@ -445,6 +458,8 @@ function enterObservedTimes() {
         return;
     }
     const noon = new Date((sunrise.getTime() + sunset.getTime()) / 2);
+    saveSolarEvent('sunrise', sunrise);
+    saveSolarEvent('sunset', sunset);
     saveSolarNoon(noon, 'entered_times');
 }
 
@@ -482,17 +497,21 @@ const kairosCalibrator = (window.KairosObservation && window.KairosObservation.c
 
 document.getElementById('sunriseBtn').addEventListener('click', () => {
     if (!kairosCalibrator) return;
-    kairosCalibrator.recordSunrise(new Date());
+    const now = new Date();
+    kairosCalibrator.recordSunrise(now);
+    saveSolarEvent('sunrise', now);
     setObservationStatus(t('obs.sunrise_recorded'), true);
 });
 
 document.getElementById('sunsetBtn').addEventListener('click', () => {
     if (!kairosCalibrator) return;
-    const r = kairosCalibrator.recordSunset(new Date());
+    const now = new Date();
+    const r = kairosCalibrator.recordSunset(now);
     if (r.status === 'need_sunrise') {
         setObservationStatus(t('obs.need_sunrise'));
         return;
     }
+    saveSolarEvent('sunset', now);
     saveSolarNoon(r.noon, 'sunrise_sunset');
 });
 

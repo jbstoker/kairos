@@ -96,3 +96,42 @@ process.stdout.write(JSON.stringify({
             self.assertEqual(pair[0]['start'], pair[1]['start'])
             self.assertEqual(pair[0]['end'], pair[1]['end'])
             self.assertAlmostEqual(pair[0]['pulse'], pair[1]['pulse'])
+
+    def test_location_predictions_yield_to_matching_observations(self):
+        script = """
+global.SunCalc = require('./web/lib/suncalc.js');
+const k = require('./web/static/js/observational_time.js');
+const at = new Date('2026-06-21T12:00:00Z');
+const base = k.getKairosObservationalTime(at, 53.1503, 5.8389);
+const rise = new Date(base.sunrise.getTime() + 120000);
+const set = new Date(base.sunset.getTime() - 180000);
+const observations = [
+  {kind:'sunrise', timestamp:rise.toISOString(), lat:53.1503, lon:5.8389},
+  {kind:'sunset', timestamp:set.toISOString(), lat:53.1503, lon:5.8389}
+];
+const partial = k.getKairosObservationalTime(at, 53.1503, 5.8389, observations.slice(0, 1));
+const complete = k.getKairosObservationalTime(at, 53.1503, 5.8389, observations);
+const other = k.getKairosObservationalTime(at, 53.1503, 5.8389,
+  observations.map(x => ({...x, lon:0})));
+const invalid = k.getKairosObservationalTime(at, 53.1503, 5.8389,
+  [{kind:'sunrise', timestamp:'invalid', lat:53.1503, lon:5.8389}]);
+process.stdout.write(JSON.stringify({
+  base: [base.sunrise.getTime(),base.sunset.getTime(),base.sunriseObserved,base.sunsetObserved],
+  partial: [partial.sunrise.getTime(),partial.sunset.getTime(),partial.sunriseObserved,partial.sunsetObserved],
+  complete: [complete.sunrise.getTime(),complete.sunset.getTime(),complete.sunriseObserved,complete.sunsetObserved],
+  other: [other.sunrise.getTime(),other.sunset.getTime()],
+  invalid: [invalid.sunrise.getTime(),invalid.sunset.getTime()],
+  rise:rise.getTime(),set:set.getTime(),
+  pulse:complete.pulseLength
+}));
+"""
+        proc = subprocess.run(['node', '-e', script], cwd=ROOT, capture_output=True,
+                              text=True, encoding='utf-8')
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        out = json.loads(proc.stdout)
+        self.assertEqual(out['base'][2:], [False, False])
+        self.assertEqual(out['partial'], [out['rise'], out['base'][1], True, False])
+        self.assertEqual(out['complete'], [out['rise'], out['set'], True, True])
+        self.assertEqual(out['other'], out['base'][:2])
+        self.assertEqual(out['invalid'], out['base'][:2])
+        self.assertNotEqual(out['pulse'], 0)

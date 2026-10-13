@@ -281,15 +281,23 @@
         }
     }
 
-    function updateObservationalClock(now) {
+    function currentSolarClock(now) {
         let clock = null;
         if (typeof getKairosObservationalTime === 'function') {
             try {
                 const loc = typeof getObserverLocation === 'function'
                     ? getObserverLocation() : location;
-                clock = getKairosObservationalTime(now, loc.lat, loc.lon);
+                let observed = [];
+                try { observed = JSON.parse(localStorage.getItem('kairos_solar_events') || '[]'); }
+                catch (e) { /* storage unavailable: use predictions */ }
+                clock = getKairosObservationalTime(now, loc.lat, loc.lon, observed);
             } catch (e) { /* No valid solar event: report unavailable. */ }
         }
+        return clock;
+    }
+
+    function updateObservationalClock(now) {
+        const clock = currentSolarClock(now);
         setText('kairos-half', clock ? `${clock.isLight ? '☀️ Light' : '🌙 Dark'} ·` : 'Sky clock unavailable (no sunrise/sunset)');
         setText('kairos-time', clock ? clock.display : '--:--:--');
         setText('kairos-stride', clock ? `Stride ${clock.stride}/13 ·` : '');
@@ -514,12 +522,24 @@
                     : "--";
                 sunriseText = fmt(times.sunrise);
                 sunsetText = fmt(times.sunset);
-            } else if (typeof getSunriseTimeKairos === "function") {
-                sunriseText = getSunriseTimeKairos(loc.lat, now);
-                sunsetText = getSunsetTimeKairos(loc.lat, now);
             }
-            setText('sunrise-val', sunriseText);
-            setText('sunset-val', sunsetText);
+            // Readouts show the current sunrise cycle, including recorded
+            // observations, rather than a different UTC day's solar events.
+            const clock = currentSolarClock(now);
+            if (clock) {
+                const fmt = d => `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+                sunriseText = fmt(clock.sunrise);
+                sunsetText = fmt(clock.sunset);
+            } else {
+                sunriseText = '--';
+                sunsetText = '--';
+            }
+            const sunriseInput = document.getElementById('enterSunrise');
+            const sunsetInput = document.getElementById('enterSunset');
+            if (sunriseInput) sunriseInput.placeholder = sunriseText === '--' ? '' : sunriseText;
+            if (sunsetInput) sunsetInput.placeholder = sunsetText === '--' ? '' : sunsetText;
+            setText('sunrise-val', sunriseText === '--' ? '--' : `${sunriseText} (${clock && clock.sunriseObserved ? 'observed' : 'predicted'})`);
+            setText('sunset-val', sunsetText === '--' ? '--' : `${sunsetText} (${clock && clock.sunsetObserved ? 'observed' : 'predicted'})`);
         } catch (e) { /* ignore */ }
     }
 
