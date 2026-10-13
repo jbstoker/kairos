@@ -24,8 +24,9 @@
         siteOne:'Primary sanctuary associated with Fosite; later accounts describe a protected spring and herds.', siteTwo:'Findspot of a votive stone dedicated to Hludana.', siteThree:'A settlement mound with substantial archaeological evidence for distinctive treatment of the dead.', siteFour:'A spring with a later Christian legend; the claimed pre-Christian overlay remains a folklore interpretation.', siteFive:'One proposed location for Baduhenna’s grove.', siteSix:'A living beech with a long local significance.',
         mapClock:'The Map and the Clock', community:'The Community', roadmapOne:'Consecrate your own place, establish a hearth, and begin simple offerings.', roadmapTwo:'Visit a recorded place. Build the public map and link the web experience to Kairos.', roadmapThree:'Develop research articles and an annual practice with visible evidence labels.', roadmapFour:'Remain open when roads cross; offer a contact point without recruitment machinery.'
     });
-    Object.assign(translations.nl, { navRecipes:'Recepten', navPhilosophy:'Filosofie' });
-    Object.assign(translations.en, { navRecipes:'Recipes', navPhilosophy:'Philosophy' });
+    Object.assign(translations.fy, { navTraditions:'Tradysjes' });
+    Object.assign(translations.nl, { navTraditions:'Tradities', navRecipes:'Recepten', navPhilosophy:'Filosofie' });
+    Object.assign(translations.en, { navTraditions:'Traditions', navRecipes:'Recipes', navPhilosophy:'Philosophy' });
     function language() { return translations[document.documentElement.lang] || translations.fy; }
     function setLanguage(code) { const t = translations[code] || translations.fy; const select = document.querySelector('#language'); document.documentElement.lang = code; document.title = t.title; if (select) select.value = code; document.querySelectorAll('[data-i18n]').forEach(el => { el.innerHTML = t[el.dataset.i18n] || el.innerHTML; }); try { localStorage.setItem(LANGUAGE_KEY, code); } catch (error) {} document.dispatchEvent(new CustomEvent('frysk-hearren-language', { detail: { code: code } })); }
     const toggle = document.querySelector('.menu-toggle'); const nav = document.querySelector('.site-nav');

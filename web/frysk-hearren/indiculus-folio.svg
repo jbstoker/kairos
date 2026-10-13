@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 860" role="img" aria-label="Abstract manuscript-inspired research illustration">
+  <rect width="680" height="860" fill="#263b33"/><rect x="45" y="35" width="590" height="790" rx="3" fill="#d8d0bb"/>
+  <path d="M87 110h340M87 145h470M87 180h410M87 244h454M87 279h370M87 314h476M87 378h417M87 413h489M87 448h334M87 512h466M87 547h405M87 582h474M87 646h356M87 681h468M87 716h395" stroke="#6d675c" stroke-width="7" opacity=".65"/>
+  <path d="M87 99h170M87 233h130M87 367h190M87 501h150M87 635h180" stroke="#b45334" stroke-width="10"/>
+  <circle cx="535" cy="118" r="48" fill="none" stroke="#b45334" stroke-width="7"/><path d="M510 118h50M535 93v50" stroke="#b45334" stroke-width="6"/>
+  <path d="M533 672c-51-57-98-6-70 39 24 39 70 47 70 47s46-8 70-47c28-45-19-96-70-39Z" fill="#b45334" opacity=".9"/>
+  <text x="87" y="83" fill="#263b33" font-family="Georgia,serif" font-size="25" letter-spacing="3">INDICVLVS</text>
+</svg>
