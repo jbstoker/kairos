@@ -511,35 +511,21 @@
     function updateSunriseSunsetReadouts() {
         if (typeof getObserverLocation !== 'function') return;
         try {
-            const loc = getObserverLocation();
             const now = new Date();
-            let sunriseText = "--";
-            let sunsetText = "--";
-            if (typeof SunCalc !== "undefined" && SunCalc.getTimes) {
-                const times = SunCalc.getTimes(now, loc.lat, loc.lon);
-                const fmt = d => (d instanceof Date && !isNaN(d))
-                    ? `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`
-                    : "--";
-                sunriseText = fmt(times.sunrise);
-                sunsetText = fmt(times.sunset);
-            }
-            // Readouts show the current sunrise cycle, including recorded
-            // observations, rather than a different UTC day's solar events.
             const clock = currentSolarClock(now);
-            if (clock) {
-                const fmt = d => `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
-                sunriseText = fmt(clock.sunrise);
-                sunsetText = fmt(clock.sunset);
-            } else {
-                sunriseText = '--';
-                sunsetText = '--';
-            }
+            const fmt = d => `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+            const sunriseText = clock ? fmt(clock.sunrise) : '--';
+            const sunsetText = clock ? fmt(clock.sunset) : '--';
             const sunriseInput = document.getElementById('enterSunrise');
             const sunsetInput = document.getElementById('enterSunset');
             if (sunriseInput) sunriseInput.placeholder = sunriseText === '--' ? '' : sunriseText;
             if (sunsetInput) sunsetInput.placeholder = sunsetText === '--' ? '' : sunsetText;
-            setText('sunrise-val', sunriseText === '--' ? '--' : `${sunriseText} (${clock && clock.sunriseObserved ? 'observed' : 'predicted'})`);
-            setText('sunset-val', sunsetText === '--' ? '--' : `${sunsetText} (${clock && clock.sunsetObserved ? 'observed' : 'predicted'})`);
+            // Compare the sky clock only to sky-clock boundaries; civil times
+            // remain labelled for orientation and for the observation inputs.
+            const readouts = formatSolarEventReadouts(now, clock);
+            setText('sunrise-val', readouts.sunrise);
+            setText('sunset-val', readouts.sunset);
+            setText('civil-now-val', readouts.civilNow);
         } catch (e) { /* ignore */ }
     }
 

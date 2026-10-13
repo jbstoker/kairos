@@ -13,6 +13,40 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 @unittest.skipUnless(shutil.which('node'), 'requires node')
 class TestObservationalClock(unittest.TestCase):
+    def test_civil_sunrise_is_not_a_sky_clock_hour(self):
+        # Reproduce the reported Dutch screenshot at 13:13 civil, 13 Oct 2026.
+        script = """
+global.SunCalc = require('./web/lib/suncalc.js');
+const k = require('./web/static/js/observational_time.js');
+const now = new Date('2026-10-13T11:13:00Z');
+const clock = k.getKairosObservationalTime(now, 53.1503, 5.8389);
+const before = k.getKairosObservationalTime(new Date(clock.sunrise.getTime() - 1000), 53.1503, 5.8389);
+const atSet = k.getKairosObservationalTime(clock.sunset, 53.1503, 5.8389);
+process.stdout.write(JSON.stringify({
+  now: now.getTime(), sunrise: clock.sunrise.getTime(), sunset: clock.sunset.getTime(),
+  half: clock.half, display: clock.display, before: before.half, atSet: atSet.half,
+  readouts: k.formatSolarEventReadouts(now, clock),
+  unavailable: k.formatSolarEventReadouts(now, null)
+}));
+"""
+        env = dict(os.environ, TZ='Europe/Amsterdam')
+        proc = subprocess.run(['node', '-e', script], cwd=ROOT, capture_output=True,
+                              text=True, encoding='utf-8', env=env)
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        out = json.loads(proc.stdout)
+        self.assertLess(out['sunrise'], out['now'])
+        self.assertLess(out['now'], out['sunset'])
+        self.assertEqual(out['half'], 'light')
+        self.assertEqual(out['before'], 'dark')
+        self.assertEqual(out['atSet'], 'dark')
+        self.assertTrue(out['display'].startswith('07:08:'), out['display'])
+        self.assertEqual(out['readouts'], {
+            'sunrise': '01:01:01 Light · 07:59 civil (predicted)',
+            'sunset': '01:01:01 Dark · 18:48 civil (predicted)',
+            'civilNow': 'Civil now: 13:13'
+        })
+        self.assertEqual(out['unavailable'], {'sunrise': '--', 'sunset': '--', 'civilNow': ''})
+
     def test_transits_and_pulses(self):
         script = """
 global.SunCalc = require('./web/lib/suncalc.js');
@@ -69,7 +103,8 @@ process.stdout.write(JSON.stringify({polar: k.getKairosObservationalTime(
         self.assertEqual(client.get('/static/js/observational_time.js').status_code, 200)
         html = client.get('/').get_data(as_text=True)
         for marker in ('id="kairos-half"', 'id="kairos-time"',
-                       'id="kairos-stride"', 'id="kairos-pulse-length"'):
+                       'id="kairos-stride"', 'id="kairos-pulse-length"',
+                       'id="civil-now-val"'):
             self.assertIn(marker, html)
         self.assertLess(html.index('src="static/js/observational_time.js"'),
                         html.index('src="kst_display.js"'))
@@ -111,6 +146,8 @@ const observations = [
 ];
 const partial = k.getKairosObservationalTime(at, 53.1503, 5.8389, observations.slice(0, 1));
 const complete = k.getKairosObservationalTime(at, 53.1503, 5.8389, observations);
+const partialReadouts = k.formatSolarEventReadouts(at, partial);
+const completeReadouts = k.formatSolarEventReadouts(at, complete);
 const other = k.getKairosObservationalTime(at, 53.1503, 5.8389,
   observations.map(x => ({...x, lon:0})));
 const invalid = k.getKairosObservationalTime(at, 53.1503, 5.8389,
@@ -122,6 +159,7 @@ process.stdout.write(JSON.stringify({
   other: [other.sunrise.getTime(),other.sunset.getTime()],
   invalid: [invalid.sunrise.getTime(),invalid.sunset.getTime()],
   rise:rise.getTime(),set:set.getTime(),
+  partialReadouts,completeReadouts,
   pulse:complete.pulseLength
 }));
 """
@@ -134,4 +172,8 @@ process.stdout.write(JSON.stringify({
         self.assertEqual(out['complete'], [out['rise'], out['set'], True, True])
         self.assertEqual(out['other'], out['base'][:2])
         self.assertEqual(out['invalid'], out['base'][:2])
+        self.assertIn('Light', out['partialReadouts']['sunrise'])
+        self.assertIn('(observed)', out['partialReadouts']['sunrise'])
+        self.assertIn('(predicted)', out['partialReadouts']['sunset'])
+        self.assertIn('(observed)', out['completeReadouts']['sunset'])
         self.assertNotEqual(out['pulse'], 0)

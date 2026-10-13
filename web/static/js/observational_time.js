@@ -81,8 +81,20 @@
         return clock ? clock.pulseLength : null;
     }
 
+    // Both event instants and "now" are Dates (absolute instants). The sky
+    // clock's halves each start at 01:01:01; civil times are references only.
+    function formatSolarEventReadouts(date, clock) {
+        if (!clock) return { sunrise: '--', sunset: '--', civilNow: '' };
+        const fmt = d => `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+        return {
+            sunrise: `01:01:01 Light · ${fmt(clock.sunrise)} civil (${clock.sunriseObserved ? 'observed' : 'predicted'})`,
+            sunset: `01:01:01 Dark · ${fmt(clock.sunset)} civil (${clock.sunsetObserved ? 'observed' : 'predicted'})`,
+            civilNow: `Civil now: ${fmt(date)}`
+        };
+    }
+
     const api = { STRIDES_PER_HALF, PULSES_PER_HALF, getKairosObservationalTime,
-        getKairosObservationalPulseLength };
+        getKairosObservationalPulseLength, formatSolarEventReadouts };
     if (typeof module !== 'undefined' && module.exports) module.exports = api;
     if (typeof window !== 'undefined') Object.assign(window, api);
 })();
