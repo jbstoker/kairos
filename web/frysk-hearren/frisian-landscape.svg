@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 760" preserveAspectRatio="xMidYMid slice" role="img" aria-labelledby="title desc">
+  <title id="title">Low Frisian landscape</title>
+  <desc id="desc">An abstract landscape of water, sky, reeds, a mound, and a subtle Frisian pompeblêd.</desc>
+  <defs>
+    <linearGradient id="sky" x1="0" x2="0" y1="0" y2="1"><stop stop-color="#aebfbd"/><stop offset=".62" stop-color="#d7dfd7"/></linearGradient>
+    <linearGradient id="water" x1="0" x2="0" y1="0" y2="1"><stop stop-color="#638c8e"/><stop offset="1" stop-color="#315e61"/></linearGradient>
+    <pattern id="ripples" width="120" height="28" patternUnits="userSpaceOnUse"><path d="M0 14c20-8 40-8 60 0s40 8 60 0" fill="none" stroke="#b9d0cd" stroke-opacity=".45" stroke-width="2"/></pattern>
+  </defs>
+  <rect width="900" height="760" fill="url(#sky)"/>
+  <circle cx="675" cy="152" r="76" fill="#e6b66c" opacity=".9"/><circle cx="675" cy="152" r="105" fill="none" stroke="#e6b66c" stroke-opacity=".2" stroke-width="22"/>
+  <path d="M0 340c110-41 192-20 295 2 119 25 224-22 352-15 111 6 186 39 253 24v145H0Z" fill="#779286"/>
+  <path d="M0 407c129-52 205-11 314-11 148 0 224-56 346-39 112 16 150 64 240 35v149H0Z" fill="#3e6054"/>
+  <path d="M0 482c119-24 220-13 322 10 148 33 273 19 387-4 75-15 139-13 191 3v269H0Z" fill="url(#water)"/>
+  <rect y="482" width="900" height="278" fill="url(#ripples)" opacity=".65"/>
+  <path d="M0 460c48-45 90-57 136-33 39 21 72 26 113 10 33-13 74-17 117 0 22 9 47 18 81 16v31H0Z" fill="#263e37"/>
+  <g stroke="#253e35" stroke-width="5" stroke-linecap="round" opacity=".92"><path d="M80 528V391"/><path d="M95 528V404"/><path d="M112 528V383"/><path d="M790 555V420"/><path d="M809 555V400"/><path d="M831 555V433"/></g>
+  <g stroke="#253e35" stroke-width="3" opacity=".92"><path d="M80 432l-20-24m20 4 23-25m12 49-19-20m19 0 19-19M790 456l-21-21m21 6 23-28m-4 57-20-21m20 2 23-20"/></g>
+  <path d="M445 250c-18-16-46-5-49 20-3 23 20 47 49 69 29-22 52-46 49-69-3-25-31-36-49-20Z" fill="#c86534" opacity=".86"/>
+  <path d="M445 268c-10-10-25-4-26 9-2 13 10 28 26 40 16-12 28-27 26-40-1-13-16-19-26-9Z" fill="#d7dfd7" opacity=".9"/>
+  <path d="M360 364h42l13-20 18 49 21-69 17 40h31" fill="none" stroke="#151719" stroke-linecap="round" stroke-linejoin="round" stroke-width="7" opacity=".88"/>
+</svg>

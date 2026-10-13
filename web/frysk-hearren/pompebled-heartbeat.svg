@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-labelledby="title desc">
+  <title id="title">Frysk Hearren mark</title>
+  <desc id="desc">A stylised Frisian pompeblêd crossed by a heartbeat line.</desc>
+  <path d="M80 27C59 9 28 20 23 49c-4 24 16 47 57 79 41-32 61-55 57-79C132 20 101 9 80 27Z" fill="#c86534"/>
+  <path d="M80 42c-13-13-32-5-34 12-2 15 11 31 34 50 23-19 36-35 34-50-2-17-21-25-34-12Z" fill="#e8e4da" opacity=".9"/>
+  <path d="M17 88h25l9-16 13 36 15-48 12 28h19l8-13 8 13h17" fill="none" stroke="#151719" stroke-linecap="round" stroke-linejoin="round" stroke-width="7"/>
+  <circle cx="17" cy="88" r="3.5" fill="#151719"/><circle cx="143" cy="88" r="3.5" fill="#151719"/>
+</svg>
