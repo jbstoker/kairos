@@ -318,6 +318,7 @@
         if (kairosRow) kairosRow.hidden = system === 'civil';
         if (civilRow) civilRow.hidden = system === 'kairos';
         setText('kairos-week-display', week ? week.display : '--');
+        setText('week-day-domain', week ? week.dayDomain : '');
         setText('civil-week-display', `${now.toLocaleDateString('en-US', { weekday: 'long' })} (7-day week)`);
     }
 

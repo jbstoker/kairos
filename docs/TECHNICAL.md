@@ -430,11 +430,13 @@ Kairos Time has its own observed calendar, defined in `core/constants.py`:
 
 - **13 months of 28 days** plus one intercalary day in common years (two
   in leap years) — 13 × 28 + 1 = 365, or + 2 = 366.
-- **Thirteen named days** — a constructed weekly rhythm:
+- **Thirteen calendar day names** — the existing constructed date labels:
 
   `Imix · Ik · Akbal · Kan · Chicchan · Cimi · Manik · Lamat · Muluc · Oc · Chuen · Eb · Ben`
 
-  (day 1 is Imix; day 14 is Imix again; 28 weeks cover 364 days.)
+  (day 1 is Imix; day 14 is Imix again.) The separate Frisian 13-day week
+  shown in the web week card runs Tiw through Forseti, anchored to day 1
+  of each Kairos year. Its 28 weeks cover 364 days; The Closing has no week.
 
 - **Thirteen observed months** — named for what is happening in the
   living world:

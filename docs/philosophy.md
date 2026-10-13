@@ -11,15 +11,16 @@ Kairos does not drift. It does not correct. It simply *observes*.
 ---
 
 ### The Day — A Turning, Not a Number
-Kairos's primary constructed week has 13 named days: Imix, Ik, Akbal, Kan,
-Chicchan, Cimi, Manik, Lamat, Muluc, Oc, Chuen, Eb, Ben. Twenty-eight such
-weeks fit into 364 calendar days. The remaining Closing (two days in leap
-years) has no week name; each new year begins again with Imix. A continuous
-civil seven-day week is available as an optional reference.
+The independent Frisian 13-day week runs Tiw, Wodan, Thuner, Fro, Njord,
+Balder, Bragi, Heimdall, Hoder, Vidar, Vali, Ull, Forseti. Twenty-eight
+weeks fit into 364 calendar days. The Closing (two days in leap years) sits
+outside the week; each new year begins again with Tiw. The seven-day civil
+week remains an optional reference and does not determine this cycle.
 
-These names are inspired by Maya day-sign names, **not** a representation of
-the historical Tzolk’in (a continuous 260-day combination of 13 numbers and
-20 day signs). The Kairos mapping is symbolic, not an astronomical observation.
+The calendar date also has its existing named-day sequence (Imix through
+Ben), inspired by Maya day signs. It is **not** the historical Tzolk’in
+(a continuous 260-day combination of 13 numbers and 20 day signs). That
+calendar naming layer is separate from the Frisian week.
 
 ---
 
